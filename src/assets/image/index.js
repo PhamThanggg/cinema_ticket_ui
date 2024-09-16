@@ -1,5 +1,9 @@
 const images = {
-    logo: require('~/assets/image/logo.svg'),
+    logo: require('./Logo.png'),
+    user: require('./user.png'),
+    buyTicket: require('./image.png'),
+    name: require('./name.png'),
+    gift: require('./gift.png'),
 };
 
 export default images;
