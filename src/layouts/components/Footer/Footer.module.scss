@@ -1,0 +1,93 @@
+.wrapper {
+    width: 100%;
+    display: block;
+    padding: 0;
+    background-color: var(--black);
+}
+
+.title {
+    color: var(--white);
+    margin: 50px 0 15px 0;
+    font-size: 20px;
+    line-height: 20px;
+    text-transform: capitalize;
+    font-weight: 600;
+}
+
+.wrapper-email {
+    position: relative;
+    display: flex;
+    margin-top: 20px;
+}
+
+.item {
+    color: #979797;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24.5px;
+    margin: 0 0 10px 0;
+    display: block;
+}
+
+.input {
+    background: transparent;
+    padding: 15px 20px;
+    font-size: 17px;
+    line-height: 26px;
+    border: 1px solid #979797;
+    outline: none;
+    width: 100%;
+    color: #fff;
+    border-radius: 6px;
+}
+
+.btn {
+    text-align: center;
+    background-color: transparent;
+    padding-left: 0;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    cursor: pointer;
+    position: absolute;
+    right: 15px;
+    top: 20px;
+}
+
+.icon {
+    color: #fff;
+}
+
+.description {
+    margin-top: 20px;
+    color: #979797;
+    font-size: 14px;
+    line-height: 24px;
+    max-width: 250px;
+}
+
+.below {
+    background: #222;
+    padding: 16px 0;
+}
+
+.container {
+    display: flex;
+    max-width: 1200px;
+    margin: 0 auto;
+    justify-content: space-between;
+}
+
+.coppyright {
+    color: #979797;
+}
+
+.contact-icon {
+    color: var(--white);
+}
+
+.icon-info {
+    margin-left: 20px;
+    cursor: pointer;
+    font-size: 20px;
+}

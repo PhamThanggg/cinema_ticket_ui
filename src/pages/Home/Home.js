@@ -1,5 +1,11 @@
+import Slider from './Slider';
+
 function Home() {
-    return <h2 style={{ height: '1500px' }}>Home</h2>;
+    return (
+        <div>
+            <Slider />
+        </div>
+    );
 }
 
 export default Home;

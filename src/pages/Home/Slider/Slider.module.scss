@@ -1,0 +1,22 @@
+.wrapper {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    height: 1000px;
+}
+
+.slides {
+    position: relative;
+    width: 100%;
+    height: auto;
+}
+
+.image {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+.image-link {
+    display: block;
+}
