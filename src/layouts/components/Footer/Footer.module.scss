@@ -1,5 +1,6 @@
 .wrapper {
-    width: 100%;
+    width: 100vw;
+    max-width: 100%;
     display: block;
     padding: 0;
     background-color: var(--black);
@@ -90,4 +91,20 @@
     margin-left: 20px;
     cursor: pointer;
     font-size: 20px;
+}
+
+@media (max-width: 1250px) {
+    .container {
+        margin: 0 50px;
+    }
+}
+
+@media (max-width: 740px) {
+    .wrapper-item {
+        margin: 0 50px;
+    }
+
+    .container {
+        margin: 0 50px;
+    }
 }

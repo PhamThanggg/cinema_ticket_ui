@@ -456,10 +456,6 @@
         margin-right: 50px;
     }
 
-    .wrapper-avatar {
-        display: none;
-    }
-
     .search-item {
         display: none;
     }
@@ -471,11 +467,15 @@
     .drop-menu {
         min-width: 280px;
     }
+
+    .acc-header {
+        display: none;
+    }
 }
 
 @media only screen and (max-width: 21.875em) {
     .nav-tck {
-        display: none;
+        display: block;
     }
 
     .drop-menu {
@@ -488,5 +488,13 @@
 
     .menu-list {
         margin-left: 20px;
+    }
+
+    .acc-header {
+        display: none;
+    }
+
+    .avatar-wrapper {
+        display: flex;
     }
 }

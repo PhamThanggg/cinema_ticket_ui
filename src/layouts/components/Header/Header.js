@@ -72,7 +72,9 @@ function Header() {
                             Search
                         </Button>
                     </div>
-                    <Account offset={false} />
+                    <div className={cx('acc-header')}>
+                        <Account offset={false} />
+                    </div>
                     <div className={cx('mode-container')}>
                         <i className={cx('gg-sun', 'sun-css')}></i>
                         <i className={cx('gg-moon', 'moon-css')}></i>

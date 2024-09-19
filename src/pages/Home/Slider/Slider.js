@@ -8,6 +8,24 @@ import classNames from 'classnames/bind';
 
 const cx = classNames.bind(styles);
 
+const PrevArrow = (props) => {
+    const { onClick } = props;
+    return (
+        <button className={cx('slick-prev')} onClick={onClick}>
+            &lt;
+        </button>
+    );
+};
+
+const NextArrow = (props) => {
+    const { onClick } = props;
+    return (
+        <button className={cx('slick-next')} onClick={onClick}>
+            &gt;
+        </button>
+    );
+};
+
 function Slide() {
     const images = [
         'https://cdn.galaxycine.vn/media/2024/9/9/tim-kiem-tai-nang-am-phu-2048-sneak-_1725856218383.jpg',
@@ -17,13 +35,27 @@ function Slide() {
     ];
 
     const settings = {
+        className: 'center',
+        centerMode: true,
         dots: true, // Hiển thị các chấm tròn để chuyển ảnh
         infinite: true, // Cho phép vòng lặp lại slider
         speed: 500, // Tốc độ chuyển ảnh
         slidesToShow: 1, // Số ảnh hiển thị mỗi lần
         slidesToScroll: 1, // Số ảnh cuộn mỗi lần
         autoplay: true, // Tự động chuyển ảnh
-        autoplaySpeed: 3000, // Thời gian giữa các lần chuyển ảnh (3000ms = 3 giây)
+        autoplaySpeed: 4000, // Thời gian giữa các lần chuyển ảnh (3000ms = 3 giây)
+        centerPadding: '205px',
+        prevArrow: <PrevArrow />,
+        nextArrow: <NextArrow />,
+        responsive: [
+            {
+                breakpoint: 1105,
+                settings: {
+                    className: 'center',
+                    centerMode: false,
+                },
+            },
+        ],
     };
 
     return (

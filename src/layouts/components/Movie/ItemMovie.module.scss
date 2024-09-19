@@ -1,0 +1,114 @@
+.item-link {
+    cursor: pointer;
+}
+
+.ctn-image {
+    position: relative;
+    transition: opacity 0.5s ease;
+    &:hover {
+        .img-hover {
+            display: block;
+        }
+    }
+}
+
+.image {
+    width: 100%;
+    border-radius: 6px;
+    border: none;
+    height: 435px;
+    object-fit: cover;
+}
+
+.img-hover {
+    position: absolute;
+    background-color: rgba(19, 19, 19, 0.5);
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 435px;
+    border: none;
+    border-radius: 6px;
+    display: none;
+}
+
+.play {
+    position: absolute;
+    font-size: 50px;
+    top: 40%;
+    transform: translateY(-50%);
+    left: 50%;
+    transform: translateX(-50%);
+    color: #ebebeb;
+}
+
+.buy-ticket {
+    position: absolute;
+    top: 88%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.meta {
+    margin-top: 15px;
+}
+
+.age-limit {
+    background-color: var(--primary);
+    color: var(--white);
+    border-radius: 4px;
+    padding: 4px;
+    font-size: 13px;
+}
+
+.type {
+    background-color: var(--primary);
+    color: var(--white);
+    border-radius: 4px;
+    padding: 4px;
+    font-size: 13px;
+    margin: 0 10px;
+}
+
+.format {
+    background-color: var(--primary);
+    color: var(--white);
+    border-radius: 4px;
+    padding: 4px;
+    font-size: 13px;
+}
+
+.title {
+    margin-top: 15px;
+    margin-bottom: 0px;
+    font-size: 1em;
+    height: 24px;
+    overflow: hidden;
+    max-width: 95%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.tooltip {
+    color: #2c2c2c;
+}
+
+.cats {
+    font-size: 0.9em;
+    height: 21px;
+    overflow: hidden;
+    color: var(--black);
+    margin-bottom: 10px;
+}
+
+.movie-type {
+    margin-left: 5px;
+    color: var(--primary);
+}
+
+@media (max-width: 740px) {
+    .margin-rsp {
+        margin: 0 50px;
+    }
+}

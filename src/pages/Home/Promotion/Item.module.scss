@@ -1,0 +1,38 @@
+.item-link {
+    cursor: pointer;
+}
+
+.ctn-image {
+    position: relative;
+    transition: opacity 0.5s ease;
+}
+
+.image {
+    border-radius: 6px;
+    border: none;
+    max-width: 275px;
+    width: 100%;
+    height: 185px;
+    object-fit: cover;
+}
+
+.title {
+    margin-top: 15px;
+    margin-bottom: 0px;
+    font-size: 1em;
+    height: 100%;
+    // overflow: hidden;
+    max-width: 95%;
+    // white-space: nowrap;
+    // text-overflow: ellipsis;
+}
+
+.tooltip {
+    color: #2c2c2c;
+}
+
+@media (max-width: 740px) {
+    .margin-rsp {
+        margin: 0 50px;
+    }
+}
