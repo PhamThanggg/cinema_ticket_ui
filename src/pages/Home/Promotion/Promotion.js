@@ -3,13 +3,11 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
-import styleGrid from '~/components/GlobalStyles/Grid.module.scss';
 import styles from './Promotion.module.scss';
 import classNames from 'classnames/bind';
 import Item from './Item';
 
 const cx = classNames.bind(styles);
-const cw = classNames.bind(styleGrid);
 
 const PrevArrow = (props) => {
     const { onClick } = props;

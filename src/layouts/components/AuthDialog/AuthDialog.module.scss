@@ -1,0 +1,316 @@
+.wrapper {
+    position: relative;
+    margin: 0 auto;
+    box-sizing: border-box;
+    padding: 2em;
+    border-radius: 6px;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.09);
+    font-size: 18px;
+    min-height: 500px;
+}
+
+.btn-close {
+    display: inline;
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    right: 0px;
+    top: 0px;
+    font-size: 18px;
+    color: #262626;
+    background-color: var(--white);
+
+    &:hover {
+        color: #474747;
+    }
+}
+
+.form {
+    margin: 0 15px;
+}
+
+.title {
+    margin: 0 auto;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: -10px;
+    color: rgb(49, 49, 49);
+}
+
+.ctn-item {
+    padding: 20px;
+}
+
+.wr-icon {
+    display: flex;
+    justify-content: center;
+}
+
+.icon-bd {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: 1px solid var(--primary);
+    background-color: pink;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.title {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.gg {
+    margin: 20px 0px 20px 0;
+    display: flex;
+    justify-content: center;
+    height: 38px;
+    border-radius: 3px;
+}
+.login-gg {
+    width: 100%;
+    height: 100%;
+    background-color: var(--white);
+    border: 1px solid var(--primary);
+    border-radius: 3px;
+    color: rgb(49, 49, 49);
+    font-weight: 600;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &:hover {
+        background-color: rgb(255, 227, 232);
+    }
+}
+
+.txt-gg {
+    margin-left: 10px;
+}
+
+.line {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    font-size: 14px;
+    color: #474747;
+}
+
+.line::before {
+    content: '';
+    flex-grow: 1;
+    border-bottom: 1px solid #ccc;
+    margin-right: 8px;
+}
+
+.line::after {
+    content: '';
+    flex-grow: 1;
+    border-bottom: 1px solid #ccc;
+    margin-left: 8px;
+}
+
+.ctn-input {
+    margin: 15px 0;
+}
+
+.label {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.input {
+    display: flex;
+    justify-content: center;
+    border: 1px solid #ccc;
+    height: 38px;
+    border-radius: 3px;
+}
+
+.input-txt {
+    width: 100%;
+    height: 100%;
+    margin: 0 10px;
+    border-radius: 3px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+}
+
+.input.focused {
+    border-color: var(--primary);
+}
+
+.gender-options {
+    margin-top: 5px;
+    display: flex;
+}
+
+.gender-male {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.gender-female {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.male {
+    font-size: 14px;
+    margin: 0 20px 0 5px;
+}
+
+.female {
+    font-size: 14px;
+    margin: 0 20px 0 5px;
+}
+
+.ctn-cb {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.txt-cb {
+    font-size: 13.5px;
+    margin-left: 5px;
+    color: #474747;
+}
+
+.forgot-pas {
+    font-size: 13.5px;
+    color: var(--primary);
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+.login {
+    margin: 20px 0px 20px 0;
+    display: flex;
+    justify-content: center;
+    height: 38px;
+    border-radius: 3px;
+}
+
+.login-btn {
+    width: 100%;
+    height: 100%;
+    background-color: var(--primary);
+    border: 1px solid var(--primary);
+    border-radius: 3px;
+    font-weight: 600;
+    font-size: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--white);
+
+    &:hover {
+        border: 1px solid var(--theme-blue);
+        background: var(--theme-blue);
+        transition: 0.5s ease-out;
+    }
+}
+
+.check-out {
+    font-size: 16px;
+}
+
+//register
+.txt-cbox {
+    font-size: 13px;
+    margin-left: 3px;
+}
+
+.ctn-input-res {
+    margin: 5px 0;
+}
+
+.label-res {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.input-txt {
+    width: 100%;
+    height: 100%;
+    margin: 0 10px;
+    border-radius: 3px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 15px;
+}
+
+.input-txt-date {
+    max-width: 290px !important;
+    padding-right: 120px;
+    height: 100%;
+    margin: 0 10px;
+    border-radius: 3px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 15px;
+}
+
+.checkbox-res {
+    margin-top: 20px;
+}
+
+.ctn-cb-res {
+    display: flex;
+    cursor: pointer;
+}
+
+:global {
+    .react-datepicker-wrapper {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .react-datepicker__input-container {
+        height: 100%;
+    }
+
+    .react-datepicker {
+        font-size: 1.6rem !important;
+    }
+
+    .react-datepicker__current-month {
+        font-size: 1.8rem !important;
+    }
+
+    .react-datepicker__header {
+        padding-top: 6px !important;
+    }
+
+    .react-datepicker__navigation {
+        top: 13px !important;
+    }
+
+    .react-datepicker__day-name,
+    .react-datepicker__day {
+        margin: 1rem !important;
+    }
+}

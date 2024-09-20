@@ -17,7 +17,7 @@ function Movie({ movieType }) {
                             <p className={cx('showing-name')}>{movieType}</p>
                         </div>
                         <div className={cx('more-item')}>
-                            <Button outline className={cx('btn-more')}>
+                            <Button text className={cx('btn-more')}>
                                 Xem thêm
                             </Button>
                         </div>

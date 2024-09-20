@@ -9,12 +9,12 @@ import { useState } from 'react';
 import Button from '~/components/Button';
 import Menu from './Menu';
 import DropdownMenu from './DropDownMenu';
-import Account from './Account';
+// import Account from './Account';
 import Search from './Search';
 
 const cx = classNames.bind(styles);
 
-function Header() {
+function Header({ onLoginClick }) {
     const firm = ['Phim đang chiếu', 'Phim sắp chiếu'];
     const cinemaCorner = ['Thể loại', 'Diễn viên', 'Đạo diễn'];
     const event = ['Ưu đãi', 'Phim hay tháng', 'Đạo diễn'];
@@ -72,8 +72,13 @@ function Header() {
                             Search
                         </Button>
                     </div>
-                    <div className={cx('acc-header')}>
+                    {/* <div className={cx('acc-header')}>
                         <Account offset={false} />
+                    </div> */}
+                    <div>
+                        <Button outline onClick={onLoginClick}>
+                            Đăng nhập
+                        </Button>
                     </div>
                     <div className={cx('mode-container')}>
                         <i className={cx('gg-sun', 'sun-css')}></i>

@@ -38,5 +38,12 @@
 }
 
 .btn-more {
-    font-weight: 400;
+    font-weight: 600 !important;
+    font-size: 18px !important;
+    background-color: transparent !important;
+    color: var(--primary) !important;
+
+    &:hover {
+        text-decoration: underline;
+    }
 }
