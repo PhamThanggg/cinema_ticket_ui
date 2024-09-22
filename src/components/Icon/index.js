@@ -33,3 +33,9 @@ export const GoogleIcon = ({ width = '24', height = '24', className }) => (
         <path d="M1 1h22v22H1z" fill="none"></path>
     </svg>
 );
+
+export const btnShow = ({ width = 10, height = 10, className }) => (
+    <svg width={width} height={height} viewBox="0 0 8 5" className={className}>
+        <path d="M0.538289 5H7.46171C7.94067 5 8.18015 4.42148 7.84111 4.08244L4.38075 0.619382C4.17087 0.4095 3.82913 0.4095 3.61925 0.619382L0.158886 4.08244C-0.180154 4.42148 0.0593268 5 0.538289 5Z"></path>
+    </svg>
+);

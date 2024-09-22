@@ -1,0 +1,330 @@
+.wrapper {
+    max-width: var(--default-layout-with);
+    margin: 0 auto;
+    min-height: 500px;
+    height: 100%;
+}
+
+.container {
+    margin: 0 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.wrapper-start {
+    width: 385px;
+    border-radius: 10px;
+    background-color: var(--white);
+    --tw-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    --tw-shadow-colored: 0 25px 50px -12px var(--tw-shadow-color);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+.ctn {
+    margin: 20px 20px;
+}
+
+.acc {
+    display: flex;
+    justify-content: center;
+}
+
+.avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+}
+
+.acc-name {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.name {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.name-stars {
+    display: flex;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--primary);
+    margin: 5px 0 20px 0;
+}
+
+.line {
+    width: 100%;
+    height: 1px;
+    background-color: #ccc;
+    margin-bottom: 20px;
+}
+
+.total-pay {
+    display: flex;
+    justify-content: space-between;
+}
+
+.total-txt {
+    font-weight: 700;
+}
+
+.total-number {
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.Rating_rating {
+    width: 100%;
+    height: 8px;
+    line-height: 1;
+    border-radius: 8px;
+    position: relative;
+    background-color: #d0e3ed;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 0;
+    margin: 100px auto;
+    border: 1px solid #1174c5;
+}
+
+.Rating_steps {
+    height: 100%;
+    position: relative;
+}
+
+.Rating_relative {
+    position: absolute;
+    position: relative;
+    top: -37px;
+    left: -2px;
+}
+
+.Rating_relative2 {
+    position: absolute;
+    position: relative;
+    top: -44px;
+    left: -10px;
+}
+
+.Rating_relative3 {
+    position: absolute;
+    position: relative;
+    top: -52px;
+    left: -30px;
+}
+
+.logo-price {
+    position: relative;
+    left: -5px;
+}
+
+.logo-price3 {
+    position: relative;
+    left: -9px;
+}
+
+.Rating_index {
+    width: 14px;
+    height: 14px;
+    border: 2px solid #1174c5;
+    background: #fff;
+    border-radius: 50%;
+}
+
+.price1 {
+    position: absolute;
+    margin-top: 10px;
+}
+
+.price2 {
+    position: absolute;
+    margin-top: 10px;
+    left: -33px;
+}
+
+// info
+.information {
+    width: 835px;
+    // background-color: rgb(175, 222, 222);
+}
+
+// nav
+.tablist {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 30px;
+}
+
+.item {
+    padding: 10px 0 10px 0;
+}
+
+.item-link {
+    color: #4d4d4d;
+    font-weight: 600;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.nav-active {
+    color: var(--primary);
+    border-bottom: 2px solid var(--primary);
+}
+
+.nav-line {
+    height: 1px;
+    background-color: #ccc;
+}
+
+//Lịch sử giao dịch
+
+.rounded {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.card__item__ticket {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 95px;
+    background-color: var(--white);
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border-radius: 5px;
+}
+
+.image-card {
+    margin-left: 20px;
+    border-radius: 2px;
+}
+
+.item__detail {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.title__content {
+    margin-top: 3px;
+    margin-left: 25px;
+}
+
+.text-base {
+    font-size: 15px;
+    font-weight: 400;
+}
+
+.item__title {
+    margin-top: 10px;
+}
+
+.title-txt {
+    font-size: 13px;
+    color: #4f4f4f;
+}
+
+.title-block {
+    font-size: 14px;
+    width: 20px;
+    height: 20px;
+    padding: 5px;
+    background-color: var(--primary);
+    margin-left: 10px;
+    color: var(--white);
+    border-radius: 3px;
+}
+
+.order {
+    margin-right: 25px;
+    display: flex;
+    align-items: center;
+}
+
+.order-detail {
+    margin-right: 25px;
+    font-size: 14px;
+    font-weight: 400;
+    color: #4f4f4f;
+    line-height: 20px;
+}
+
+.order-btn {
+    font-size: 14px;
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    border-radius: 3px;
+    padding: 3px 5px;
+    cursor: pointer;
+
+    &:hover {
+        background-color: var(--primary);
+        color: var(--white);
+    }
+}
+
+.pagination {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+// Thông tin cá nhân
+
+//Thông báo
+
+// respnsive
+@media only screen and (min-width: 46.1875em) and (max-width: 69em) {
+    .wrapper-start {
+        display: none;
+    }
+
+    .container {
+        justify-content: center;
+    }
+
+    .information {
+        width: 1200px;
+    }
+}
+
+@media only screen and (max-width: 46.1875em) {
+    .wrapper-start {
+        display: none;
+    }
+
+    .order-detail {
+        display: none;
+    }
+
+    .item-link {
+        font-size: 13px;
+        color: #4d4d4d;
+        font-weight: 600;
+        padding: 10px 0;
+    }
+}
+
+@media only screen and (max-width: 21.875em) {
+    .wrapper-start {
+        display: none;
+    }
+
+    .order-detail {
+        display: none;
+    }
+
+    .item-link {
+        font-size: 10px;
+        color: #4d4d4d;
+        font-weight: 600;
+        padding: 10px;
+    }
+}

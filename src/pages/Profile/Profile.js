@@ -1,5 +1,11 @@
-function Home() {
-    return <h2>Profile page</h2>;
+import ProfileInfo from '~/layouts/components/ProfileInfo';
+
+function Profile() {
+    return (
+        <div>
+            <ProfileInfo />
+        </div>
+    );
 }
 
-export default Home;
+export default Profile;

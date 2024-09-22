@@ -1,0 +1,244 @@
+.form {
+    width: 100%;
+    display: block;
+    padding: 0;
+}
+
+.form.wide {
+    width: 840px;
+    margin: 10px auto;
+}
+
+.start-info {
+    display: none;
+}
+
+.row {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -4px;
+    margin-right: -4px;
+}
+
+.ctn-input {
+    margin: 15px 0;
+}
+
+.label {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.input {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    border: 1px solid #ccc;
+    height: 38px;
+    border-radius: 3px;
+    margin-bottom: 15px;
+}
+
+.input-txt {
+    width: 100%;
+    height: 100%;
+    padding: 0 10px;
+    border-radius: 3px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+}
+
+.input.focused {
+    border-color: var(--primary);
+}
+
+.gender-options {
+    margin-top: 5px;
+    display: flex;
+}
+
+.gender-male {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.gender-female {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.male {
+    font-size: 14px;
+    margin: 0 20px 0 5px;
+}
+
+.female {
+    font-size: 14px;
+    margin: 0 20px 0 5px;
+}
+
+.ctn-cb {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.txt-cb {
+    font-size: 13.5px;
+    margin-left: 5px;
+    color: #474747;
+}
+
+.login {
+    width: 800px;
+    margin-top: 20px;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+}
+
+.login-btn {
+    background-color: var(--primary);
+    border: 1px solid var(--primary);
+    border-radius: 3px;
+    font-weight: 600;
+    font-size: 14px;
+
+    color: var(--white);
+
+    &:hover {
+        border: 1px solid var(--theme-blue);
+        background: var(--theme-blue);
+        transition: 0.5s ease-out;
+    }
+}
+
+.txt-cbox {
+    font-size: 13px;
+    margin-left: 3px;
+}
+
+.ctn-input-res {
+    display: inline;
+    width: 350px;
+    margin: 0 35px;
+}
+
+.label-res {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.input-txt-date {
+    max-width: 290px !important;
+    padding-right: 120px;
+    height: 100%;
+    padding: 0 10px;
+    border-radius: 3px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 15px;
+}
+
+.checkbox-res {
+    margin-top: 20px;
+}
+
+.ctn-cb-res {
+    display: flex;
+    cursor: pointer;
+}
+
+:global {
+    .react-datepicker-wrapper {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .react-datepicker__input-container {
+        height: 100%;
+    }
+
+    .react-datepicker {
+        font-size: 1.6rem !important;
+    }
+
+    .react-datepicker__current-month {
+        font-size: 1.8rem !important;
+    }
+
+    .react-datepicker__header {
+        padding-top: 6px !important;
+    }
+
+    .react-datepicker__navigation {
+        top: 13px !important;
+    }
+
+    .react-datepicker__day-name,
+    .react-datepicker__day {
+        margin: 1rem !important;
+    }
+}
+
+// respnsive
+
+@media only screen and (max-width: 69em) {
+    .start-info {
+        display: block;
+    }
+}
+
+@media only screen and (max-width: 850px) {
+    .form.wide {
+        width: 100%;
+        margin: 10px auto;
+    }
+
+    .row {
+        width: 100%;
+        display: inline;
+        margin-left: -4px;
+        margin-right: -4px;
+    }
+
+    .label-res {
+        display: flex;
+        right: 0;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .login {
+        width: 100%;
+        margin-top: 0px;
+        display: flex;
+        justify-content: end;
+        align-items: center;
+    }
+
+    .ctn-input-res {
+        display: inline;
+        width: 350px;
+        margin: 0 0px;
+    }
+}
+
+@media only screen and (max-width: 21.875em) {
+}

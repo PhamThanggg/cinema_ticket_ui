@@ -42,7 +42,7 @@ function Account(offSet) {
                     </span>
                     <span className={cx('username')}>
                         <img className={cx('image-gift')} src={images.gift} alt="name" />
-                        <span style={{ marginLeft: '5px' }}>{`0 Start`}</span>
+                        <span style={{ marginLeft: '5px' }}>{`0 Stars`}</span>
                     </span>
                 </div>
             </div>
