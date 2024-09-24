@@ -1,0 +1,124 @@
+// booking
+.order-ctn {
+    background-color: var(--white);
+    margin-bottom: 30px;
+    border-radius: 4px;
+    box-shadow: 0 0.225rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.order-place {
+    width: 835px;
+    height: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.title-place {
+    margin-left: 20px;
+    font-weight: 700;
+    font-size: large;
+}
+
+.btn-hide {
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 20px;
+    background-color: var(--primary);
+    color: var(--white);
+}
+
+.btn-show {
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #efefef;
+    color: var(--primary);
+    margin-right: 20px;
+}
+
+.title-content {
+    margin: 0 20px;
+    transition: max-height 0.5s ease-out, opacity 0.5s ease-out;
+}
+
+.title-content.visible {
+    height: 100%;
+    opacity: 1;
+    transition: max-height 0.5s ease-out, opacity 0.5s ease-out;
+}
+
+.btn-hide.hidden,
+.btn-show.hidden {
+    display: none;
+}
+
+.place {
+    border: 1px solid #ccc;
+    background-color: transparent;
+    border-radius: 3px;
+    padding: 8px 14px;
+    margin-bottom: 20px;
+}
+
+// SCSS chọn suất
+.title-content {
+    max-width: 795px;
+    margin: 0 auto;
+    height: 100%;
+}
+
+.booking-cinema {
+    display: flex;
+    justify-content: end;
+}
+
+.cinema-select {
+    width: 400px;
+    height: 30px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    color: #4d4d4d;
+    outline: none;
+}
+
+.booking-date {
+    width: 80%;
+    margin: 0 auto;
+}
+
+.cinema-name {
+    margin-top: 20px;
+}
+
+.name-detail {
+    margin-top: 30px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.name-pd {
+    font-size: 14px;
+    font-weight: 400;
+    margin-left: 15px;
+}
+
+.hour {
+    width: 80%;
+    margin: 20px auto;
+}
+
+.btn-hour {
+    border: 1px solid #ccc;
+    background-color: transparent;
+    border-radius: 3px;
+    padding: 8px 14px;
+    margin-bottom: 20px;
+}

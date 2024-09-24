@@ -1,0 +1,145 @@
+.nav {
+    border-radius: 4px;
+    background-color: var(--white);
+    height: 50px;
+    display: flex;
+    align-items: center;
+}
+
+.time {
+    margin-left: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.title-time {
+    font-size: 15px;
+    font-weight: 600;
+    color: #484848;
+}
+
+.btn-time {
+    margin-left: 10px;
+    padding: 8px 16px;
+    border-radius: 4px;
+    background-color: transparent;
+    border: 1px solid #ccc;
+
+    &:hover {
+        background-color: var(--primary);
+        color: var(--white);
+    }
+}
+
+.cinema-seat {
+    background-color: var(--white);
+    margin: 20px 0;
+}
+
+.seat-info {
+    margin: 0 10px 10px 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.column {
+    font-size: 14px;
+    color: #535353;
+}
+
+.seat {
+    font-size: 11px;
+    padding: 3px;
+    margin: 0 3px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: transparent;
+    color: #535353;
+
+    &:hover {
+        background-color: var(--primary);
+        color: var(--white);
+        border: 1px solid var(--primary);
+    }
+}
+
+.screen {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    color: #535353;
+}
+
+.line {
+    height: 3px;
+    background-color: var(--primary);
+    margin: 20px 10px;
+}
+
+.seat-status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.ctn-status {
+    display: flex;
+}
+
+.status {
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.status-color {
+    width: 20px;
+    height: 20px;
+    background-color: #ccc;
+    border-radius: 3px;
+}
+
+.status-color.pink {
+    background-color: var(--primary);
+}
+
+.status-name {
+    color: #626262;
+    font-size: 14px;
+    margin-left: 5px;
+}
+
+.seat-type {
+    display: flex;
+}
+
+.type {
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.type-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+}
+
+.type-color.vip {
+    border: 1px solid var(--primary);
+}
+
+.type-color.double {
+    width: 40px;
+    height: 20px;
+    border-radius: 3px;
+    border: 1px solid var(--primary);
+}
+
+.type-name {
+    color: #626262;
+    font-size: 14px;
+    margin-left: 5px;
+}

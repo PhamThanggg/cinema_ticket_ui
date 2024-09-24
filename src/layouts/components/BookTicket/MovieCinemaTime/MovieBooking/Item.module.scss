@@ -1,0 +1,58 @@
+.item-link {
+    cursor: pointer;
+}
+
+.ctn-image {
+    transition: opacity 0.5s ease;
+    position: relative;
+    max-width: 170px;
+    height: 240px;
+}
+
+.image {
+    border-radius: 6px;
+    border: none;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.tick {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #2c2c2c;
+    opacity: 0.5;
+    border-radius: 4px;
+}
+
+.title {
+    margin-top: 15px;
+    margin-bottom: 0px;
+    font-size: 1em;
+    height: 100%;
+    max-width: 90%;
+}
+
+.check {
+    position: absolute;
+    top: 40%;
+    transform: translatey(-50%);
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 40px;
+    color: rgb(255, 255, 255);
+}
+
+.tooltip {
+    color: #2c2c2c;
+    font-weight: 500;
+}
+
+@media (max-width: 740px) {
+    .margin-rsp {
+        margin: 0 50px;
+    }
+}

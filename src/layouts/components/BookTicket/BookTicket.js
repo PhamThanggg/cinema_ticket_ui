@@ -1,33 +1,45 @@
 import classNames from 'classnames/bind';
 import styles from './BookTicket.module.scss';
-import { Link } from 'react-router-dom';
-import { useState, useEffect, useRef } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons';
+import { useState } from 'react';
 import Button from '~/components/Button';
+import MovieCinemaTime from './MovieCinemaTime/MovieCinemaTime';
+import BookingSeat from './BookingSeat';
+import Payment from './Payment';
+import FoodSelection from './FoodSelection';
+import Confirmation from './Confirmation';
 
 const cx = classNames.bind(styles);
 
 function BookTicket() {
-    const [activeTab, setActiveTab] = useState('ticketInfo');
+    const [activeTab, setActiveTab] = useState('ticketInfo'); // Default first tab
+    const [clickedTabs, setClickedTabs] = useState(['ticketInfo']); // Keeps track of visited tabs
 
-    const [isVisible, setIsVisible] = useState(false);
-    const [maxHeight, setMaxHeight] = useState(null);
-    const contentRef = useRef(null);
+    const tabTitles = ['Chọn phim / Rạp / Suất', 'Chọn ghế', 'Chọn thức ăn', 'Thanh toán', 'Xác nhận'];
 
-    const toggleContent = () => {
-        setIsVisible((prev) => !prev);
+    const tabs = ['ticketInfo', 'personalInfo', 'foodInfo', 'payment', 'confirmation'];
+
+    const currentIndex = tabs.indexOf(activeTab); // Get current tab index
+
+    const handleNext = () => {
+        // Go to the next tab in sequence
+        if (currentIndex < tabs.length - 1) {
+            const nextTab = tabs[currentIndex + 1];
+            setActiveTab(nextTab);
+
+            // Mark tab as visited
+            if (!clickedTabs.includes(nextTab)) {
+                setClickedTabs([...clickedTabs, nextTab]);
+            }
+        }
     };
 
-    useEffect(() => {
-        if (isVisible) {
-            setMaxHeight(`${contentRef.current.scrollHeight}px`);
-        } else {
-            setTimeout(() => {
-                setMaxHeight('0px');
-            }, 500);
+    const handlePrevious = () => {
+        // Go to the previous tab in sequence
+        if (currentIndex > 0) {
+            const prevTab = tabs[currentIndex - 1];
+            setActiveTab(prevTab);
         }
-    }, [isVisible]);
+    };
 
     return (
         <div className={cx('wrapper')}>
@@ -35,51 +47,19 @@ function BookTicket() {
                 <div className={cx('nav')}>
                     <div className={cx('account-nav')}>
                         <ul className={cx('tablist')}>
-                            <li className={cx('item')}>
-                                <Link
-                                    className={cx('item-link', activeTab === 'ticketInfo' && 'nav-active')}
-                                    to="#ticketInfo"
-                                    onClick={() => setActiveTab('ticketInfo')}
-                                >
-                                    Chọn phim / Rạp / Suất
-                                </Link>
-                            </li>
-                            <li className={cx('item')}>
-                                <Link
-                                    className={cx('item-link', activeTab === 'personalInfo' && 'nav-active')}
-                                    to="#personalInfo"
-                                    onClick={() => setActiveTab('personalInfo')}
-                                >
-                                    Chọn ghế
-                                </Link>
-                            </li>
-                            <li className={cx('item')}>
-                                <Link
-                                    className={cx('item-link', activeTab === 'notification' && 'nav-active')}
-                                    to="#notification"
-                                    onClick={() => setActiveTab('notification')}
-                                >
-                                    Chọn thức ăn
-                                </Link>
-                            </li>
-                            <li className={cx('item')}>
-                                <Link
-                                    className={cx('item-link', activeTab === 'notification' && 'nav-active')}
-                                    to="#notification"
-                                    onClick={() => setActiveTab('notification')}
-                                >
-                                    Thanh toán
-                                </Link>
-                            </li>
-                            <li className={cx('item')}>
-                                <Link
-                                    className={cx('item-link', activeTab === 'notification' && 'nav-active')}
-                                    to="#notification"
-                                    onClick={() => setActiveTab('notification')}
-                                >
-                                    Xác nhận
-                                </Link>
-                            </li>
+                            {tabs.map((tab, index) => (
+                                <li className={cx('item')} key={tab}>
+                                    <div
+                                        className={cx(
+                                            'item-link',
+                                            index === currentIndex ? 'nav-active' : clickedTabs.includes(tab),
+                                            index < currentIndex ? 'nav-active-before' : clickedTabs.includes(tab),
+                                        )}
+                                    >
+                                        {tabTitles[index]}
+                                    </div>
+                                </li>
+                            ))}
                         </ul>
                     </div>
                     {/* <div className={cx('nav-line')}></div> */}
@@ -88,51 +68,11 @@ function BookTicket() {
 
             <div className={cx('booking')}>
                 <div className={cx('order')}>
-                    <div className={cx('order-ctn')}>
-                        <div className={cx('order-place')}>
-                            <h3 className={cx('title-place')}>Chọn vị trí</h3>
-                            <div className={cx('btn-hide', { hidden: !isVisible })}>
-                                <FontAwesomeIcon className={cx('icon')} onClick={toggleContent} icon={faCaretUp} />
-                            </div>
-                            <div className={cx('btn-show', { hidden: isVisible })}>
-                                <FontAwesomeIcon className={cx('icon')} onClick={toggleContent} icon={faCaretDown} />
-                            </div>
-                        </div>
-
-                        <div
-                            ref={contentRef}
-                            style={{ maxHeight: maxHeight, transition: 'max-height 0.5s ease', overflow: 'hidden' }}
-                            className={cx('title-content', { visible: isVisible })}
-                        >
-                            <button className={cx('place')}>Hà nội</button>
-                        </div>
-                    </div>
-
-                    <div className={cx('order-ctn')}>
-                        <div className={cx('order-place')}>
-                            <h3 className={cx('title-place')}>Chọn phim</h3>
-                            {/* <div className={cx('btn-hide')}>
-                                <FontAwesomeIcon className={cx('icon')} icon={faCaretUp} />
-                            </div> */}
-                            <div className={cx('btn-show')}>
-                                <FontAwesomeIcon className={cx('icon')} icon={faCaretDown} />
-                            </div>
-                        </div>
-                        {/* <div className={cx('title-content')}>Content</div> */}
-                    </div>
-
-                    <div className={cx('order-ctn')}>
-                        <div className={cx('order-place')}>
-                            <h3 className={cx('title-place')}>Chọn suất</h3>
-                            {/* <div className={cx('btn-hide')}>
-                                <FontAwesomeIcon className={cx('icon')} icon={faCaretUp} />
-                            </div> */}
-                            <div className={cx('btn-show')}>
-                                <FontAwesomeIcon className={cx('icon')} icon={faCaretDown} />
-                            </div>
-                        </div>
-                        {/* <div className={cx('title-content')}>Content</div> */}
-                    </div>
+                    {activeTab === 'ticketInfo' && <MovieCinemaTime />}
+                    {activeTab === 'personalInfo' && <BookingSeat />}
+                    {activeTab === 'foodInfo' && <FoodSelection />}
+                    {activeTab === 'payment' && <Payment />}
+                    {activeTab === 'confirmation' && <Confirmation />}
                 </div>
                 {/* thong tin booking */}
                 <div className={cx('order-detail')}>
@@ -182,8 +122,12 @@ function BookTicket() {
                         </div>
 
                         <div className={cx('order-btn')}>
-                            <Button outline>Quay lại</Button>
-                            <Button primary>Tiếp tục</Button>
+                            <Button outline onClick={handlePrevious} disabled={currentIndex === 0}>
+                                Quay lại
+                            </Button>
+                            <Button primary onClick={handleNext} disabled={currentIndex === tabs.length - 1}>
+                                Tiếp tục
+                            </Button>
                         </div>
                     </div>
                 </div>

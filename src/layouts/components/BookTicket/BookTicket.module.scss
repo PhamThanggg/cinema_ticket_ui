@@ -2,7 +2,6 @@
     width: 100%;
     margin: 0 auto;
     margin-bottom: 20px;
-    height: 100%;
 }
 
 // info
@@ -27,8 +26,8 @@
 }
 
 .item-link {
-    color: #4d4d4d;
-    font-weight: 600;
+    color: #939393;
+    font-weight: 500;
     padding: 10px;
     display: flex;
     align-items: center;
@@ -44,14 +43,24 @@
     border-bottom: 3px solid var(--primary);
 }
 
+.nav-active-before {
+    color: var(--primary);
+    border-bottom: 3px solid var(--primary);
+    color: #df729d;
+}
+
+.item-link.faded {
+    opacity: 0.5;
+    font-weight: normal;
+}
+
 .nav-line {
     height: 1px;
     background-color: #ccc;
 }
 
-// booking
 .booking {
-    width: var(--default-layout-with);
+    width: 1400px;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
@@ -63,77 +72,6 @@
     flex: 2;
 }
 
-.order-ctn {
-    background-color: var(--white);
-    margin: 0 20px 30px 20px;
-    border-radius: 4px;
-    box-shadow: 0 0.225rem 0.25rem rgba(0, 0, 0, 0.075);
-}
-
-.order-place {
-    width: 835px;
-    height: 60px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.title-place {
-    margin-left: 20px;
-    font-weight: 700;
-    font-size: large;
-}
-
-.btn-hide {
-    border-radius: 50%;
-    width: 22px;
-    height: 22px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-right: 20px;
-    background-color: var(--primary);
-    color: var(--white);
-}
-
-.btn-show {
-    border-radius: 50%;
-    width: 22px;
-    height: 22px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #efefef;
-    color: var(--primary);
-    margin-right: 20px;
-}
-
-.title-content {
-    margin: 0 20px;
-    height: 0;
-    opacity: 0;
-    transition: max-height 0.5s ease-out, opacity 0.5s ease-out;
-}
-
-.title-content.visible {
-    height: 100%;
-    opacity: 1;
-    transition: max-height 0.5s ease-out, opacity 0.5s ease-out;
-}
-
-.btn-hide.hidden,
-.btn-show.hidden {
-    display: none;
-}
-
-.place {
-    border: 1px solid #ccc;
-    background-color: transparent;
-    border-radius: 3px;
-    padding: 8px 14px;
-    margin-bottom: 20px;
-}
-
 //Order detail thong tin booking
 .order-detail {
     flex: 1;
@@ -141,7 +79,8 @@
 }
 
 .detail-ctn {
-    width: 450px;
+    margin-left: 20px;
+    width: 440px;
     background-color: var(--white);
     border-radius: 5px;
     padding-bottom: 20px;
