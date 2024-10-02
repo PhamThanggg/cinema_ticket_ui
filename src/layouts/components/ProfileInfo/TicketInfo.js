@@ -5,10 +5,15 @@ import Stack from '@mui/material/Stack';
 import { useState } from 'react';
 import TicketDetail from './TicketDetail';
 import PaginationItem from '@mui/material/PaginationItem';
+import { useMediaQuery } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 
 const cx = classNames.bind(styles);
 
 function TicketInfo() {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
     const [isDialogOpen, setDialogOpen] = useState(false);
 
     const handleTicketDetailClick = () => {
@@ -61,8 +66,8 @@ function TicketInfo() {
                     <Stack spacing={2}>
                         <Pagination
                             count={100}
-                            size="large"
-                            renderItem={(item) => (item.page === 5 ? null : <PaginationItem {...item} />)}
+                            size={isMobile ? 'small' : 'large'}
+                            renderItem={(item) => <PaginationItem {...item} />}
                             sx={{
                                 '& .MuiPaginationItem-root': {
                                     fontSize: {

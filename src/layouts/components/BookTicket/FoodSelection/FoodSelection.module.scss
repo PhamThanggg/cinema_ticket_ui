@@ -1,0 +1,59 @@
+.wrapper {
+    background-color: var(--white);
+    border-radius: 5px;
+}
+
+.container {
+    margin: 0 20px;
+}
+
+.info {
+    padding: 15px 0px;
+}
+
+.ctn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+}
+
+.item {
+    display: flex;
+}
+
+.image {
+    width: 150px;
+    height: 85px;
+    border-radius: 3px;
+    object-fit: cover;
+}
+
+.title {
+    margin-left: 15px;
+}
+
+.name {
+    margin-top: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    opacity: 0.9;
+}
+
+.des {
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+.price {
+    margin-top: 8px;
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--primary);
+    opacity: 1;
+}
+
+.quantity {
+}

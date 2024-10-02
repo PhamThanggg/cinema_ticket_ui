@@ -15,10 +15,27 @@ import Search from './Search';
 const cx = classNames.bind(styles);
 
 function Header({ onLoginClick }) {
-    const firm = ['Phim đang chiếu', 'Phim sắp chiếu'];
-    const cinemaCorner = ['Thể loại', 'Diễn viên', 'Đạo diễn'];
-    const event = ['Ưu đãi', 'Phim hay tháng', 'Đạo diễn'];
-    const cimema = ['Rap Xuân Thủy', 'Rạp Sala', 'Rạp tân bình'];
+    const firm = [
+        { name: 'Phim đang chiếu', link: '/phim-dang-chieu' },
+        { name: 'Phim sắp chiếu', link: '/phim-sap-chieu' },
+    ];
+
+    const cinemaCorner = [
+        { name: 'Thể loại', link: '/the-loai' },
+        { name: 'Diễn viên', link: '/dien-vien' },
+        { name: 'Đạo diễn', link: '/dao-dien' },
+    ];
+
+    const event = [
+        { name: 'Ưu đãi', link: '/uu-dai' },
+        { name: 'Phim hay tháng', link: '/phim-hay-thang' },
+    ];
+
+    const cinema = [
+        { name: 'Rạp Xuân Thủy', link: '/rap-xuan-thuy' },
+        { name: 'Rạp Sala', link: '/rap-sala' },
+        { name: 'Rạp Tân Bình', link: '/rap-tan-binh' },
+    ];
 
     // Search
     const [showSearch, setShowSearch] = useState(false);
@@ -57,7 +74,7 @@ function Header({ onLoginClick }) {
                             <DropdownMenu items={event} buttonText={'Sự kiện'} />
                         </li>
                         <li className={cx('nav-item')}>
-                            <DropdownMenu items={cimema} buttonText={'Rạp/Giá vé'} />
+                            <DropdownMenu items={cinema} buttonText={'Rạp/Giá vé'} />
                         </li>
                         <div style={{ width: '15px' }}></div>
                     </ul>
@@ -97,7 +114,7 @@ function Header({ onLoginClick }) {
                                 <DropdownMenu items={event} buttonText={'Sự kiện'} offSet={true} />
                             </li>
                             <li className={cx('nav-item')}>
-                                <DropdownMenu items={cimema} buttonText={'Rạp/Giá vé'} offSet={true} />
+                                <DropdownMenu items={cinema} buttonText={'Rạp/Giá vé'} offSet={true} />
                             </li>
                         </Menu>
                     </div>

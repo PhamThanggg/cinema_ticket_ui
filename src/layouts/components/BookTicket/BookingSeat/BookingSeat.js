@@ -18,7 +18,7 @@ function BookingSeat() {
                 <div className={cx('seat-info')}>
                     <div className={cx('column')}>A</div>
                     <div className={cx('row')}>
-                        <button className={cx('seat')}>A1</button>
+                        <button className={cx('seat')}>A99</button>
                         <button className={cx('seat')}>A2</button>
                         <button className={cx('seat')}>A3</button>
                         <button className={cx('seat')}>A1</button>
@@ -53,6 +53,24 @@ function BookingSeat() {
                         <button className={cx('seat')}>A3</button>
                         <button className={cx('seat')}>A1</button>
                         <button className={cx('seat')}>A2</button>
+                        <button className={cx('seat')}>A3</button>
+                        <button className={cx('seat-space')}></button>
+                        <span className={cx('seat-space')}></span>
+                        <span className={cx('seat-space')}></span>
+                        <button className={cx('seat')}>A3</button>
+                        <button className={cx('seat')}>A3</button>
+                        <button className={cx('seat')}>A3</button>
+                        <button className={cx('seat')}>A3</button>
+                        <button className={cx('seat')}>A3</button>
+                        <button className={cx('seat')}>A1</button>
+                        <button className={cx('seat')}>A2</button>
+                        <button className={cx('seat')}>A3</button>
+                        <button className={cx('seat-space')}></button>
+                        <span className={cx('seat-space')}></span>
+                        <span className={cx('seat-space')}></span>
+                        <button className={cx('seat')}>A3</button>
+                        <button className={cx('seat')}>A3</button>
+                        <button className={cx('seat')}>A3</button>
                         <button className={cx('seat')}>A3</button>
                     </div>
                     <div className={cx('column')}>A</div>

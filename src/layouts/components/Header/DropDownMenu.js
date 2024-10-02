@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
 import Button from '~/components/Button';
+import { Link } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
@@ -30,7 +31,9 @@ function DropdownMenu({ items, buttonText, offset }) {
                     <ul className={cx('menu-list-respon')}>
                         {items.map((item, index) => (
                             <li key={index} className={cx('menu-item')}>
-                                {item}
+                                <Link to={item.link} className={cx('menu-link')}>
+                                    {item.name}
+                                </Link>
                             </li>
                         ))}
                     </ul>

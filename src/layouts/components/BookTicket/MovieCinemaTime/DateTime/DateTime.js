@@ -59,7 +59,7 @@ function DateTime() {
         slidesToScroll: 1,
         autoplay: false,
         autoplaySpeed: 4000,
-        centerPadding: '30px',
+        centerPadding: '117.8px',
         prevArrow: <PrevArrow />,
         nextArrow: <NextArrow />,
         responsive: [

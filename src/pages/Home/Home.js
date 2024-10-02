@@ -14,8 +14,8 @@ function Home() {
         <div className={cx('wrapper')}>
             <Slider />
             <div className={cx('wrapper-movie')}>
-                <Movie movieType={movieType} />
-                <Movie movieType={movieType2} />
+                <Movie movieType={movieType} showBuyTicketButton={true} />
+                <Movie movieType={movieType2} showBuyTicketButton={false} />
                 <Promotion />
             </div>
         </div>
