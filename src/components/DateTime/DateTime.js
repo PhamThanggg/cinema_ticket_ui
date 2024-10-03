@@ -45,21 +45,18 @@ const NextArrow = (props) => {
     );
 };
 
-function DateTime() {
+function DateTime({ count = 6 }) {
     // const [selectedDate, setSelectedDate] = useState(null);
-
     const days = getNext7Days();
+
     const settings = {
-        className: 'center',
-        centerMode: true,
         dots: false,
         infinite: true,
         speed: 500,
-        slidesToShow: 5,
+        slidesToShow: count,
         slidesToScroll: 1,
         autoplay: false,
         autoplaySpeed: 4000,
-        centerPadding: '117.8px',
         prevArrow: <PrevArrow />,
         nextArrow: <NextArrow />,
         responsive: [
