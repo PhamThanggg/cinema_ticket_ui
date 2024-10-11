@@ -7,7 +7,7 @@ import Button from '~/components/Button';
 const cx = classNames.bind(styles);
 const cw = classNames.bind(styleGrid);
 
-function Movie({ movieType, showBuyTicketButton }) {
+function Movie({ movieType, showBuyTicketButton, movieData }) {
     return (
         <div className={cx('wrapper')}>
             <div className={cw('grid', 'wide')}>
@@ -23,10 +23,9 @@ function Movie({ movieType, showBuyTicketButton }) {
                         </div>
                     </div>
                     <div className={cw('row')}>
-                        <ItemMovie showBuyTicketButton={showBuyTicketButton} />
-                        <ItemMovie showBuyTicketButton={showBuyTicketButton} />
-                        <ItemMovie showBuyTicketButton={showBuyTicketButton} />
-                        <ItemMovie showBuyTicketButton={showBuyTicketButton} />
+                        {movieData.map((item, index) => (
+                            <ItemMovie key={index} showBuyTicketButton={showBuyTicketButton} movieItemData={item} />
+                        ))}
                     </div>
                 </div>
             </div>

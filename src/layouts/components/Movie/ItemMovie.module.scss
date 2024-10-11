@@ -1,5 +1,6 @@
 .item-link {
     cursor: pointer;
+    position: relative;
 }
 
 .ctn-image {
@@ -46,10 +47,13 @@
 .buy-ticket {
     position: absolute;
     width: 160px;
-    top: 88%;
+    top: 75%;
     left: 50%;
     transform: translateX(-50%);
-    background: linear-gradient(180deg, #b6486f 0%, #c63f6e 59.9%, #ec0f72 99.48%);
+    background: rgb(185, 0, 89);
+    background: -moz-linear-gradient(0deg, rgb(185, 0, 62) 0%, rgb(238, 75, 116) 50%);
+    background: -webkit-linear-gradient(0deg, rgb(235, 25, 109) 0%, rgb(225, 90, 113) 50%);
+    background: linear-gradient(0deg, rgb(231, 18, 78) 0%, rgb(250, 110, 126) 50%);
 
     &:hover {
         background: linear-gradient(180deg, #48b686 0%, #3fbbc6 59.9%, #0fcbec 99.48%);
@@ -57,35 +61,23 @@
 }
 
 .meta {
-    margin-top: 15px;
+    position: absolute;
+    top: 10px;
+    left: 10px;
 }
 
 .age-limit {
     color: var(--white);
     border-radius: 4px;
+    width: 40px;
+    height: 32px;
     padding: 4px;
-    font-size: 13px;
-    background: rgb(238, 0, 0);
-    background: -moz-linear-gradient(0deg, rgba(238, 0, 0, 1) 0%, rgba(198, 63, 63, 1) 50%, rgba(182, 92, 72, 1) 100%);
-    background: -webkit-linear-gradient(
-        0deg,
-        rgba(238, 0, 0, 1) 0%,
-        rgba(198, 63, 63, 1) 50%,
-        rgba(182, 92, 72, 1) 100%
-    );
-    background: linear-gradient(0deg, rgba(238, 0, 0, 1) 0%, rgba(198, 63, 63, 1) 50%, rgba(182, 92, 72, 1) 100%);
-}
-
-.format {
-    background: rgb(185, 0, 89);
-    background: -moz-linear-gradient(0deg, rgb(185, 0, 62) 0%, rgb(238, 75, 116) 50%);
-    background: -webkit-linear-gradient(0deg, rgb(235, 25, 109) 0%, rgb(225, 90, 113) 50%);
-    background: linear-gradient(0deg, rgb(231, 18, 78) 0%, rgb(250, 110, 126) 50%);
-    color: var(--white);
-    border-radius: 4px;
-    padding: 4px;
-    font-size: 13px;
-    margin-left: 10px;
+    font-size: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    background-color: #ff896c;
 }
 
 .title {
@@ -97,20 +89,21 @@
     max-width: 95%;
     white-space: nowrap;
     text-overflow: ellipsis;
+    text-align: center;
 }
 
 .tooltip {
     color: #2c2c2c;
-    font-size: 15px;
+    font-size: 17px;
     font-weight: 600;
 }
 
 .cats {
     font-size: 0.9em;
     height: 21px;
-    overflow: hidden;
     color: var(--black);
     margin-bottom: 10px;
+    text-align: center;
 }
 
 .movie-type {

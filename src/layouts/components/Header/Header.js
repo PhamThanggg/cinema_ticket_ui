@@ -44,6 +44,8 @@ function Header({ onLoginClick }) {
         setShowSearch(!showSearch); // Bật/tắt Search
     };
 
+    // logic khi login
+
     return (
         <header className={cx('wrapper')}>
             <div className={cx('inner')}>

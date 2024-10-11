@@ -5,14 +5,21 @@ import classNames from 'classnames/bind';
 import styles from './AuthDialog.module.scss';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClose } from '@fortawesome/free-solid-svg-icons';
+import { faClose, faSpinner, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import Button from '~/components/Button';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { toast } from 'react-toastify';
+import { RegisterApi } from '~/service/auth';
 
 const cx = classNames.bind(styles);
 
 function Register({ open, handleClose, handleLogin }) {
+    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
+    const togglePasswordVisibility = () => {
+        setIsPasswordVisible(!isPasswordVisible);
+    };
     const [focusStates, setFocusStates] = useState({
         email: false,
         password: false,
@@ -21,7 +28,15 @@ function Register({ open, handleClose, handleLogin }) {
         phone: false,
         dateOfBirth: false,
     });
+    const [isShowSpinner, setIsShowSpinner] = useState(false);
+
     const [gender, setGender] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [repassword, setRepassword] = useState('');
+    const [fullname, setFullname] = useState('');
+    const [phone, setPhone] = useState('');
+    const [startDate, setStartDate] = useState(null);
 
     const handleFocus = (inputName) => {
         setFocusStates((prev) => ({ ...prev, [inputName]: true }));
@@ -47,13 +62,54 @@ function Register({ open, handleClose, handleLogin }) {
     };
 
     //gender
-
     const handleGenderChange = (event) => {
         setGender(event.target.value);
     };
 
-    // date of birth
-    const [startDate, setStartDate] = useState(null); // State để lưu trữ ngày đã chọn
+    //validate
+    const handleSubmit = async () => {
+        const validations = [
+            { condition: !fullname, message: 'Vui lòng nhập họ tên' },
+            { condition: !email || !/\S+@\S+\.\S+/.test(email), message: 'Vui lòng nhập email hợp lệ' },
+            { condition: !phone || !/^\d{10}$/.test(phone), message: 'Vui lòng nhập số điện thoại hợp lệ' },
+            { condition: !gender, message: 'Vui lòng chọn giới tính' },
+            { condition: !startDate, message: 'Vui lòng chọn ngày sinh' },
+            { condition: startDate && startDate >= new Date(), message: 'Ngày sinh phải nhỏ hơn ngày hiện tại' },
+            { condition: !password, message: 'Vui lòng nhập mật khẩu' },
+            { condition: password !== repassword, message: 'Mật khẩu nhập lại không khớp' },
+            { condition: !checked, message: 'Bạn cần đồng ý với điều khoản dịch vụ' },
+        ];
+
+        for (const { condition, message } of validations) {
+            if (condition) {
+                toast.error(message);
+                return;
+            }
+        }
+
+        const formattedDate = startDate.toISOString().split('T')[0];
+
+        const user = {
+            full_name: fullname,
+            gender: gender,
+            phone: phone,
+            date_of_birth: formattedDate,
+            email: email,
+            password: password,
+            repassword: repassword,
+            status: 0,
+        };
+
+        console.log(user);
+        setIsShowSpinner(true);
+        // Call API
+        const res = await RegisterApi(user);
+        if (res && res.message) {
+            toast.success(res.message);
+        }
+
+        setIsShowSpinner(false);
+    };
 
     return (
         <Dialog
@@ -99,6 +155,8 @@ function Register({ open, handleClose, handleLogin }) {
                                 className={cx('input-txt')}
                                 type="text"
                                 placeholder="Nhập họ và tên"
+                                value={fullname}
+                                onChange={(e) => setFullname(e.target.value)}
                                 onFocus={() => handleFocus('fullname')}
                                 onBlur={() => handleBlur('fullname')}
                             />
@@ -112,6 +170,8 @@ function Register({ open, handleClose, handleLogin }) {
                                 className={cx('input-txt')}
                                 type="text"
                                 placeholder="Nhập email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                                 onFocus={() => handleFocus('email')}
                                 onBlur={() => handleBlur('email')}
                             />
@@ -125,6 +185,8 @@ function Register({ open, handleClose, handleLogin }) {
                                 className={cx('input-txt')}
                                 type="text"
                                 placeholder="Nhập số điện thoại"
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
                                 onFocus={() => handleFocus('phone')}
                                 onBlur={() => handleBlur('phone')}
                             />
@@ -178,11 +240,16 @@ function Register({ open, handleClose, handleLogin }) {
                         <div className={cx('input', { focused: focusStates.password })}>
                             <input
                                 className={cx('input-txt')}
-                                type="password"
+                                type={isPasswordVisible ? 'text' : 'password'}
                                 placeholder="Nhập mật khẩu"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
                                 onFocus={() => handleFocus('password')}
                                 onBlur={() => handleBlur('password')}
                             />
+                            <span className={cx('icon-eye')} onClick={togglePasswordVisibility}>
+                                <FontAwesomeIcon icon={isPasswordVisible ? faEyeSlash : faEye} />
+                            </span>
                         </div>
                     </div>
 
@@ -191,11 +258,16 @@ function Register({ open, handleClose, handleLogin }) {
                         <div className={cx('input', { focused: focusStates.repassword })}>
                             <input
                                 className={cx('input-txt')}
-                                type="password"
+                                type={isPasswordVisible ? 'text' : 'password'}
+                                value={repassword}
+                                onChange={(e) => setRepassword(e.target.value)}
                                 placeholder="Nhập lại mật khẩu"
                                 onFocus={() => handleFocus('repassword')}
                                 onBlur={() => handleBlur('repassword')}
                             />
+                            <span className={cx('icon-eye')} onClick={togglePasswordVisibility}>
+                                <FontAwesomeIcon icon={isPasswordVisible ? faEyeSlash : faEye} />
+                            </span>
                         </div>
                     </div>
                     <div className={cx('checkbox-res')}>
@@ -214,7 +286,14 @@ function Register({ open, handleClose, handleLogin }) {
                         </div>
                     </div>
                     <div className={cx('login')}>
-                        <Button disabled={!checked} className={cx('login-btn')}>
+                        <Button
+                            onClick={handleSubmit}
+                            rightIcon={
+                                isShowSpinner && <FontAwesomeIcon className={cx('custom-spinner')} icon={faSpinner} />
+                            }
+                            disabled={!checked}
+                            className={cx('login-btn')}
+                        >
                             Đăng Ký
                         </Button>
                     </div>

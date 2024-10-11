@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDown, faCirclePlay, faClose } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
 import { ClockIcon, ScheduleIcon, StarIcon } from '~/components/Icon';
-import { height } from '@mui/system';
+// import { height } from '@mui/system';
 import DateTime from '~/components/DateTime/DateTime';
 
 const cx = classNames.bind(styles);

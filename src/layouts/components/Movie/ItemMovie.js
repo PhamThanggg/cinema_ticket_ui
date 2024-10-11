@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 const cx = classNames.bind(styles);
 const cw = classNames.bind(styleGrid);
 
-function ItemMovie({ showBuyTicketButton, movieId = 10 }) {
+function ItemMovie({ showBuyTicketButton, movieItemData, movieId = 10 }) {
     const [showTrailer, setShowTrailer] = useState(false);
 
     const handlePlayTrailer = () => {
@@ -36,7 +36,11 @@ function ItemMovie({ showBuyTicketButton, movieId = 10 }) {
                     <div className={cx('ctn-image')}>
                         <img
                             className={cx('image')}
-                            src="https://bhdstar.vn/wp-content/uploads/2024/08/referenceSchemeHeadOfficeallowPlaceHoldertrueheight700ldapp-22.jpg"
+                            src={
+                                movieItemData.images[0] !== undefined
+                                    ? movieItemData.images[0].imageUrl
+                                    : 'https://www.galaxycine.vn/_next/static/media/not_found.f844bf41.jpg'
+                            }
                             alt="Name"
                         ></img>
                         <div className={cx('img-hover')}>
@@ -49,16 +53,20 @@ function ItemMovie({ showBuyTicketButton, movieId = 10 }) {
                         </div>
                     </div>
                     <div className={cx('meta')}>
-                        <span className={cx('age-limit', 'T18')}>T18</span>
-                        <span className={cx('format')}>2D</span>
+                        <span className={cx('age-limit', 'T18')}>T{movieItemData.ageLimit}</span>
                     </div>
                     <h4 className={cx('title')}>
-                        <span className={cx('tooltip')}>Longlegs: THẢM Kịch dị giáo THẢM K THẢM K THẢM K</span>
+                        <span className={cx('tooltip')}>{movieItemData.nameMovie}</span>
                     </h4>
                 </div>
                 <div className={cx('cats')}>
                     Thể loại phim:
-                    <span className={cx('movie-type')}>Crime</span>
+                    {movieItemData.genres.map((genre, index) => (
+                        <span className={cx('movie-type')} key={genre.id}>
+                            {genre.name}
+                            {index < movieItemData.genres.length - 1 ? ', ' : ''}
+                        </span>
+                    ))}
                 </div>
                 {showTrailer && (
                     <div className={cx('trailer-popup')} onClick={handleCloseTrailer}>
@@ -66,7 +74,7 @@ function ItemMovie({ showBuyTicketButton, movieId = 10 }) {
                             <iframe
                                 width="1080"
                                 height="480"
-                                src={'https://www.youtube.com/embed/EjnPaUaWeWg'}
+                                src={movieItemData.trailer}
                                 title="YouTube video player"
                                 frameBorder="0"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

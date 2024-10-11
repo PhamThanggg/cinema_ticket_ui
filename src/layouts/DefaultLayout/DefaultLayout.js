@@ -6,6 +6,9 @@ import React, { useState } from 'react';
 import Login from '~/layouts/components/AuthDialog/Login';
 import Register from '~/layouts/components/AuthDialog/Register';
 
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const cx = classNames.bind(styles);
 
 function DefaultLayout({ children }) {
@@ -33,6 +36,18 @@ function DefaultLayout({ children }) {
             ) : (
                 <Register open={isDialogOpen} handleClose={handleCloseDialog} handleLogin={toggleForm} />
             )}
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="colored"
+            />
             <div className={cx('container')}>
                 <div className={cx('content')}>{children}</div>
             </div>

@@ -5,7 +5,10 @@ import classNames from 'classnames/bind';
 import styles from './AuthDialog.module.scss';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClose } from '@fortawesome/free-solid-svg-icons';
+import { faClose, faSpinner, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { toast } from 'react-toastify';
+
+import { LoginApi } from '~/service/auth';
 
 const cx = classNames.bind(styles);
 
@@ -28,6 +31,35 @@ function Login({ open, handleClose, handleRegister }) {
 
     const handleDivClick = () => {
         setChecked(!checked);
+    };
+
+    //an hien pas
+    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
+    const togglePasswordVisibility = () => {
+        setIsPasswordVisible(!isPasswordVisible);
+    };
+
+    //Logic API
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [isShowPassword, setIsShowPassword] = useState(false);
+
+    const handleLogin = async () => {
+        setIsShowPassword(true);
+
+        if (!email || !password) {
+            toast.error('Email/Password is required');
+            setIsShowPassword(false);
+            return;
+        }
+
+        const res = await LoginApi(email, password);
+        if (res && res.result.token) {
+            localStorage.setItem('token', res.result.token);
+        }
+
+        setIsShowPassword(false);
     };
 
     return (
@@ -74,6 +106,8 @@ function Login({ open, handleClose, handleRegister }) {
                                 className={cx('input-txt')}
                                 type="text"
                                 placeholder="Nhập email"
+                                value={email}
+                                onChange={(event) => setEmail(event.target.value)}
                                 onFocus={() => handleFocus('email')}
                                 onBlur={() => handleBlur('email')}
                             />
@@ -85,11 +119,17 @@ function Login({ open, handleClose, handleRegister }) {
                         <div className={cx('input', { focused: focusStates.password })}>
                             <input
                                 className={cx('input-txt')}
-                                type="password"
+                                type={isPasswordVisible ? 'text' : 'password'}
                                 placeholder="Nhập mật khẩu"
+                                value={password}
+                                onChange={(event) => setPassword(event.target.value)}
                                 onFocus={() => handleFocus('password')}
                                 onBlur={() => handleBlur('password')}
                             />
+
+                            <span className={cx('icon-eye')} onClick={togglePasswordVisibility}>
+                                <FontAwesomeIcon icon={isPasswordVisible ? faEyeSlash : faEye} />
+                            </span>
                         </div>
                     </div>
                     <div className={cx('checkbox')}>
@@ -105,7 +145,10 @@ function Login({ open, handleClose, handleRegister }) {
                         <Link className={cx('forgot-pas')}>Quên mật khẩu</Link>
                     </div>
                     <div className={cx('login')}>
-                        <button className={cx('login-btn')}>Đăng Nhập</button>
+                        <button onClick={() => handleLogin()} className={cx('login-btn')}>
+                            Đăng Nhập
+                            {isShowPassword && <FontAwesomeIcon className={cx('custom-spinner')} icon={faSpinner} />}
+                        </button>
                     </div>
                     <div className={cx('checkbox')}>
                         <div>
