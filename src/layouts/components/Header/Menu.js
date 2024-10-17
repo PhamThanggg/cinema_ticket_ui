@@ -4,12 +4,16 @@ import Typpy from '@tippyjs/react/headless';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 import styles from './Header.module.scss';
+import { useAuth } from '~/components/Context/AuthContext';
 
 import Account from './Account';
+import Button from '~/components/Button';
 
 const cx = classNames.bind(styles);
 
-function Menu({ children }) {
+function Menu({ children, onLoginClick }) {
+    const { state } = useAuth();
+
     const [visible, setVisible] = useState(false);
     const dropMenuRef = useRef(null);
 
@@ -60,9 +64,18 @@ function Menu({ children }) {
                                 <input className={cx('search-input-rsp')} placeholder="Tìm kiếm" />
                             </div>
                         </div>
-                        <div className={cx('acc')}>
-                            <Account offset={true} />
-                        </div>
+                        {!state.isAuthenticated && (
+                            <div className={cx('login_css')}>
+                                <Button outline onClick={onLoginClick}>
+                                    Đăng nhập
+                                </Button>
+                            </div>
+                        )}
+                        {state.isAuthenticated && (
+                            <div className={cx('acc')}>
+                                <Account offset={true} />
+                            </div>
+                        )}
                         <ul className={cx('menu-list')}>{children}</ul>
                     </div>
                 )}

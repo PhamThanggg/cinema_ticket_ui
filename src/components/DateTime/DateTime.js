@@ -1,4 +1,5 @@
 import Slider from 'react-slick';
+import { useState } from 'react';
 
 import classNames from 'classnames/bind';
 import styles from './DateTime.module.scss';
@@ -17,11 +18,14 @@ const getNext7Days = () => {
 
         // Lấy tên ngày và định dạng ngày (dd/MM)
         const name = i === 0 ? 'Hôm Nay' : daysOfWeek[nextDate.getDay()];
-        const date = `${nextDate.getDate().toString().padStart(2, '0')}/${(nextDate.getMonth() + 1)
+        const dateDisplay = `${nextDate.getDate().toString().padStart(2, '0')}/${(nextDate.getMonth() + 1)
             .toString()
             .padStart(2, '0')}`;
+        const date = `${nextDate.getDate().toString().padStart(2, '0')}/${(nextDate.getMonth() + 1)
+            .toString()
+            .padStart(2, '0')}/${nextDate.getFullYear()}`;
 
-        next7Days.push({ name, date });
+        next7Days.push({ name, date, dateDisplay });
     }
 
     return next7Days;
@@ -45,10 +49,9 @@ const NextArrow = (props) => {
     );
 };
 
-function DateTime({ count = 6 }) {
-    // const [selectedDate, setSelectedDate] = useState(null);
+function DateTime({ count = 6, onDateSelect }) {
     const days = getNext7Days();
-
+    const [selectedDate, setSelectedDate] = useState(days[0].date);
     const settings = {
         dots: false,
         infinite: true,
@@ -91,9 +94,14 @@ function DateTime({ count = 6 }) {
         ],
     };
 
-    // const handleDateClick = (day) => {
-    //     setSelectedDate(day.date);
-    // };
+    const handleDateClick = (day) => {
+        if (day) {
+            setSelectedDate(day);
+            onDateSelect(day);
+        } else {
+            console.error('fullDate is undefined for:', day);
+        }
+    };
 
     return (
         <div className={cx('wrapper')}>
@@ -101,9 +109,14 @@ function DateTime({ count = 6 }) {
                 {days.map((day, index) => (
                     <div key={index} className={cx('slider-item')}>
                         <div className={cx('date-item')}>
-                            <button className={cx('date')}>
+                            <button
+                                className={cx('date', {
+                                    'selected-date': selectedDate && selectedDate === day.date,
+                                })}
+                                onClick={() => handleDateClick(day.date)}
+                            >
                                 <p className={cx('day-name')}>{day.name}</p>
-                                <p className={cx('day-date')}>{day.date}</p>
+                                <p className={cx('day-date')}>{day.dateDisplay}</p>
                             </button>
                         </div>
                     </div>

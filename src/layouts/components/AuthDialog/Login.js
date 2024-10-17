@@ -9,10 +9,12 @@ import { faClose, faSpinner, faEye, faEyeSlash } from '@fortawesome/free-solid-s
 import { toast } from 'react-toastify';
 
 import { LoginApi } from '~/service/auth';
+import { useAuth } from '~/components/Context/AuthContext';
 
 const cx = classNames.bind(styles);
 
 function Login({ open, handleClose, handleRegister }) {
+    const { login } = useAuth();
     const [focusStates, setFocusStates] = useState({
         email: false,
         password: false,
@@ -56,7 +58,9 @@ function Login({ open, handleClose, handleRegister }) {
 
         const res = await LoginApi(email, password);
         if (res && res.result.token) {
-            localStorage.setItem('token', res.result.token);
+            login(res.result);
+            toast.success('Đăng nhập thành công!');
+            handleClose();
         }
 
         setIsShowPassword(false);

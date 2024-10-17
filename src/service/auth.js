@@ -39,6 +39,36 @@ const RegisterApi = async (user) => {
     }
 };
 
+const LogoutApi = async (data) => {
+    const options = {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    };
+
+    try {
+        const res = await request.post('auth/logout', data, options);
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+const IntrospectApi = async (data) => {
+    const options = {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    };
+
+    try {
+        const res = await request.post('auth/introspect', data, options);
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 // const fetchApi = async (page = 0, limit = 20) => {
 //     try {
 //         const res = await request.get('auth/token', {
@@ -50,4 +80,4 @@ const RegisterApi = async (user) => {
 //     } catch (error) {}
 // };
 
-export { RegisterApi, LoginApi };
+export { RegisterApi, LoginApi, LogoutApi, IntrospectApi };

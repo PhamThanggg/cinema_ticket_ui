@@ -390,6 +390,12 @@
     color: rgba(0, 0, 0, 0.7);
 }
 
+.login_css {
+    display: flex;
+    justify-content: center;
+    display: none;
+}
+
 // dark
 .wrapper-dark {
     position: fixed;
@@ -475,6 +481,13 @@
     .acc-header {
         display: none;
     }
+
+    .login {
+        display: none;
+    }
+    .login_css {
+        display: flex;
+    }
 }
 
 @media only screen and (max-width: 21.875em) {
@@ -500,5 +513,9 @@
 
     .avatar-wrapper {
         display: flex;
+    }
+
+    .login {
+        display: none;
     }
 }

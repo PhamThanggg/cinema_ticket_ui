@@ -24,7 +24,12 @@ function Movie({ movieType, showBuyTicketButton, movieData }) {
                     </div>
                     <div className={cw('row')}>
                         {movieData.map((item, index) => (
-                            <ItemMovie key={index} showBuyTicketButton={showBuyTicketButton} movieItemData={item} />
+                            <ItemMovie
+                                key={index}
+                                showBuyTicketButton={showBuyTicketButton}
+                                movieItemData={item}
+                                movieId={item.id}
+                            />
                         ))}
                     </div>
                 </div>

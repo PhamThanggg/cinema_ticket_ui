@@ -2,7 +2,10 @@ const routes = {
     home: '/',
     profile: '/Profile',
     booking: '/Booking',
-    ShowMovie: '/Movie',
+
+    //movie
+    Showing: '/showing',
+    ComingSoon: '/coming-soon',
     MovieDetail: '/Movie-detail',
 };
 

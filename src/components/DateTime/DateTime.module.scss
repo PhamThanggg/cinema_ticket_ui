@@ -28,6 +28,11 @@
     &:hover {
         background-color: #efefef;
     }
+
+    &.selected-date {
+        background-color: var(--primary);
+        color: white;
+    }
 }
 
 .day-name {

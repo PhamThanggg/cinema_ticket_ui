@@ -10,12 +10,12 @@ function Item() {
                 <div className={cx('ctn-image')}>
                     <img
                         className={cx('image')}
-                        src="https://bhdstar.vn/wp-content/uploads/2024/08/referenceSchemeHeadOfficeallowPlaceHoldertrueheight700ldapp-22.jpg"
+                        src="https://cdn.galaxycine.vn/media/2024/10/9/dam-cuoi-xa-hoa---uu-dai-xa-xi-chi-co-o-galaxy-cinema-3_1728462270936.jpg"
                         alt="Name"
                     ></img>
                 </div>
                 <h4 className={cx('title')}>
-                    <span className={cx('tooltip')}>Longlegs: THẢM Kịch dị giáo THẢM K THẢM K THẢM K</span>
+                    <div className={cx('tooltip')}>Đám Cưới Xa Hoa - Ưu Đãi Xa Xỉ</div>
                 </h4>
             </a>
         </div>

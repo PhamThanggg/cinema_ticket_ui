@@ -10,12 +10,8 @@ import DateTime from '~/components/DateTime/DateTime';
 
 const cx = classNames.bind(styles);
 
-function MovieDetail() {
-    // const location = useLocation();
-    // const { movieId } = location.state || {};
-
+function MovieDetail({ movieData, areaData }) {
     const [showTrailer, setShowTrailer] = useState(false);
-
     const handlePlayTrailer = () => {
         setShowTrailer(true);
     };
@@ -24,14 +20,23 @@ function MovieDetail() {
         setShowTrailer(false);
     };
 
+    // begin select option arae and cimema
     const [selectedLocation, setSelectedLocation] = useState('Toàn quốc');
 
     const handleChange = (event) => {
         setSelectedLocation(event.target.value);
     };
 
-    const locations = [
-        'Toàn quốc',
+    const [selectedCinema, setSelectedCinema] = useState('All Rạp');
+
+    const handleChangeCinema = (event) => {
+        setSelectedCinema(event.target.value);
+    };
+
+    const locations = [{ id: 0, areaName: 'Toàn quốc' }, ...areaData];
+
+    const cinemas = [
+        'All Rạp',
         'TP Hồ Chí Minh',
         'Nghệ An',
         'Thừa Thiên Huế',
@@ -40,8 +45,26 @@ function MovieDetail() {
         'Hải Phòng',
         'Đà Nẵng',
         'Khánh Hòa',
-        // Add more locations as needed
     ];
+    // end select option arae and cimema
+
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+
+        return `${day}/${month}/${year}`;
+    };
+
+    // set chọn schedule
+    const today = new Date();
+    const [selectedDate, setSelectedDate] = useState(formatDate(today));
+
+    const handleDateSelect = (date) => {
+        setSelectedDate(date);
+    };
+    console.log('Selected Date:', selectedDate);
 
     return (
         <div className={cx('wrapper')}>
@@ -49,7 +72,11 @@ function MovieDetail() {
                 <div className={cx('overlay', 'left')}></div>
                 <img
                     className={cx('trailer_img')}
-                    src="https://cdn.galaxycine.vn/media/2024/8/13/transformers-750_1723544376869.jpg"
+                    src={
+                        movieData.images[0] !== undefined
+                            ? movieData.images[0].imageUrl
+                            : 'https://www.galaxycine.vn/_next/static/media/not_found.f844bf41.jpg'
+                    }
                     alt=""
                 />
                 <FontAwesomeIcon className={cx('icon')} icon={faCirclePlay} />
@@ -61,7 +88,7 @@ function MovieDetail() {
                         <iframe
                             width="1080"
                             height="480"
-                            src={'https://www.youtube.com/embed/EjnPaUaWeWg'}
+                            src={movieData.trailer}
                             title="YouTube video player"
                             frameBorder="0"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -80,56 +107,53 @@ function MovieDetail() {
                         <div className={cx('content')}>
                             <img
                                 className={cx('movie_img')}
-                                src="https://cdn.galaxycine.vn/media/2024/8/13/transformers-500_1723544375976.jpg"
+                                src={
+                                    movieData.images[0] !== undefined
+                                        ? movieData.images[0].imageUrl
+                                        : 'https://www.galaxycine.vn/_next/static/media/not_found.f844bf41.jpg'
+                                }
                                 alt=""
                             />
                             <div className={cx('content_ctn')}>
                                 <div style={{ display: 'flex' }}>
-                                    <h2 className={cx('movie_name')}>Transformers Một</h2>
-                                    <div className={cx('age')}>T13</div>
+                                    <h2 className={cx('movie_name')}>{movieData.nameMovie}</h2>
+                                    <div className={cx('age')}>T{movieData.ageLimit}</div>
                                 </div>
                                 <div style={{ display: 'flex', marginTop: '10px' }}>
                                     <p className={cx('time')}>
-                                        <ClockIcon /> <span>104 phút</span>
+                                        <ClockIcon /> <span>{movieData.duration} phút</span>
                                     </p>
                                     <p className={cx('date')}>
                                         <ScheduleIcon />
-                                        <span> 27/9/2024</span>
+                                        <span> {formatDate(movieData.premiereDate)}</span>
                                     </p>
                                 </div>
                                 <div className={cx('votes')}>
                                     <StarIcon className={cx('star')} /> <p>4.5</p> <span>(199 votes)</span>
                                 </div>
                                 <div className={cx('country')}>
-                                    Quốc gia: <span>Mỹ</span>
+                                    Quốc gia: <span>{movieData.nation}</span>
                                 </div>
                                 <div className={cx('director')}>
-                                    Nhà sản xuất: <span>Thang Pham</span>
+                                    Nhà sản xuất: <span>{movieData.producer}</span>
                                 </div>
                                 <div className={cx('genre')}>
                                     Thể loại:
-                                    <span>Hành động</span>
+                                    {movieData.genres.map((genre, index) => (
+                                        <span key={genre.id}>
+                                            {genre.name}
+                                            {index < movieData.genres.length - 1 ? ', ' : ''}
+                                        </span>
+                                    ))}
                                 </div>
                                 <div className={cx('genre')}>
                                     Đạo diễn:
                                     <span>Thang pham</span>
                                 </div>
-                                <div className={cx('genre')}>
-                                    Diễn viên:
-                                    <span>Phạm Huy Thắng</span>
-                                </div>
                             </div>
                         </div>
                         <div className={cx('movie-nd')}>Nội dung phim</div>
-                        <p className={cx('nd')}>
-                            Transformers Một là bộ phim hoạt hình Transformers đầu tiên sau 40 năm, và để kỷ niệm 40 năm
-                            thương hiệu Transformers, bộ phim là câu chuyện gốc về quá trình Optimus Prime và Megatron
-                            từ bạn thành thù. Lấy chủ đề câu chuyện phiêu lưu hài hước tràn ngập tình đồng đội cùng
-                            những pha hành động và biến hình cực đã mắt, Transformer One hé lộ câu chuyện gốc được chờ
-                            đợi bấy lâu về cách các nhân vật mang tính biểu tượng nhất trong vũ trụ Transformers - Orion
-                            Pax và D-16 từ anh em chiến đấu trở thành Optimus Prime và Megatron - kẻ thù không đội trời
-                            chung.
-                        </p>
+                        <p className={cx('nd')}>{movieData.description}</p>
 
                         <div style={{ height: '200px', marginTop: '20px' }}>Comment</div>
                     </div>
@@ -138,7 +162,7 @@ function MovieDetail() {
                         <div className={cx('schedule')}>
                             <h2 className={cx('show_title')}>Lịch chiếu</h2>
                             <div className={cx('show_date')}>
-                                <DateTime count={4} />
+                                <DateTime count={4} onDateSelect={handleDateSelect} />
                             </div>
                             <div className={cx('select')}>
                                 <div className={cx('show_area')}>
@@ -148,8 +172,8 @@ function MovieDetail() {
                                         onChange={handleChange}
                                     >
                                         {locations.map((location, index) => (
-                                            <option key={index} value={location}>
-                                                {location}
+                                            <option key={location.id} value={location.areaName}>
+                                                {location.areaName}
                                             </option>
                                         ))}
                                     </select>
@@ -161,10 +185,10 @@ function MovieDetail() {
                                 <div className={cx('show_area')}>
                                     <select
                                         className={cx('location-select')}
-                                        value={selectedLocation}
-                                        onChange={handleChange}
+                                        value={selectedCinema}
+                                        onChange={handleChangeCinema}
                                     >
-                                        {locations.map((location, index) => (
+                                        {cinemas.map((location, index) => (
                                             <option key={index} value={location}>
                                                 {location}
                                             </option>
