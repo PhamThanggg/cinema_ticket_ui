@@ -5,16 +5,12 @@ import { faCheck } from '@fortawesome/free-solid-svg-icons';
 
 const cx = classNames.bind(styles);
 
-function Item({ isSelected }) {
+function Item({ isSelected, data }) {
     return (
         <div className={cx('wrapper-item', 'margin-rsp')}>
             <div className={cx('item-link')}>
                 <div className={cx('ctn-image')}>
-                    <img
-                        className={cx('image')}
-                        src="https://bhdstar.vn/wp-content/uploads/2024/08/referenceSchemeHeadOfficeallowPlaceHoldertrueheight700ldapp-22.jpg"
-                        alt="Name"
-                    ></img>
+                    <img className={cx('image')} src={data?.images[0]?.imageUrl || ''} alt="Name"></img>
                     {isSelected && (
                         <div>
                             <div className={cx('tick')}></div>
@@ -23,7 +19,7 @@ function Item({ isSelected }) {
                     )}
                 </div>
                 <h4 className={cx('title')}>
-                    <span className={cx('tooltip')}>Longlegs: THẢM Kịch dị giáo THẢM K THẢM K THẢM K</span>
+                    <span className={cx('tooltip')}>{data?.nameMovie || ''} </span>
                 </h4>
             </div>
         </div>

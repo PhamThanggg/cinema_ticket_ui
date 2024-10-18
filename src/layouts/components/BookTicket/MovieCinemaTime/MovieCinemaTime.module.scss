@@ -66,6 +66,15 @@
     border-radius: 3px;
     padding: 8px 14px;
     margin-bottom: 20px;
+    margin: 0 5px 20px 5px;
+
+    &:hover {
+        background-color: #eaeaea;
+    }
+}
+
+.place.active {
+    background-color: #eaeaea;
 }
 
 // SCSS chọn suất
@@ -120,5 +129,9 @@
     background-color: transparent;
     border-radius: 3px;
     padding: 8px 14px;
-    margin-bottom: 20px;
+    margin: 0 5px 20px 5px;
+
+    &:hover {
+        background-color: #ececec;
+    }
 }

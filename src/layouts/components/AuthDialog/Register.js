@@ -70,7 +70,10 @@ function Register({ open, handleClose, handleLogin }) {
     const handleSubmit = async () => {
         const validations = [
             { condition: !fullname, message: 'Vui lòng nhập họ tên' },
-            { condition: !email || !/\S+@\S+\.\S+/.test(email), message: 'Vui lòng nhập email hợp lệ' },
+            {
+                condition: !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),
+                message: 'Vui lòng nhập email hợp lệ',
+            },
             { condition: !phone || !/^\d{10}$/.test(phone), message: 'Vui lòng nhập số điện thoại hợp lệ' },
             { condition: !gender, message: 'Vui lòng chọn giới tính' },
             { condition: !startDate, message: 'Vui lòng chọn ngày sinh' },
@@ -90,13 +93,13 @@ function Register({ open, handleClose, handleLogin }) {
         const formattedDate = startDate.toISOString().split('T')[0];
 
         const user = {
-            full_name: fullname,
-            gender: gender,
-            phone: phone,
-            date_of_birth: formattedDate,
-            email: email,
-            password: password,
-            repassword: repassword,
+            full_name: fullname.trim(),
+            gender: gender.trim(),
+            phone: phone.trim(),
+            date_of_birth: formattedDate.trim(),
+            email: email.trim(),
+            password: password.trim(),
+            repassword: repassword.trim(),
             status: 0,
         };
 

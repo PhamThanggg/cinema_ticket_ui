@@ -5,10 +5,14 @@ import Button from '~/components/Button';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import StarInfo from './StarInfo';
+import { useAuth } from '~/components/Context/AuthContext';
 
 const cx = classNames.bind(styles);
 
 function PersonalInfo() {
+    const { state } = useAuth();
+    const { account } = state;
+
     const [focusStates, setFocusStates] = useState({
         email: false,
         password: false,
@@ -28,11 +32,11 @@ function PersonalInfo() {
 
     //check radio
     const handleMaleClick = () => {
-        setGender('male');
+        setGender('Nam');
     };
 
     const handleFemaleClick = () => {
-        setGender('female');
+        setGender('Nữ');
     };
 
     //gender
@@ -57,6 +61,7 @@ function PersonalInfo() {
                             className={cx('input-txt')}
                             type="text"
                             placeholder="Nhập họ và tên"
+                            value={account?.fullName || ''}
                             onFocus={() => handleFocus('fullname')}
                             onBlur={() => handleBlur('fullname')}
                         />
@@ -67,6 +72,7 @@ function PersonalInfo() {
                     <label className={cx('label-res')}>Ngày sinh</label>
                     <div className={cx('input', { focused: focusStates.dateOfBirth })}>
                         <DatePicker
+                            value={account?.dateOfBirth || ''}
                             className={cx('input-txt-date')}
                             selected={startDate}
                             onChange={(date) => setStartDate(date)}
@@ -88,6 +94,7 @@ function PersonalInfo() {
                             className={cx('input-txt')}
                             type="text"
                             placeholder="Nhập email"
+                            value={account?.email || ''}
                             onFocus={() => handleFocus('email')}
                             onBlur={() => handleBlur('email')}
                         />
@@ -100,6 +107,7 @@ function PersonalInfo() {
                         <input
                             className={cx('input-txt')}
                             type="text"
+                            value={account?.phone || ''}
                             placeholder="Nhập số điện thoại"
                             onFocus={() => handleFocus('phone')}
                             onBlur={() => handleBlur('phone')}
@@ -113,8 +121,8 @@ function PersonalInfo() {
                         <div className={cx('gender-male')} onClick={handleMaleClick}>
                             <input
                                 type="radio"
-                                value="male"
-                                checked={gender === 'male'}
+                                value="Nam"
+                                checked={gender === 'Nam' || account?.gender === 'Nam'}
                                 onChange={handleGenderChange}
                             />
                             <span className={cx('male')}>Nam</span>
@@ -122,8 +130,8 @@ function PersonalInfo() {
                         <div className={cx('gender-female')} onClick={handleFemaleClick}>
                             <input
                                 type="radio"
-                                value="female"
-                                checked={gender === 'female'}
+                                value="Nữ"
+                                checked={gender === 'Nữ' || account?.gender === 'Nữ'}
                                 onChange={handleGenderChange}
                             />
                             <span className={cx('female')}>Nữ</span>

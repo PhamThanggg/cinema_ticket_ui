@@ -1,4 +1,5 @@
 import * as request from '~/utils/request';
+import { toast } from 'react-toastify';
 
 const LoginApi = async (email, password) => {
     const data = {
@@ -16,7 +17,12 @@ const LoginApi = async (email, password) => {
         const res = await request.post('auth/token', data, options);
         return res;
     } catch (error) {
-        console.log(error);
+        if (error.response) {
+            const { code, message } = error.response.data;
+            toast.error(`Error ${code}: ${message}`);
+        } else {
+            toast.error('Đã xảy ra lỗi. Vui lòng thử lại.');
+        }
     }
 };
 
@@ -35,7 +41,12 @@ const RegisterApi = async (user) => {
         const res = await request.post('users/register', data, options);
         return res;
     } catch (error) {
-        console.log(error);
+        if (error.response) {
+            const { code, message } = error.response.data;
+            toast.error(`Error ${code}: ${message}`);
+        } else {
+            toast.error('Đã xảy ra lỗi. Vui lòng thử lại.');
+        }
     }
 };
 

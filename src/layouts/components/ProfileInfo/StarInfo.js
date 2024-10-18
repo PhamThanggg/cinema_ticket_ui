@@ -1,22 +1,27 @@
 import classNames from 'classnames/bind';
 import styles from './ProfileInfo.module.scss';
 import images from '~/assets/image';
+import { useAuth } from '~/components/Context/AuthContext';
 
 const cx = classNames.bind(styles);
 
 function StarInfo() {
+    const { account } = useAuth();
     return (
         <div className={cx('wrap')}>
             <div className={cx('ctn')}>
                 <div className={cx('acc')}>
                     <img
                         className={cx('avatar')}
-                        src="https://img.pikbest.com/png-images/qianku/default-avatar_2405039.png!w700wp"
+                        src={
+                            account?.image ||
+                            'https://img.pikbest.com/png-images/qianku/default-avatar_2405039.png!w700wp'
+                        }
                         alt="name"
                     />
                 </div>
                 <div className={cx('acc-name')}>
-                    <p className={cx('name')}>Phạm Huy Thắng</p>
+                    <p className={cx('name')}>{account?.fullName || ''}</p>
                 </div>
                 <div className={cx('name-stars')}>50 Stars</div>
 

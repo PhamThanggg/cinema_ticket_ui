@@ -10,7 +10,7 @@ import Confirmation from './Confirmation';
 
 const cx = classNames.bind(styles);
 
-function BookTicket() {
+function BookTicket({ dataArea }) {
     const [activeTab, setActiveTab] = useState('ticketInfo'); // Default first tab
     const [clickedTabs, setClickedTabs] = useState(['ticketInfo']); // Keeps track of visited tabs
 
@@ -68,7 +68,7 @@ function BookTicket() {
 
             <div className={cx('booking')}>
                 <div className={cx('order')}>
-                    {activeTab === 'ticketInfo' && <MovieCinemaTime />}
+                    {activeTab === 'ticketInfo' && <MovieCinemaTime dataArea={dataArea} />}
                     {activeTab === 'personalInfo' && <BookingSeat />}
                     {activeTab === 'foodInfo' && <FoodSelection />}
                     {activeTab === 'payment' && <Payment />}

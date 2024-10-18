@@ -378,6 +378,7 @@
 .menu-item {
     padding: 8px 12px;
     cursor: pointer;
+    color: var(--text-color);
 
     &:hover {
         color: var(--primary);

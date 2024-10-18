@@ -2,18 +2,18 @@ import classNames from 'classnames/bind';
 import styles from './Header.module.scss';
 import images from '~/assets/image';
 import Typpy from '@tippyjs/react/headless';
-import { useEffect, useState } from 'react';
 import { useAuth } from '~/components/Context/AuthContext';
 import { toast } from 'react-toastify';
 import { LogoutApi } from '~/service/auth';
-import { getMyInfoApi } from '~/service/UserAPI';
-import Loading from '~/components/Loading';
+import { useState } from 'react';
+
+import { Link } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
-function Account(offSet) {
-    const { logout } = useAuth();
-    const [account, setAccount] = useState(null);
+function Account({ offSet }) {
+    const { state, logout } = useAuth();
+    const { account } = state;
 
     const [visible, setVisible] = useState(false);
     const handleToggle = () => {
@@ -33,27 +33,6 @@ function Account(offSet) {
         }
     };
 
-    // call api
-    useEffect(() => {
-        getMyInfo();
-    }, []);
-
-    const getMyInfo = async () => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            try {
-                const getAcc = await getMyInfoApi(token);
-
-                setAccount(getAcc);
-            } catch (error) {
-                console.log('Error fetching data:', error);
-            }
-        }
-    };
-
-    if (!account) {
-        return <Loading />;
-    }
     return (
         <Typpy
             interactive={true}
@@ -68,8 +47,12 @@ function Account(offSet) {
             render={(attrs) => (
                 <div className={cx('dropdown-menu')} tabIndex="-1" {...attrs}>
                     <ul className={cx('menu-list-respon')}>
-                        <li className={cx('menu-item')}>Tài khoản</li>
-                        <li className={cx('menu-item')}>Lịch Sử</li>
+                        <Link to={'/profile'}>
+                            <li className={cx('menu-item')}>Tài khoản</li>
+                        </Link>
+                        <Link to={'/profile'}>
+                            <li className={cx('menu-item')}>Lịch Sử</li>
+                        </Link>
                         <li className={cx('menu-item')} onClick={handleLogout}>
                             Đăng xuất
                         </li>
@@ -78,11 +61,11 @@ function Account(offSet) {
             )}
         >
             <div className={cx('wrapper-avatar')} onClick={handleToggle}>
-                <img className={cx('avatar')} src={images.user} alt={'PhamHuyThang'} />
+                <img className={cx('avatar')} src={account?.image || images.user} alt={'PhamHuyThang'} />
                 <div className={cx('info')}>
                     <span className={cx('name')}>
                         <img className={cx('image-name')} src={images.name} alt="name" />
-                        {account.fullName}
+                        {account?.fullName || 'User'}
                     </span>
                     <span className={cx('username')}>
                         <img className={cx('image-gift')} src={images.gift} alt="name" />

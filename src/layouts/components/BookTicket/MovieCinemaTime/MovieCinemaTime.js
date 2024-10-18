@@ -5,12 +5,96 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons';
 import MovieBooking from './MovieBooking';
 import DateSlider from '../../../../components/DateTime/DateTime';
+import { MovieAreaShowNowApi } from '~/service/MovieService';
+import { CinemaAreaApi, CinemaScheduleApi } from '~/service/CinemaApi';
 
 const cx = classNames.bind(styles);
 
-function MovieCinemaTime() {
-    // slide
+function MovieCinemaTime({ dataArea }) {
+    const today = new Date();
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+
+        return `${year}-${month}-${day}`;
+    };
+
+    const [selectedDate, setSelectedDate] = useState(formatDate(today));
     const [isVisible, setIsVisible] = useState('place');
+    const [selectMovie, setselectMovie] = useState(null);
+    const [activeArea, setActiveArea] = useState(null);
+    const [movie, setMovie] = useState(null);
+    const [cinema, setCinema] = useState(null);
+    const [selectCinema, setSelectCinema] = useState(null);
+    const [cinemSchedule, setCinemSchedule] = useState(null);
+
+    useEffect(() => {
+        if (activeArea) {
+            getCinema();
+        }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeArea]);
+
+    useEffect(() => {
+        if (activeArea) {
+            getMovie();
+        }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeArea]);
+
+    useEffect(() => {
+        if (selectMovie) {
+            getCinemaSchedule();
+        }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectMovie, selectCinema, selectedDate]);
+
+    const handleClick = (areaId, areaName) => {
+        setActiveArea({ id: areaId, name: areaName });
+    };
+
+    const handleSelectMovie = (movie) => {
+        setselectMovie(movie);
+    };
+
+    const handleSelectCinema = (cinema) => {
+        setSelectCinema(cinema);
+    };
+
+    const handleDateSelect = (date) => {
+        setSelectedDate(date);
+    };
+
+    const getCinema = async () => {
+        const data = await CinemaAreaApi(activeArea.id);
+
+        if (data && data.result) {
+            setCinema(data.result);
+        }
+    };
+
+    const getMovie = async () => {
+        const data = await MovieAreaShowNowApi(activeArea.id, 0, 0, 100);
+
+        if (data && data.result) {
+            setMovie(data.result);
+        }
+    };
+
+    // console.log(selectCinema, selectMovie, selectedDate);
+    const getCinemaSchedule = async () => {
+        const data = await CinemaScheduleApi(selectCinema?.id || null, selectMovie?.id || null, selectedDate);
+        if (data && data.result) {
+            setCinemSchedule(data.result);
+        }
+    };
+
+    // logic giao diện
     const [maxHeights, setMaxHeights] = useState({
         place: '0px',
         movie: '0px',
@@ -49,25 +133,16 @@ function MovieCinemaTime() {
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isVisible]);
-
     return (
         <div className={cx('wrapper')}>
             <div className={cx('order-ctn')}>
-                <div className={cx('order-place')}>
-                    <h3 className={cx('title-place')}>Chọn vị trí</h3>
+                <div className={cx('order-place')} onClick={() => toggleDownUp('place')}>
+                    <h3 className={cx('title-place')}>Chọn vị trí {activeArea ? ' - ' + activeArea.name : ''}</h3>
                     <div className={cx('btn-hide', { hidden: isVisible !== 'place' })}>
-                        <FontAwesomeIcon
-                            className={cx('icon')}
-                            onClick={() => toggleDownUp('place')}
-                            icon={faCaretUp}
-                        />
+                        <FontAwesomeIcon className={cx('icon')} icon={faCaretUp} />
                     </div>
                     <div className={cx('btn-show', { hidden: isVisible === 'place' })}>
-                        <FontAwesomeIcon
-                            className={cx('icon')}
-                            onClick={() => toggleDownUp('place')}
-                            icon={faCaretDown}
-                        />
+                        <FontAwesomeIcon className={cx('icon')} icon={faCaretDown} />
                     </div>
                 </div>
 
@@ -80,26 +155,26 @@ function MovieCinemaTime() {
                     }}
                     className={cx('title-content', { visible: isVisible === 'place' })}
                 >
-                    <button className={cx('place')}>Hà nội</button>
+                    {dataArea.map((data, index) => (
+                        <button
+                            className={cx('place', { active: activeArea && activeArea.id === data.id })}
+                            key={data.id}
+                            onClick={() => handleClick(data.id, data.areaName)}
+                        >
+                            {data.areaName}
+                        </button>
+                    ))}
                 </div>
             </div>
 
             <div className={cx('order-ctn')}>
-                <div className={cx('order-place')}>
-                    <h3 className={cx('title-place')}>Chọn phim</h3>
+                <div className={cx('order-place')} onClick={() => toggleDownUp('movie')}>
+                    <h3 className={cx('title-place')}>Chọn phim {selectMovie ? ' - ' + selectMovie.nameMovie : ''}</h3>
                     <div className={cx('btn-hide', { hidden: isVisible !== 'movie' })}>
-                        <FontAwesomeIcon
-                            className={cx('icon')}
-                            onClick={() => toggleDownUp('movie')}
-                            icon={faCaretUp}
-                        />
+                        <FontAwesomeIcon className={cx('icon')} icon={faCaretUp} />
                     </div>
                     <div className={cx('btn-show', { hidden: isVisible === 'movie' })}>
-                        <FontAwesomeIcon
-                            className={cx('icon')}
-                            onClick={() => toggleDownUp('movie')}
-                            icon={faCaretDown}
-                        />
+                        <FontAwesomeIcon className={cx('icon')} icon={faCaretDown} />
                     </div>
                 </div>
 
@@ -112,23 +187,19 @@ function MovieCinemaTime() {
                     }}
                     className={cx('title-content', { visible: isVisible === 'movie' })}
                 >
-                    <MovieBooking />
+                    <MovieBooking movieData={movie} handleSelectMovie={handleSelectMovie} />
                     <div style={{ height: '10px' }}></div>
                 </div>
             </div>
 
             <div className={cx('order-ctn')}>
-                <div className={cx('order-place')}>
+                <div className={cx('order-place')} onClick={() => toggleDownUp('time')}>
                     <h3 className={cx('title-place')}>Chọn suất</h3>
                     <div className={cx('btn-hide', { hidden: isVisible !== 'time' })}>
-                        <FontAwesomeIcon className={cx('icon')} onClick={() => toggleDownUp('time')} icon={faCaretUp} />
+                        <FontAwesomeIcon className={cx('icon')} icon={faCaretUp} />
                     </div>
                     <div className={cx('btn-show', { hidden: isVisible === 'time' })}>
-                        <FontAwesomeIcon
-                            className={cx('icon')}
-                            onClick={() => toggleDownUp('time')}
-                            icon={faCaretDown}
-                        />
+                        <FontAwesomeIcon className={cx('icon')} icon={faCaretDown} />
                     </div>
                 </div>
 
@@ -143,23 +214,59 @@ function MovieCinemaTime() {
                 >
                     <div className={cx('booking-time')}>
                         <div className={cx('booking-cinema')}>
-                            <select className={cx('cinema-select')}>
-                                <option>Tất cả các rạp</option>
-                                <option>Rạp 1</option>
+                            <select
+                                className={cx('cinema-select')}
+                                onChange={(e) => {
+                                    const selectedOption = JSON.parse(e.target.value);
+                                    handleSelectCinema(selectedOption);
+                                }}
+                            >
+                                <option key={0} value={JSON.stringify({ id: null, name: null })}>
+                                    Tất cả các rạp
+                                </option>
+                                {cinema ? (
+                                    cinema.map((data, index) => (
+                                        <option key={index} value={JSON.stringify({ id: data.id, name: data.name })}>
+                                            {data.name}
+                                        </option>
+                                    ))
+                                ) : (
+                                    <option key={1} value={null}>
+                                        Không có rạp nào
+                                    </option>
+                                )}
                             </select>
                         </div>
                         <div className={cx('booking-date')}>
-                            <DateSlider />
+                            <DateSlider onDateSelect={handleDateSelect} />
                         </div>
 
-                        <div className={cx('cinema-name')}>
-                            <div className={cx('name-detail')}>
-                                Rap 1 <span className={cx('name-pd')}>2D phụ đề</span>
-                            </div>
-                        </div>
-                        <div className={cx('hour')}>
-                            <button className={cx('btn-hour')}>14:00</button>
-                        </div>
+                        {cinemSchedule
+                            ? cinemSchedule.map((data, index) => (
+                                  <div key={index} className={cx('cinema-schedule')}>
+                                      <div className={cx('cinema-name')}>
+                                          <div className={cx('name-detail')}>
+                                              {data.cinemaName}
+                                              {/* <span className={cx('name-pd')}>{schedule.type}</span> */}
+                                          </div>
+                                      </div>
+                                      <div className={cx('hour')}>
+                                          {data.schedules.map((schedule, scheduleIndex) => {
+                                              const date = new Date(schedule.startTime);
+                                              const hours = date.getHours().toString().padStart(2, '0');
+                                              const minutes = date.getMinutes().toString().padStart(2, '0');
+                                              const formattedTime = `${hours}:${minutes}`;
+
+                                              return (
+                                                  <button key={scheduleIndex} className={cx('btn-hour')}>
+                                                      {formattedTime}
+                                                  </button>
+                                              );
+                                          })}
+                                      </div>
+                                  </div>
+                              ))
+                            : ''}
                     </div>
                 </div>
             </div>

@@ -1,17 +1,17 @@
 import classNames from 'classnames/bind';
 import styles from './Header.module.scss';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import config from '~/config';
 import images from '~/assets/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
-import { useState } from 'react';
 import Button from '~/components/Button';
 import Menu from './Menu';
 import DropdownMenu from './DropDownMenu';
 import Account from './Account';
 import Search from './Search';
 import { useAuth } from '~/components/Context/AuthContext';
+import { useState } from 'react';
 
 import routes from '~/config/router';
 
@@ -19,6 +19,7 @@ const cx = classNames.bind(styles);
 
 function Header({ onLoginClick }) {
     const { state } = useAuth();
+    const navigate = useNavigate();
 
     const firm = [
         { name: 'Phim đang chiếu', link: routes.Showing },
@@ -46,30 +47,36 @@ function Header({ onLoginClick }) {
     const [showSearch, setShowSearch] = useState(false);
 
     const handleSearchClick = () => {
-        setShowSearch(!showSearch); // Bật/tắt Search
+        setShowSearch(!showSearch);
     };
 
-    // logic khi login
+    const handleCheckLogin = async () => {
+        if (!state.isAuthenticated) {
+            onLoginClick();
+        } else {
+            navigate(config.routes.booking);
+        }
+    };
 
     return (
         <header className={cx('wrapper')}>
             <div className={cx('inner')}>
                 <div className={cx('logo')} style={{ display: 'flex' }}>
                     <Link to={config.routes.home} tabIndex="-1" className={cx('logo-link')}>
-                        <img className={cx('logo-img')} src={images.logo} alt="TikTok"></img>
+                        <img className={cx('logo-img')} src={images.logo} alt="cinema"></img>
                     </Link>
                     <div className={cx('nav-ticket', 'nav-tck')}>
-                        <a href="/" tabIndex="-1">
+                        <div tabIndex="-1" onClick={handleCheckLogin}>
                             <img className={cx('ticket-img')} src={images.buyTicket} alt="" />
-                        </a>
+                        </div>
                     </div>
                 </div>
                 <div className={cx('navbar-collapse')}>
                     <ul className={cx('navbar-nav')}>
                         <div className={cx('nav-ticket')}>
-                            <a href="/" tabIndex="-1">
+                            <div tabIndex="-1" onClick={handleCheckLogin}>
                                 <img className={cx('ticket-img')} src={images.buyTicket} alt="" />
-                            </a>
+                            </div>
                         </div>
                         <li className={cx('nav-item')}>
                             <DropdownMenu items={firm} buttonText={'Phim'} />
