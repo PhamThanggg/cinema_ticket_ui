@@ -32,9 +32,14 @@ function DefaultLayout({ children }) {
         <div className={cx('wrapper')}>
             <Header onLoginClick={handleLoginClick} />
             {isLogin ? (
-                <Login open={isDialogOpen} handleClose={handleCloseDialog} handleRegister={toggleForm} />
+                <Login
+                    open={isDialogOpen}
+                    handleClose={handleCloseDialog}
+                    handleRegister={toggleForm}
+                    handleLoginDialog={handleLoginClick}
+                />
             ) : (
-                <Register open={isDialogOpen} handleClose={handleCloseDialog} handleLogin={toggleForm} />
+                <Register open={isDialogOpen} handleClose={handleCloseDialog} />
             )}
             <ToastContainer
                 position="top-right"

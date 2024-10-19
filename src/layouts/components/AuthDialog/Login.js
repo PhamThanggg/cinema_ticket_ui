@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent } from '@mui/material';
 import { LockIcon, GoogleIcon } from '~/components/Icon';
 import classNames from 'classnames/bind';
@@ -11,10 +11,13 @@ import { toast } from 'react-toastify';
 import { LoginApi } from '~/service/auth';
 import { useAuth } from '~/components/Context/AuthContext';
 
+import { useLocation } from 'react-router-dom';
+import { LoginGGApi } from '~/service/auth';
+
 const cx = classNames.bind(styles);
 
-function Login({ open, handleClose, handleRegister }) {
-    const { login } = useAuth();
+function Login({ open, handleClose, handleRegister, handleLoginDialog }) {
+    const { login, state } = useAuth();
     const [focusStates, setFocusStates] = useState({
         email: false,
         password: false,
@@ -66,6 +69,55 @@ function Login({ open, handleClose, handleRegister }) {
         setIsShowPassword(false);
     };
 
+    // login gg
+    const handleClick = () => {
+        const callbackUrl = 'http://localhost:3000';
+        const authUrl = 'https://accounts.google.com/o/oauth2/auth';
+        const googleClientId = '296253261995-l9h9uurvmsmb31l9lenrv3iau6p1c6lj.apps.googleusercontent.com';
+
+        const targetUrl = `${authUrl}?redirect_uri=${encodeURIComponent(
+            callbackUrl,
+        )}&response_type=code&client_id=${googleClientId}&scope=openid%20email%20profile&prompt=select_account`;
+
+        window.location.href = targetUrl;
+    };
+
+    const location = useLocation();
+
+    useEffect(() => {
+        const handleLogin = async () => {
+            const code = getCodeFromUrl();
+            if (!state.isAuthenticated && code) {
+                handleLoginDialog();
+                const res = await LoginGGApi(decodeURIComponent(code));
+
+                if (res && res.result.token) {
+                    await login(res.result);
+                    toast.success('Đăng nhập thành công!');
+                    handleClose();
+                }
+            }
+        };
+        setIsShowPassword(true);
+
+        handleLogin();
+
+        setIsShowPassword(false);
+    }, []);
+
+    const getCodeFromUrl = () => {
+        const queryString = location.search;
+        const start = queryString.indexOf('code=');
+
+        if (start !== -1) {
+            const codeString = queryString.substring(start + 5);
+
+            return codeString.substring(0);
+        }
+
+        return null;
+    };
+
     return (
         <Dialog
             open={open}
@@ -94,7 +146,7 @@ function Login({ open, handleClose, handleRegister }) {
                     </div>
                     <h2 className={cx('title')}>Đăng Nhập</h2>
                     <div className={cx('gg')}>
-                        <button className={cx('login-gg')}>
+                        <button className={cx('login-gg')} onClick={handleClick}>
                             <GoogleIcon />
                             <span className={cx('txt-gg')}> Đăng Nhập Với Google</span>
                         </button>

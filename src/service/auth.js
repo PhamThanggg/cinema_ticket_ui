@@ -26,6 +26,32 @@ const LoginApi = async (email, password) => {
     }
 };
 
+const LoginGGApi = async (code) => {
+    const options = {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        params: {
+            code: code,
+        },
+    };
+
+    try {
+        const res = await request.post('auth/oauth2/google', null, {
+            headers: options.headers,
+            params: options.params,
+        });
+        return res;
+    } catch (error) {
+        if (error.response) {
+            const { code, message } = error.response.data;
+            toast.error(`Error ${code}: ${message}`);
+        } else {
+            toast.error('Đã xảy ra lỗi. Vui lòng thử lại.');
+        }
+    }
+};
+
 const RegisterApi = async (user) => {
     const data = {
         ...user, //spread
@@ -91,4 +117,4 @@ const IntrospectApi = async (data) => {
 //     } catch (error) {}
 // };
 
-export { RegisterApi, LoginApi, LogoutApi, IntrospectApi };
+export { RegisterApi, LoginApi, LogoutApi, IntrospectApi, LoginGGApi };

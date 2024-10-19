@@ -28,7 +28,7 @@ const NextArrow = (props) => {
     );
 };
 
-function MovieBooking({ movieData, handleSelectMovie }) {
+function MovieBooking({ movieData, handleSelectMovie, selectedIndex }) {
     const settings = {
         className: 'center',
         centerMode: true,
@@ -74,20 +74,13 @@ function MovieBooking({ movieData, handleSelectMovie }) {
         ],
     };
 
-    const [selectedIndex, setSelectedIndex] = useState(null); // State để quản lý chỉ mục được chọn
-
-    const handleItemClick = (index, data) => {
-        setSelectedIndex(index);
-        handleSelectMovie(data);
-    };
-
     return (
         <div className={cx('wrapper')}>
             <div className={cx('slider')}>
                 {movieData && movieData.length > 0 ? (
                     <Slider {...settings}>
                         {movieData.map((data, index) => (
-                            <div key={index} onClick={() => handleItemClick(index, data)}>
+                            <div key={index} onClick={() => handleSelectMovie(index, data)}>
                                 <Item isSelected={selectedIndex === index} data={data} />
                             </div>
                         ))}

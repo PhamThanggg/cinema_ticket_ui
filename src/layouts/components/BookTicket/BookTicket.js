@@ -1,6 +1,6 @@
 import classNames from 'classnames/bind';
 import styles from './BookTicket.module.scss';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Button from '~/components/Button';
 import MovieCinemaTime from './MovieCinemaTime/MovieCinemaTime';
 import BookingSeat from './BookingSeat';
@@ -11,14 +11,23 @@ import Confirmation from './Confirmation';
 const cx = classNames.bind(styles);
 
 function BookTicket({ dataArea }) {
-    const [activeTab, setActiveTab] = useState('ticketInfo'); // Default first tab
-    const [clickedTabs, setClickedTabs] = useState(['ticketInfo']); // Keeps track of visited tabs
+    const [activeTab, setActiveTab] = useState(() => {
+        return sessionStorage.getItem('activeTab') || 'ticketInfo';
+    });
+
+    const [clickedTabs, setClickedTabs] = useState(['ticketInfo']);
+
+    const [area, setArea] = useState(null);
+    const [movie, setMovie] = useState(null);
+    const [schedule, setSchedule] = useState(null);
+
+    console.log(area, movie, schedule);
 
     const tabTitles = ['Chọn phim / Rạp / Suất', 'Chọn ghế', 'Chọn thức ăn', 'Thanh toán', 'Xác nhận'];
 
     const tabs = ['ticketInfo', 'personalInfo', 'foodInfo', 'payment', 'confirmation'];
 
-    const currentIndex = tabs.indexOf(activeTab); // Get current tab index
+    const currentIndex = tabs.indexOf(activeTab);
 
     const handleNext = () => {
         // Go to the next tab in sequence
@@ -40,6 +49,24 @@ function BookTicket({ dataArea }) {
             setActiveTab(prevTab);
         }
     };
+
+    useEffect(() => {
+        sessionStorage.setItem('activeTab', activeTab);
+    }, [activeTab]);
+
+    useEffect(() => {
+        const handleBeforeUnload = (event) => {
+            const message = 'Bạn có chắc chắn muốn tải lại trang? Việc này có thể khiến bạn mất dữ liệu.';
+            event.preventDefault();
+            event.returnValue = message;
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, []);
 
     return (
         <div className={cx('wrapper')}>
@@ -68,7 +95,14 @@ function BookTicket({ dataArea }) {
 
             <div className={cx('booking')}>
                 <div className={cx('order')}>
-                    {activeTab === 'ticketInfo' && <MovieCinemaTime dataArea={dataArea} />}
+                    {activeTab === 'ticketInfo' && (
+                        <MovieCinemaTime
+                            dataArea={dataArea}
+                            setAreaData={setArea}
+                            setMovieData={setMovie}
+                            setScheduleData={setSchedule}
+                        />
+                    )}
                     {activeTab === 'personalInfo' && <BookingSeat />}
                     {activeTab === 'foodInfo' && <FoodSelection />}
                     {activeTab === 'payment' && <Payment />}
@@ -81,18 +115,26 @@ function BookTicket({ dataArea }) {
                             <div className={cx('order-img')}>
                                 <img
                                     className={cx('order-detail-img')}
-                                    src="https://cdn.galaxycine.vn/media/2024/9/9/cam-500_1725872473264.jpg"
+                                    src={
+                                        movie?.images[0]?.imageUrl ||
+                                        'https://www.galaxycine.vn/_next/static/media/img-blank.bb695736.svg'
+                                    }
                                     alt=""
                                 />
                                 <div className={cx('movie-booking')}>
-                                    <div className={cx('name-movie')}>Cám </div>
+                                    <div className={cx('name-movie')}>{movie?.nameMovie || ''}</div>
                                     <p className={cx('movie-info')}>
-                                        2D phụ đề - <span className={cx('movie-age')}>T18</span>
+                                        {movie && '2D phụ đề -'}
+                                        {movie && <span className={cx('movie-age')}>{movie?.ageLimit || ''}</span>}
                                     </p>
                                 </div>
                             </div>
-                            <div className={cx('order-cinema')}>Galaxy Mipec Long Biên - RAP 3</div>
-                            <div className={cx('order-time')}>Suất: 20:15 - Thứ Ba, 24/09/2024</div>
+                            <div className={cx('order-cinema')}>
+                                {schedule?.cinemaName || ''} {movie?.schedule && '-'} {schedule?.roomName || ''}
+                            </div>
+
+                            {schedule && <OrderTime dateString={schedule?.startTime || ''} />}
+
                             <div className={cx('line')}></div>
                             <div className={cx('order-seat')}>
                                 <div>
@@ -136,4 +178,23 @@ function BookTicket({ dataArea }) {
     );
 }
 
+const OrderTime = ({ dateString }) => {
+    const date = new Date(dateString);
+
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+
+    const dayNames = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+    const dayName = dayNames[date.getDay()];
+
+    const day = date.getDate();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Tháng bắt đầu từ 0
+    const year = date.getFullYear();
+
+    return (
+        <div className={cx('order-time')}>
+            Suất: {hours}:{minutes} - {dayName}, {day}/{month}/{year}
+        </div>
+    );
+};
 export default BookTicket;

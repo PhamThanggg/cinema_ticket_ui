@@ -10,7 +10,7 @@ import { CinemaAreaApi, CinemaScheduleApi } from '~/service/CinemaApi';
 
 const cx = classNames.bind(styles);
 
-function MovieCinemaTime({ dataArea }) {
+function MovieCinemaTime({ dataArea, setAreaData, setMovieData, setScheduleData }) {
     const today = new Date();
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -29,6 +29,10 @@ function MovieCinemaTime({ dataArea }) {
     const [cinema, setCinema] = useState(null);
     const [selectCinema, setSelectCinema] = useState(null);
     const [cinemSchedule, setCinemSchedule] = useState(null);
+    const [selectSchedule, setSelectSchedule] = useState(null);
+
+    //quản lý movie chọn
+    const [selectedIndex, setSelectedIndex] = useState(null);
 
     useEffect(() => {
         if (activeArea) {
@@ -56,14 +60,33 @@ function MovieCinemaTime({ dataArea }) {
 
     const handleClick = (areaId, areaName) => {
         setActiveArea({ id: areaId, name: areaName });
+        setAreaData({ id: areaId, name: areaName });
+
+        setMovieData(null);
+        setCinemSchedule(null);
+        setselectMovie(null);
+        setMovieData(null);
+        setScheduleData(null);
+        setSelectedIndex(null);
+        setSelectSchedule(null);
     };
 
-    const handleSelectMovie = (movie) => {
+    const handleSelectMovie = (index, movie) => {
+        setSelectedIndex(index);
         setselectMovie(movie);
+
+        setMovieData(movie);
+        setCinemSchedule(null);
+        setSelectSchedule(null);
     };
 
     const handleSelectCinema = (cinema) => {
         setSelectCinema(cinema);
+    };
+
+    const handleSelectSchedule = (data) => {
+        setSelectSchedule(data);
+        setScheduleData(data);
     };
 
     const handleDateSelect = (date) => {
@@ -133,6 +156,8 @@ function MovieCinemaTime({ dataArea }) {
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isVisible]);
+
+    console.log(selectSchedule);
     return (
         <div className={cx('wrapper')}>
             <div className={cx('order-ctn')}>
@@ -187,7 +212,11 @@ function MovieCinemaTime({ dataArea }) {
                     }}
                     className={cx('title-content', { visible: isVisible === 'movie' })}
                 >
-                    <MovieBooking movieData={movie} handleSelectMovie={handleSelectMovie} />
+                    <MovieBooking
+                        movieData={movie}
+                        handleSelectMovie={handleSelectMovie}
+                        selectedIndex={selectedIndex}
+                    />
                     <div style={{ height: '10px' }}></div>
                 </div>
             </div>
@@ -256,9 +285,24 @@ function MovieCinemaTime({ dataArea }) {
                                               const hours = date.getHours().toString().padStart(2, '0');
                                               const minutes = date.getMinutes().toString().padStart(2, '0');
                                               const formattedTime = `${hours}:${minutes}`;
-
                                               return (
-                                                  <button key={scheduleIndex} className={cx('btn-hour')}>
+                                                  <button
+                                                      key={scheduleIndex}
+                                                      className={cx('btn-hour', {
+                                                          active: selectSchedule?.ScheduleId === schedule?.id,
+                                                      })}
+                                                      onClick={() =>
+                                                          handleSelectSchedule({
+                                                              ScheduleId: schedule.id,
+                                                              startTime: schedule.startTime,
+                                                              roomId: schedule.cinemaRooms.id,
+                                                              roomName: schedule.cinemaRooms.name,
+                                                              cinemaId: schedule.cinemaRooms.cinema.id,
+                                                              cinemaName: schedule.cinemaRooms.cinema.name,
+                                                              cinemaAdress: schedule.cinemaRooms.cinema.address,
+                                                          })
+                                                      }
+                                                  >
                                                       {formattedTime}
                                                   </button>
                                               );

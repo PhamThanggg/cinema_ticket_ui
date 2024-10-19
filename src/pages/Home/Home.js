@@ -6,6 +6,7 @@ import Promotion from './Promotion';
 import { useEffect, useState } from 'react';
 import { MovieShowNowApi } from '~/service/MovieService';
 import Loading from '~/components/Loading';
+
 const cx = classNames.bind(styles);
 
 function Home() {
