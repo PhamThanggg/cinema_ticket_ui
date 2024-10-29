@@ -32,6 +32,7 @@ function Slide() {
         'https://cdn.galaxycine.vn/media/2024/8/29/2048_1724920527246.jpg',
         'https://cdn.galaxycine.vn/media/2024/9/9/cam-2048_1725872495016.jpg',
         'https://cdn.galaxycine.vn/media/2024/9/9/shopee-pay-1_1725853205539.jpg',
+        'https://phenikaa-uni.edu.vn:3600/pu/vi/quoc-te-phu-nu-201024.jpg',
     ];
 
     const settings = {
@@ -43,7 +44,7 @@ function Slide() {
         slidesToShow: 1, // Số ảnh hiển thị mỗi lần
         slidesToScroll: 1, // Số ảnh cuộn mỗi lần
         autoplay: true, // Tự động chuyển ảnh
-        autoplaySpeed: 4000, // Thời gian giữa các lần chuyển ảnh (3000ms = 3 giây)
+        autoplaySpeed: 40000, // Thời gian giữa các lần chuyển ảnh (3000ms = 3 giây)
         centerPadding: '205px',
         prevArrow: <PrevArrow />,
         nextArrow: <NextArrow />,

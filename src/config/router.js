@@ -7,6 +7,8 @@ const routes = {
     Showing: '/showing',
     ComingSoon: '/coming-soon',
     MovieDetail: '/Movie-detail',
+
+    confirmation: '/Booking/confirmation',
 };
 
 export default routes;

@@ -4,6 +4,7 @@ import Booking from '~/pages/Booking';
 import Showing from '~/pages/ShowMoviePage/ShowingPage';
 import Coming from '~/pages/ShowMoviePage/CommingPage';
 import MovieDetail from '~/pages/MovieDetail';
+import Confirmation from '~/pages/Booking/ConfirmationPage/ConfirmationPage';
 import config from '~/config';
 
 const publicRoutes = [
@@ -16,6 +17,7 @@ const publicRoutes = [
 const privateRoutes = [
     { path: config.routes.profile, component: Profile },
     { path: config.routes.booking, component: Booking },
+    { path: config.routes.confirmation, component: Confirmation },
 ];
 
 export { publicRoutes, privateRoutes };

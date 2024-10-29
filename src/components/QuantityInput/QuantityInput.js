@@ -1,14 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import classNames from 'classnames/bind';
 import styles from './Quantity.module.scss';
 
 const cx = classNames.bind(styles);
 
-function QuantityInput() {
-    const [quantity, setQuantity] = useState(0);
+function QuantityInput({ initialQuantity, onQuantityChange }) {
+    const [quantity, setQuantity] = useState(initialQuantity);
 
-    const handleIncrease = () => setQuantity(quantity + 1);
-    const handleDecrease = () => setQuantity(quantity > 0 ? quantity - 1 : 0);
+    useEffect(() => {
+        setQuantity(initialQuantity);
+    }, [initialQuantity]);
+
+    const handleIncrease = () => {
+        const newQuantity = quantity + 1;
+        setQuantity(newQuantity);
+        onQuantityChange(newQuantity);
+    };
+
+    const handleDecrease = () => {
+        const newQuantity = quantity > 0 ? quantity - 1 : 0;
+        setQuantity(newQuantity);
+        onQuantityChange(newQuantity);
+    };
 
     const handleInputChange = (e) => {
         const value = parseInt(e.target.value, 10);

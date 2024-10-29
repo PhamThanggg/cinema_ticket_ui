@@ -3,7 +3,13 @@ import styles from './Payment.module.scss';
 
 const cx = classNames.bind(styles);
 
-function Payment() {
+function Payment({ selectedPaymentMethod, setSelectedPaymentMethod }) {
+    const handleRadioChange = (e) => {
+        const value = e.target.value;
+        // Nếu radio đã được chọn lại thì bỏ chọn
+        setSelectedPaymentMethod(selectedPaymentMethod === value ? '' : value);
+    };
+    console.log(selectedPaymentMethod);
     return (
         <div>
             <div className={cx('wrapper')}>
@@ -42,13 +48,22 @@ function Payment() {
                 <div className={cx('container')}>
                     <div className={cx('info')}>Phương thức thanh toán</div>
                     <div className={cx('payment')}>
-                        <input className={cx('payment_input')} type="radio" />
+                        <input
+                            className={cx('payment_input')}
+                            type="radio"
+                            id="vnpay"
+                            name="payment"
+                            value="vnpay"
+                            checked={selectedPaymentMethod === 'vnpay'}
+                            onClick={handleRadioChange}
+                            onChange={handleRadioChange}
+                        />
                         <img
                             className={cx('payment_img')}
                             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJoSZT_5VBdOUEyntQbuFTYw7W2PqpHagw2Q&s"
                             alt=""
                         />
-                        <p className={cx('payment_txt')}>Ví điện tử MOMO</p>
+                        <p className={cx('payment_txt')}>Ví VNPay</p>
                     </div>
                 </div>
             </div>

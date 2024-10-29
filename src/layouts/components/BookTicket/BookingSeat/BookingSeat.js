@@ -1,9 +1,125 @@
 import classNames from 'classnames/bind';
 import styles from './BookinSeat.module.scss';
+import { useEffect } from 'react';
+import { deleteSeatStatus, GetSeatApi, updateSeatStatus } from '~/service/SeatService';
+import Loading from '~/components/Loading';
+import SockJS from 'sockjs-client';
+import { Stomp } from '@stomp/stompjs';
+import { formatDateToCustomFormat } from '~/utils/dateFormatter';
+import { useAuth } from '~/components/Context/AuthContext';
+import { GetSeatSelectApi } from '~/service/SeatService';
 
 const cx = classNames.bind(styles);
 
-function BookingSeat() {
+function BookingSeat({ seatData, setSeatData, selectedSeats, setSelectedSeats, account, schedule }) {
+    const { state } = useAuth();
+    const { token } = state;
+
+    useEffect(() => {
+        getRoomSeat();
+
+        // Kết nối với WebSocket sử dụng SockJS và STOMP
+        const socket = new SockJS('http://localhost:8080/ws');
+        const stompClient = Stomp.over(socket);
+
+        // Kết nối STOMP
+        stompClient.connect({}, () => {
+            console.log('Connected to WebSocket');
+            // Subscribe tới topic '/topic/seats'
+            stompClient.subscribe('/topic/seats', (message) => {
+                const updatedSeats = JSON.parse(message.body);
+
+                // Cập nhật danh sách ghế
+                setSeatData((prevSeatData) => {
+                    return prevSeatData.map(
+                        (seat) => updatedSeats.find((updatedSeat) => updatedSeat.id === seat.id) || seat,
+                    );
+                });
+            });
+        });
+
+        // Cleanup WebSocket khi component bị hủy
+        return () => {
+            if (stompClient.connected) {
+                stompClient.disconnect();
+            }
+        };
+    }, []);
+
+    useEffect(() => {
+        const getSeatSelect = async () => {
+            const schedule = JSON.parse(localStorage.getItem('schedule'));
+            // console.log(schedule);
+            if (schedule && schedule.value && schedule.value.ScheduleId) {
+                const data = await GetSeatSelectApi(schedule.value.ScheduleId, token);
+
+                if (data && data.result) {
+                    setSelectedSeats(data.result);
+                }
+            }
+        };
+
+        getSeatSelect();
+    }, []);
+
+    const getRoomSeat = async () => {
+        const schedule = JSON.parse(localStorage.getItem('schedule'));
+        // console.log(schedule);
+        if (schedule && schedule.value && schedule.value.ScheduleId) {
+            const data = await GetSeatApi(schedule.value.ScheduleId);
+
+            if (data && data.result) {
+                setSeatData(data.result);
+            }
+        }
+    };
+
+    if (seatData) {
+        var groupedSeats = seatData.reduce((acc, seat) => {
+            if (!acc[seat.row]) {
+                acc[seat.row] = [];
+            }
+
+            acc[seat.row].push(seat);
+            return acc;
+        }, {});
+    }
+
+    const handleSeatClick = (seat) => {
+        // Kiểm tra ghế đã được chọn hay chưa
+        if (selectedSeats.length > 0 && selectedSeats.some((selectedSeat) => selectedSeat.id === seat.id)) {
+            // Nếu đã chọn thì bỏ chọn
+            setSelectedSeats(selectedSeats.filter((selectedSeat) => selectedSeat.id !== seat.id));
+
+            // Xóa chọn ghế;
+            deleteSeatStatus(seat.id, schedule.ScheduleId, token);
+        } else {
+            // Nếu chưa chọn thì thêm vào danh sách
+            setSelectedSeats([...selectedSeats, seat]);
+            // console.log(seat, account, schedule);
+            // cập nhật chọn ghế
+            const now = new Date();
+            const reservationTime = formatDateToCustomFormat(now);
+            const expiryTime = formatDateToCustomFormat(new Date(now.getTime() + 15 * 60000));
+            const seatIds = [];
+            seatIds.push(seat.id);
+
+            const data = {
+                userId: account.id,
+                seatIds: seatIds,
+                scheduleId: schedule.ScheduleId,
+                status: 0,
+                reservation_time: reservationTime,
+                expiry_time: expiryTime,
+            };
+            updateSeatStatus(data, token);
+        }
+    };
+
+    if (!seatData) {
+        return <Loading />;
+    }
+
     return (
         <div className={cx('wrapper')}>
             <div className={cx('nav')}>
@@ -15,66 +131,56 @@ function BookingSeat() {
 
             <div className={cx('cinema-seat')}>
                 <div style={{ height: '10px' }}></div>
-                <div className={cx('seat-info')}>
-                    <div className={cx('column')}>A</div>
-                    <div className={cx('row')}>
-                        <button className={cx('seat')}>A99</button>
-                        <button className={cx('seat')}>A2</button>
-                        <button className={cx('seat')}>A3</button>
-                        <button className={cx('seat')}>A1</button>
-                        <button className={cx('seat')}>A2</button>
-                        <button className={cx('seat')}>A3</button>
-                        <button className={cx('seat')}>A1</button>
-                        <button className={cx('seat')}>A2</button>
-                        <button className={cx('seat')}>A3</button>
-                        <button className={cx('seat')}>A1</button>
-                        <button className={cx('seat')}>A2</button>
-                        <button className={cx('seat')}>A3</button>
-                        <button className={cx('seat')}>A1</button>
-                        <button className={cx('seat')}>A2</button>
-                        <button className={cx('seat')}>A3</button>
-                        <button className={cx('seat')}>A1</button>
-                        <button className={cx('seat')}>A2</button>
-                        <button className={cx('seat')}>A3</button>
-                        <button className={cx('seat')}>A1</button>
-                        <button className={cx('seat')}>A2</button>
-                        <button className={cx('seat')}>A3</button>
-                        <button className={cx('seat')}>A1</button>
-                        <button className={cx('seat')}>A2</button>
-                        <button className={cx('seat')}>A3</button>
+
+                {Object.entries(groupedSeats).map(([row, seats]) => (
+                    <div className={cx('seat-info')} key={row}>
+                        <div className={cx('column')}>{row}</div>
+                        <div className={cx('row')}>
+                            {seats.map((seat) => {
+                                return (
+                                    <button
+                                        className={cx(
+                                            'seat',
+                                            {
+                                                active:
+                                                    selectedSeats.length > 0 &&
+                                                    selectedSeats.some((selectedSeat) => selectedSeat.id === seat.id),
+                                            },
+                                            {
+                                                active_buy:
+                                                    seat.seatReservations.length > 0 &&
+                                                    seat.seatReservations[0].status === 1,
+                                            },
+                                            {
+                                                select:
+                                                    seat.seatReservations.length > 0 &&
+                                                    seat.seatReservations[0].status === 0 &&
+                                                    seat.seatReservations[0].userId !== account.id,
+                                            },
+                                            {
+                                                active:
+                                                    seat.seatReservations.length > 0 &&
+                                                    seat.seatReservations[0].status === 0 &&
+                                                    seat.seatReservations[0].userId === account.id,
+                                            },
+                                        )}
+                                        key={seat.id}
+                                        onClick={() => handleSeatClick(seat)}
+                                        disabled={
+                                            seat.seatReservations.length > 0 &&
+                                            ((seat.seatReservations[0].userId !== account.id &&
+                                                seat.seatReservations[0].status === 0) ||
+                                                seat.seatReservations[0].status === 1)
+                                        }
+                                    >
+                                        {seat.name}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        <div className={cx('column')}>{row}</div>
                     </div>
-                    <div className={cx('column')}>A</div>
-                </div>
-                <div className={cx('seat-info')}>
-                    <div className={cx('column')}>A</div>
-                    <div className={cx('row')}>
-                        <button className={cx('seat')}>A1</button>
-                        <button className={cx('seat')}>A2</button>
-                        <button className={cx('seat')}>A3</button>
-                        <button className={cx('seat')}>A1</button>
-                        <button className={cx('seat')}>A2</button>
-                        <button className={cx('seat')}>A3</button>
-                        <button className={cx('seat-space')}></button>
-                        <span className={cx('seat-space')}></span>
-                        <span className={cx('seat-space')}></span>
-                        <button className={cx('seat')}>A3</button>
-                        <button className={cx('seat')}>A3</button>
-                        <button className={cx('seat')}>A3</button>
-                        <button className={cx('seat')}>A3</button>
-                        <button className={cx('seat')}>A3</button>
-                        <button className={cx('seat')}>A1</button>
-                        <button className={cx('seat')}>A2</button>
-                        <button className={cx('seat')}>A3</button>
-                        <button className={cx('seat-space')}></button>
-                        <span className={cx('seat-space')}></span>
-                        <span className={cx('seat-space')}></span>
-                        <button className={cx('seat')}>A3</button>
-                        <button className={cx('seat')}>A3</button>
-                        <button className={cx('seat')}>A3</button>
-                        <button className={cx('seat')}>A3</button>
-                    </div>
-                    <div className={cx('column')}>A</div>
-                </div>
+                ))}
 
                 <div className={cx('screen')}>Màn hình</div>
                 <div className={cx('line')}></div>

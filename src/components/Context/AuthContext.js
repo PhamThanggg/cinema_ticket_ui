@@ -9,13 +9,13 @@ const AuthContext = createContext();
 const authReducer = (state, action) => {
     switch (action.type) {
         case 'LOGIN':
-            return { ...state, user: action.payload, isAuthenticated: true };
+            return { ...state, user: action.payload, isAuthenticated: true, token: action.payload.token };
         case 'LOGOUT':
             return { ...state, user: null, isAuthenticated: false, account: null };
         case 'SET_ACCOUNT':
             return { ...state, account: action.payload };
         case 'REFRESH_TOKEN':
-            return { ...state, user: action.payload, isAuthenticated: true };
+            return { ...state, user: action.payload, isAuthenticated: true, token: action.payload.token };
         case 'LOADING':
             return { ...state, loading: action.payload };
         default:
@@ -28,7 +28,8 @@ export const AuthProvider = ({ children }) => {
         user: null,
         isAuthenticated: !!localStorage.getItem('token'),
         account: null,
-        loading: true, // Thêm state loading
+        loading: true,
+        token: localStorage.getItem('token'),
     });
 
     useEffect(() => {
@@ -38,7 +39,7 @@ export const AuthProvider = ({ children }) => {
                 try {
                     const validToken = await IntrospectApi(token);
                     if (validToken && validToken.result.introspect) {
-                        dispatch({ type: 'LOGIN', payload: validToken });
+                        dispatch({ type: 'LOGIN', payload: { ...validToken, token } });
                         await getMyInfo(token);
                     } else {
                         logout();
@@ -62,14 +63,14 @@ export const AuthProvider = ({ children }) => {
         } catch (error) {
             console.log('Error fetching data:', error);
         } finally {
-            dispatch({ type: 'LOADING', payload: false }); // Đặt loading về false sau khi hoàn thành
+            dispatch({ type: 'LOADING', payload: false });
         }
     };
 
     const login = (userData) => {
         localStorage.setItem('token', userData.token);
         dispatch({ type: 'LOGIN', payload: userData });
-        getMyInfo(userData.token); // Lấy thông tin người dùng ngay khi đăng nhập
+        getMyInfo(userData.token);
     };
 
     const logout = () => {
@@ -77,7 +78,6 @@ export const AuthProvider = ({ children }) => {
         dispatch({ type: 'LOGOUT' });
     };
 
-    // Đảm bảo rằng component con chỉ hiển thị khi không còn loading
     if (state.loading) {
         return <Loading />;
     }

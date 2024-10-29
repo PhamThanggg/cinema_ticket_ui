@@ -39,7 +39,7 @@ function DefaultLayout({ children }) {
                     handleLoginDialog={handleLoginClick}
                 />
             ) : (
-                <Register open={isDialogOpen} handleClose={handleCloseDialog} />
+                <Register open={isDialogOpen} handleClose={handleCloseDialog} handleLogin={toggleForm} />
             )}
             <ToastContainer
                 position="top-right"

@@ -65,9 +65,27 @@
 
     &:hover {
         background-color: var(--primary);
-        color: var(--white);
         border: 1px solid var(--primary);
     }
+}
+
+.seat.active {
+    background-color: var(--primary);
+    color: var(--white);
+    border: 1px solid var(--primary);
+}
+
+.seat.active_buy {
+    background-color: #626262;
+    color: var(--white);
+    border: 1px solid #626262;
+    cursor: auto;
+}
+
+.seat.select {
+    background-color: var(--primary);
+    border: 1px solid var(--primary);
+    cursor: auto;
 }
 
 .seat-space {

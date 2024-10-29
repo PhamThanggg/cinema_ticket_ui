@@ -157,7 +157,6 @@ function MovieCinemaTime({ dataArea, setAreaData, setMovieData, setScheduleData 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isVisible]);
 
-    console.log(selectSchedule);
     return (
         <div className={cx('wrapper')}>
             <div className={cx('order-ctn')}>
@@ -300,6 +299,7 @@ function MovieCinemaTime({ dataArea, setAreaData, setMovieData, setScheduleData 
                                                               cinemaId: schedule.cinemaRooms.cinema.id,
                                                               cinemaName: schedule.cinemaRooms.cinema.name,
                                                               cinemaAdress: schedule.cinemaRooms.cinema.address,
+                                                              price: schedule.price,
                                                           })
                                                       }
                                                   >

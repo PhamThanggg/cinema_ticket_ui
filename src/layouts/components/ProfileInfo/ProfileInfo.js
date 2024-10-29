@@ -9,7 +9,7 @@ import StarInfo from './StarInfo';
 
 const cx = classNames.bind(styles);
 
-function ProfileInfo() {
+function ProfileInfo({ invoiceData }) {
     const [activeTab, setActiveTab] = useState('ticketInfo');
 
     return (
@@ -61,7 +61,7 @@ function ProfileInfo() {
                         <div className={cx('nav-line')}></div>
 
                         {/* children */}
-                        {activeTab === 'ticketInfo' && <TicketInfo />}
+                        {activeTab === 'ticketInfo' && <TicketInfo invoiceData={invoiceData} />}
                         {activeTab === 'personalInfo' && <PersonalInfo />}
                         {activeTab === 'notification' && <Notification />}
                         {/* {activeTab === 'reward' && <Reward />} */}

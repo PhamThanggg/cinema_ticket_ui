@@ -251,7 +251,7 @@ function Register({ open, handleClose, handleLogin }) {
                                 onBlur={() => handleBlur('password')}
                             />
                             <span className={cx('icon-eye')} onClick={togglePasswordVisibility}>
-                                <FontAwesomeIcon icon={isPasswordVisible ? faEyeSlash : faEye} />
+                                <FontAwesomeIcon icon={isPasswordVisible ? faEye : faEyeSlash} />
                             </span>
                         </div>
                     </div>
@@ -269,7 +269,7 @@ function Register({ open, handleClose, handleLogin }) {
                                 onBlur={() => handleBlur('repassword')}
                             />
                             <span className={cx('icon-eye')} onClick={togglePasswordVisibility}>
-                                <FontAwesomeIcon icon={isPasswordVisible ? faEyeSlash : faEye} />
+                                <FontAwesomeIcon icon={isPasswordVisible ? faEye : faEyeSlash} />
                             </span>
                         </div>
                     </div>
