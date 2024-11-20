@@ -25,7 +25,13 @@ function Confirmation() {
             data[key] = value;
         }
 
-        console.log(data);
+        localStorage.removeItem('area');
+        localStorage.removeItem('movie');
+        localStorage.removeItem('schedule');
+        localStorage.removeItem('seat');
+        localStorage.removeItem('totalPrice');
+        localStorage.removeItem('timestamp');
+        localStorage.removeItem('itemBooked');
 
         const confirmPayment = async () => {
             try {

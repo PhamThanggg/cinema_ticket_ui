@@ -1,0 +1,24 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.container {
+    width: 1300px;
+    max-width: 100%;
+    margin-top: 55px;
+    margin-left: 228px;
+    transition: width 0.3s ease, margin-left 0.3s ease;
+}
+
+.container.active {
+    width: 100%;
+    max-width: 100%;
+    margin-top: 55px;
+    margin-left: 0;
+}
+
+.content {
+    flex: 1;
+}

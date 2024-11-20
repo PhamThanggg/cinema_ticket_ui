@@ -8,3 +8,7 @@ export function formatDateToCustomFormat(date) {
 
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
+
+export function formatToApiDateTime(dateTime) {
+    return dateTime.replace('T', ' ') + ':00';
+}

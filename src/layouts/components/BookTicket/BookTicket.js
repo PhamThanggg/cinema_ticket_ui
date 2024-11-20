@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import { useAuth } from '~/components/Context/AuthContext';
 import { PaymentVNPay } from '~/service/PaymentService';
 import { CreateInvoiceApi } from '~/service/InvocieService';
+import { formatDateToCustomFormat } from '~/utils/dateFormatter';
 
 const cx = classNames.bind(styles);
 
@@ -36,83 +37,45 @@ function BookTicket({ dataArea }) {
     const [item, setItem] = useState([]);
 
     const currentIndex = tabs.indexOf(activeTab);
-    // console.log(area, movie, schedule);
-
-    const STORAGE_DURATION = 5 * 60 * 1000;
-
-    const getStoredValue = (key) => {
-        const storedItem = JSON.parse(localStorage.getItem(key));
-        if (storedItem) {
-            const { value, timestamp } = storedItem;
-            if (Date.now() - timestamp < STORAGE_DURATION) {
-                return value;
-            } else {
-                localStorage.removeItem(key);
-            }
-        }
-        return '';
-    };
-
-    if (selectedSeats.length > 0) {
+    if (selectedSeats && selectedSeats.length > 0) {
         var seatNumbers = selectedSeats.map((seat) => seat.name).join(', ');
     }
 
     useEffect(() => {
-        getStoredValue('area');
-        getStoredValue('movie');
-        getStoredValue('schedule');
-        getStoredValue('seat');
-        getStoredValue('totalPrice');
-        // console.log(getStoredValue('schedule'));
-    });
-
-    useEffect(() => {
         if (!area && !movie && !schedule) {
-            const storedArea = getStoredValue('area');
-            const storedMovie = getStoredValue('movie');
-            const storedSchedule = getStoredValue('schedule');
-            const storedSeat = getStoredValue('seat');
-            const storedTotalPrice = getStoredValue('totalPrice');
-            const storedItem = getStoredValue('itemBooked');
+            const storedArea = localStorage.getItem('area');
+            const storedMovie = localStorage.getItem('movie');
+            const storedSchedule = localStorage.getItem('schedule');
+            const storedSeat = localStorage.getItem('seat');
+            const storedTotalPrice = localStorage.getItem('totalPrice');
+            const storedItem = localStorage.getItem('itemBooked');
 
-            // console.log('local', storedSeat.value);
             if (storedArea && storedMovie && storedSchedule) {
-                setArea(storedArea);
-                setMovie(storedMovie);
-                setSchedule(storedSchedule);
-                setSelectedSeats(storedSeat);
+                setArea(JSON.parse(storedArea));
+                setMovie(JSON.parse(storedMovie));
+                setSchedule(JSON.parse(storedSchedule));
+            }
+
+            if (storedSeat && storedTotalPrice) {
+                setSelectedSeats(JSON.parse(storedSeat));
                 setTotal(storedTotalPrice);
             }
 
             if (storedItem) {
-                setItem(storedItem);
+                setItem(JSON.parse(storedItem));
             }
         }
     }, []);
 
     useEffect(() => {
         if (area && movie && schedule) {
-            localStorage.setItem('area', JSON.stringify({ value: area, timestamp: Date.now() }));
+            localStorage.setItem('area', JSON.stringify(area));
 
-            localStorage.setItem('movie', JSON.stringify({ value: movie, timestamp: Date.now() }));
+            localStorage.setItem('movie', JSON.stringify(movie));
 
-            localStorage.setItem('schedule', JSON.stringify({ value: schedule, timestamp: Date.now() }));
+            localStorage.setItem('schedule', JSON.stringify(schedule));
         }
     }, [schedule]);
-
-    useEffect(() => {
-        const handleBeforeUnload = (event) => {
-            const message = 'Bạn có chắc chắn muốn tải lại trang? Việc này có thể khiến bạn mất dữ liệu.';
-            event.preventDefault();
-            event.returnValue = message;
-        };
-
-        window.addEventListener('beforeunload', handleBeforeUnload);
-
-        return () => {
-            window.removeEventListener('beforeunload', handleBeforeUnload);
-        };
-    }, []);
 
     const handleNext = () => {
         if (area && movie && schedule && activeTab === 'ticketInfo') {
@@ -123,7 +86,7 @@ function BookTicket({ dataArea }) {
                 return;
             }
         }
-        if (activeTab === 'bookingSeat' && selectedSeats.length > 0) {
+        if (activeTab === 'bookingSeat' && selectedSeats && selectedSeats.length > 0) {
             // add ghế chọn vào db
 
             if (currentIndex < tabs.length - 1) {
@@ -165,9 +128,8 @@ function BookTicket({ dataArea }) {
     useEffect(() => {
         var totalPrice = 0;
         if (schedule) {
-            // console.log(selectedSeats, schedule?.price);
             let itemTotal = 0;
-            if (selectedSeats.length > 0) {
+            if (selectedSeats && selectedSeats.length > 0) {
                 if (item.length > 0) {
                     item.forEach((data) => {
                         itemTotal += data.count * data.item.price;
@@ -184,63 +146,134 @@ function BookTicket({ dataArea }) {
     }, [selectedSeats, total, schedule, item]);
 
     useEffect(() => {
-        if (selectedSeats.length > 0) {
-            localStorage.setItem('seat', JSON.stringify({ value: selectedSeats, timestamp: Date.now() }));
-            localStorage.setItem('totalPrice', JSON.stringify({ value: total, timestamp: Date.now() }));
+        if (selectedSeats && selectedSeats.length > 0) {
+            localStorage.setItem('seat', JSON.stringify(selectedSeats));
+            localStorage.setItem('totalPrice', JSON.stringify(totalAll));
+
+            const timestamp = localStorage.getItem('timestamp');
+            if (!timestamp || Date.now() > parseInt(timestamp)) {
+                const currentTime = Date.now();
+
+                const expiryTime = currentTime + 10 * 60 * 1000;
+
+                localStorage.setItem('timestamp', expiryTime.toString());
+            }
+        } else {
+            localStorage.removeItem('seat');
+            localStorage.removeItem('totalPrice');
         }
     }, [selectedSeats]);
 
     useEffect(() => {
-        if (item.length > 0) {
-            localStorage.setItem('itemBooked', JSON.stringify({ value: item, timestamp: Date.now() }));
+        if (item && item.length > 0) {
+            localStorage.setItem('itemBooked', JSON.stringify(item));
         }
     }, [item]);
 
     // thanh toán
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
-    const [paymentResponse, setPaymentResponse] = useState(null);
-
     const handlePayment = async () => {
         const seatId = [];
         const itemBuy = [];
 
-        if (selectedSeats.length > 0) {
-            selectedSeats.map((data) => seatId.push(data.id));
-        }
+        if (selectedPaymentMethod === 'vnpay') {
+            if (selectedSeats && selectedSeats.length > 0) {
+                selectedSeats.map((data) => seatId.push(data.id));
+            }
 
-        if (item.length > 0) {
-            item.map((data) =>
-                itemBuy.push({
-                    item_id: data.item.id,
-                    quantity: data.count,
-                }),
-            );
-        }
+            if (item && item.length > 0) {
+                item.map((data) =>
+                    itemBuy.push({
+                        item_id: data.item.id,
+                        quantity: data.count,
+                    }),
+                );
+            }
 
-        if (schedule && schedule.ScheduleId && seatId.length > 0 && totalAll && token) {
-            //tạo order
-            const orderData = {
-                scheduleID: schedule.ScheduleId,
-                cinemaSeatId: seatId,
-                ticketTypeId: 1,
-                total_amount: totalAll,
-                cinema_id: 1,
-                invoiceItems: itemBuy,
-            };
+            if (schedule && schedule.ScheduleId && seatId && seatId.length > 0 && totalAll && token) {
+                //tạo order
+                const date = new Date(Number(localStorage.getItem('timestamp')));
+                const expiryTime = formatDateToCustomFormat(date);
+                const orderData = {
+                    scheduleID: schedule.ScheduleId,
+                    cinemaSeatId: seatId,
+                    ticketTypeId: 1,
+                    total_amount: totalAll,
+                    cinema_id: schedule.cinemaId,
+                    invoiceItems: itemBuy,
+                    paymentExpirationTime: expiryTime,
+                };
 
-            const orderRes = await CreateInvoiceApi(orderData, token);
-            console.log(orderRes.result);
-            // payment
-            if (orderRes && orderRes.result) {
-                const paymentLink = await PaymentVNPay(orderRes.result.id, orderRes.result.totalAmount, token);
-                console.log(paymentLink);
-                if (paymentLink && paymentLink.body && paymentLink.body.data) {
-                    window.location.href = paymentLink.body.data;
-                } else {
-                    console.error('Lỗi khi tạo link thanh toán');
+                const orderRes = await CreateInvoiceApi(orderData, token);
+                // payment
+                if (orderRes && orderRes.result) {
+                    const storedTimestamp = Number(localStorage.getItem('timestamp'));
+                    const remainingMinutes = Math.max(0, Math.floor((storedTimestamp - Date.now()) / 60000));
+                    const paymentLink = await PaymentVNPay(
+                        orderRes.result.id,
+                        orderRes.result.totalAmount,
+                        remainingMinutes,
+                        token,
+                    );
+                    if (paymentLink && paymentLink.body && paymentLink.body.data) {
+                        window.location.href = paymentLink.body.data;
+                    } else {
+                        console.error('Lỗi khi tạo link thanh toán');
+                    }
                 }
             }
+        } else {
+            toast.warning('Vui lòng chọn phương thức thanh toán');
         }
+    };
+
+    // thời gian giữ vé
+    const expiryTime = localStorage.getItem('timestamp');
+    const [timeLeft, setTimeLeft] = useState(() => {
+        if (expiryTime) {
+            return parseInt(expiryTime) - Date.now();
+        } else {
+            return 0;
+        }
+    });
+
+    const formatTime = (milliseconds) => {
+        const totalSeconds = Math.floor(milliseconds / 1000);
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    };
+
+    useEffect(() => {
+        if (expiryTime && timeLeft && timeLeft <= 0) {
+            cleanUpAndNavigate();
+            return;
+        }
+
+        const timer = setInterval(() => {
+            const currentTime = Date.now();
+            const newTimeLeft = parseInt(expiryTime, 10) - currentTime;
+
+            setTimeLeft(newTimeLeft);
+            if (newTimeLeft <= 0) {
+                clearInterval(timer);
+                cleanUpAndNavigate();
+            }
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [expiryTime, timeLeft, navigate, selectedSeats]);
+
+    const cleanUpAndNavigate = () => {
+        localStorage.removeItem('area');
+        localStorage.removeItem('movie');
+        localStorage.removeItem('schedule');
+        localStorage.removeItem('seat');
+        localStorage.removeItem('totalPrice');
+        localStorage.removeItem('timestamp');
+        localStorage.removeItem('itemBooked');
+        navigate('/booking');
+        window.location.reload();
     };
 
     return (
@@ -299,6 +332,11 @@ function BookTicket({ dataArea }) {
                 {/* thong tin booking */}
                 <div className={cx('order-detail')}>
                     <div className={cx('detail-ctn')}>
+                        {expiryTime && (
+                            <div className={cx('time_select')}>
+                                Thời gian giữ ghế : <span>{timeLeft > 0 ? formatTime(timeLeft) : '00:00'}</span>
+                            </div>
+                        )}
                         <div className={cx('bgr-order')}>
                             <div className={cx('order-img')}>
                                 <img
@@ -323,13 +361,13 @@ function BookTicket({ dataArea }) {
 
                             {schedule && <OrderTime dateString={schedule?.startTime || ''} />}
 
-                            {selectedSeats.length > 0 && (
+                            {selectedSeats && selectedSeats.length > 0 && (
                                 <div>
                                     <div className={cx('line')}></div>
                                     <div className={cx('order-seat')}>
                                         <div>
                                             <p className={cx('seat-type')}>
-                                                <b>{selectedSeats.length}x</b> Ghế đơn
+                                                <b>{selectedSeats && selectedSeats.length}x</b> Ghế đơn
                                             </p>
                                             <p className={cx('seat')}>
                                                 Ghế: <b>{seatNumbers}</b>
@@ -343,7 +381,8 @@ function BookTicket({ dataArea }) {
                             )}
 
                             <div className={cx('line')}></div>
-                            {item.length > 0 &&
+                            {item &&
+                                item.length > 0 &&
                                 item.map(
                                     (data, index) =>
                                         data.count !== 0 && (
@@ -358,7 +397,7 @@ function BookTicket({ dataArea }) {
                                         ),
                                 )}
 
-                            {item.length > 0 && <div className={cx('line')}></div>}
+                            {item && item.length > 0 && <div className={cx('line')}></div>}
 
                             <div className={cx('order-total')}>
                                 <div className={cx('total-name')}>Tổng cộng</div>

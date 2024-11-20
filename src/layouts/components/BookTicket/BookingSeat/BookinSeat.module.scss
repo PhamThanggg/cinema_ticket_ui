@@ -71,20 +71,21 @@
 
 .seat.active {
     background-color: var(--primary);
-    color: var(--white);
     border: 1px solid var(--primary);
+    color: var(--white);
 }
 
 .seat.active_buy {
-    background-color: #626262;
+    background-color: #979797;
     color: var(--white);
-    border: 1px solid #626262;
+    border: 1px solid #979797;
     cursor: auto;
 }
 
 .seat.select {
-    background-color: var(--primary);
-    border: 1px solid var(--primary);
+    color: var(--white);
+    border: 1px solid rgb(255, 146, 164);
+    background-color: rgb(255, 146, 164);
     cursor: auto;
 }
 

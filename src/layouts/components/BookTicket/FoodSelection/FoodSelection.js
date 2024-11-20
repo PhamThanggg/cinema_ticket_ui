@@ -14,8 +14,8 @@ function FoodSelection({ setItem }) {
         const getSeatSelect = async () => {
             const schedule = JSON.parse(localStorage.getItem('schedule'));
 
-            if (schedule && schedule.value && schedule.value.cinemaId) {
-                const data = await GetItemApi(schedule.value.cinemaId);
+            if (schedule && schedule.cinemaId) {
+                const data = await GetItemApi(schedule.cinemaId);
 
                 if (data && data.result) {
                     setSelectItem(data.result);

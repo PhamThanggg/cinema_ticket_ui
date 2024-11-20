@@ -9,7 +9,6 @@ function Payment({ selectedPaymentMethod, setSelectedPaymentMethod }) {
         // Nếu radio đã được chọn lại thì bỏ chọn
         setSelectedPaymentMethod(selectedPaymentMethod === value ? '' : value);
     };
-    console.log(selectedPaymentMethod);
     return (
         <div>
             <div className={cx('wrapper')}>
@@ -47,7 +46,7 @@ function Payment({ selectedPaymentMethod, setSelectedPaymentMethod }) {
             <div className={cx('wrapper')}>
                 <div className={cx('container')}>
                     <div className={cx('info')}>Phương thức thanh toán</div>
-                    <div className={cx('payment')}>
+                    <div className={cx('payment')} onClick={() => handleRadioChange({ target: { value: 'vnpay' } })}>
                         <input
                             className={cx('payment_input')}
                             type="radio"
@@ -55,12 +54,11 @@ function Payment({ selectedPaymentMethod, setSelectedPaymentMethod }) {
                             name="payment"
                             value="vnpay"
                             checked={selectedPaymentMethod === 'vnpay'}
-                            onClick={handleRadioChange}
                             onChange={handleRadioChange}
                         />
                         <img
                             className={cx('payment_img')}
-                            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJoSZT_5VBdOUEyntQbuFTYw7W2PqpHagw2Q&s"
+                            src="https://vn.viecnganhluat.com/wp-content/uploads/2023/02/ung-dung-Vi-VNPAY-%E2%80%93-Vi-cua-Gia-dinh.jpg"
                             alt=""
                         />
                         <p className={cx('payment_txt')}>Ví VNPay</p>

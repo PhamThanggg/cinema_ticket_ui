@@ -86,6 +86,21 @@
     padding-bottom: 20px;
 }
 
+.time_select {
+    display: flex;
+    justify-content: center;
+    padding-top: 10px;
+    font-size: 14px;
+    color: var(--text-color);
+    align-items: center;
+
+    span {
+        margin-left: 10px;
+        color: var(--primary);
+        font-size: 16px;
+    }
+}
+
 .bgr-order {
     padding: 20px;
 }

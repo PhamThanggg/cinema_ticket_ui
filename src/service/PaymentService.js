@@ -1,6 +1,6 @@
 import * as request from '~/utils/request';
 
-const PaymentVNPay = async (orderId, amount, token) => {
+const PaymentVNPay = async (orderId, amount, remainingMinutes, token) => {
     const options = {
         headers: {
             'Content-Type': 'application/json',
@@ -9,6 +9,7 @@ const PaymentVNPay = async (orderId, amount, token) => {
         data: {
             orderId: orderId,
             amount: amount,
+            timePay: remainingMinutes,
             orderInfo: 'Mua_ve_xem_phim',
             orderType: 'ticket',
             returnUrl: 'http://localhost:3000/Booking/Confirmation',

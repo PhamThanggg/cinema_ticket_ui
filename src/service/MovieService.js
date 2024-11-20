@@ -1,4 +1,21 @@
+import { toast } from 'react-toastify';
 import * as request from '~/utils/request';
+
+const CreateMovieApi = async (data, token) => {
+    const options = {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+    };
+
+    try {
+        const res = await request.post('movie', data, options);
+        return res;
+    } catch (error) {
+        toast.error(error.response.data.message);
+    }
+};
 
 const MovieShowNowApi = async (status, page, limit) => {
     const options = {
@@ -38,6 +55,28 @@ const MovieAreaShowNowApi = async (areaId, status, page, limit) => {
     }
 };
 
+const GetMovieSearchApi = async (data) => {
+    const options = {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        params: {
+            nameMovie: data.nameMovie,
+            status: data.status,
+            genreId: data.genreId,
+            page: data.page,
+            limit: data.limit,
+        },
+    };
+
+    try {
+        const res = await request.get(`movie/search`, options);
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 const MovieDetailApi = async (movieId) => {
     const options = {
         headers: {
@@ -53,4 +92,4 @@ const MovieDetailApi = async (movieId) => {
     }
 };
 
-export { MovieShowNowApi, MovieDetailApi, MovieAreaShowNowApi };
+export { MovieShowNowApi, MovieDetailApi, MovieAreaShowNowApi, CreateMovieApi, GetMovieSearchApi };

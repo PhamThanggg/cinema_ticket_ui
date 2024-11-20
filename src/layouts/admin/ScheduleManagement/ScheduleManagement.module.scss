@@ -1,0 +1,138 @@
+.wrapper {
+    background-color: var(--white);
+    border-radius: 3px;
+    margin: 0 10px;
+}
+
+.nav {
+    margin-top: 10px;
+    margin-left: 10px;
+    font-size: 15px;
+    color: #686868;
+
+    span {
+        color: var(--blue);
+    }
+}
+
+.btn {
+    margin: 10px;
+    padding-top: 10px;
+    button {
+        padding: 8px 10px;
+        background-color: rgb(9, 15, 179);
+        color: var(--white);
+        border-radius: 2px;
+    }
+
+    &:hover {
+        opacity: 0.8;
+    }
+}
+
+.btn-icon {
+    margin-right: 5px;
+}
+
+.ctn-search {
+    display: flex;
+    align-items: center;
+}
+
+.ctn-input {
+    display: flex;
+    align-items: center;
+    margin: 10px 0 10px 0;
+}
+
+.label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-color);
+    margin: 0 5px 0 10px;
+}
+
+.input {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    border: 1px solid #ccc;
+    height: 30px;
+    width: 200px;
+    border-radius: 3px;
+    outline: none;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-color);
+    margin-right: 10px;
+
+    option {
+        font-weight: 500;
+        color: var(--text-color);
+    }
+}
+
+.select {
+    padding: 0 5px;
+}
+
+.list {
+    margin: 10px 10px;
+}
+
+.title_tb {
+    font-size: 13px;
+}
+
+.detail {
+    color: var(--blue);
+    cursor: pointer;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+.bgr {
+    background-color: #cecece !important;
+}
+
+.stt {
+    width: 0px;
+}
+
+.stt_center {
+    display: flex;
+    justify-content: center;
+}
+
+.pagination {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 20px 0 100px 0;
+}
+
+.genre_title {
+    background-color: rgb(177, 204, 255);
+    border: 1px solid rgb(109, 109, 255);
+    color: var(--blue);
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+.time_title {
+    background-color: rgb(255, 201, 217);
+    border: 1px solid rgb(255, 137, 137);
+    color: rgb(255, 55, 55);
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+.status_title {
+    background-color: rgb(180, 255, 177);
+    border: 1px solid rgb(74, 255, 24);
+    color: rgb(3, 178, 3);
+    padding: 0 2px;
+    border-radius: 2px;
+}

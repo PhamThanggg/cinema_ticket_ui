@@ -18,6 +18,21 @@ const GetSeatApi = async (scheduleId) => {
     }
 };
 
+const GetSeatRoomApi = async (roomId) => {
+    const options = {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    };
+
+    try {
+        const res = await request.get(`cinema_seat/room/${roomId}`, options);
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 const GetSeatSelectApi = async (scheduleId, token) => {
     const options = {
         headers: {
@@ -38,6 +53,7 @@ const GetSeatSelectApi = async (scheduleId, token) => {
 };
 
 const updateSeatStatus = async (data, token) => {
+    // console.log(data.expiry_time);
     const options = {
         headers: {
             'Content-Type': 'application/json',
@@ -73,4 +89,4 @@ const deleteSeatStatus = async (data, scheduleId, token) => {
     }
 };
 
-export { GetSeatApi, updateSeatStatus, deleteSeatStatus, GetSeatSelectApi };
+export { GetSeatApi, updateSeatStatus, deleteSeatStatus, GetSeatSelectApi, GetSeatRoomApi };

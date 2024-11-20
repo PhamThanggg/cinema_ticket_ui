@@ -1,0 +1,1 @@
+export { CinemaAdd } from './CinemaAdd';

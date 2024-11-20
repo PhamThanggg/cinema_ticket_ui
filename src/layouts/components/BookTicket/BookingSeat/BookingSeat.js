@@ -1,6 +1,6 @@
 import classNames from 'classnames/bind';
 import styles from './BookinSeat.module.scss';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { deleteSeatStatus, GetSeatApi, updateSeatStatus } from '~/service/SeatService';
 import Loading from '~/components/Loading';
 import SockJS from 'sockjs-client';
@@ -11,9 +11,10 @@ import { GetSeatSelectApi } from '~/service/SeatService';
 
 const cx = classNames.bind(styles);
 
-function BookingSeat({ seatData, setSeatData, selectedSeats, setSelectedSeats, account, schedule }) {
+function BookingSeat({ seatData, setSeatData, selectedSeats, setSelectedSeats, account }) {
     const { state } = useAuth();
     const { token } = state;
+    const [schedule, setSchedule] = useState(JSON.parse(localStorage.getItem('schedule')) || '');
 
     useEffect(() => {
         getRoomSeat();
@@ -48,10 +49,8 @@ function BookingSeat({ seatData, setSeatData, selectedSeats, setSelectedSeats, a
 
     useEffect(() => {
         const getSeatSelect = async () => {
-            const schedule = JSON.parse(localStorage.getItem('schedule'));
-            // console.log(schedule);
-            if (schedule && schedule.value && schedule.value.ScheduleId) {
-                const data = await GetSeatSelectApi(schedule.value.ScheduleId, token);
+            if (schedule && schedule.ScheduleId) {
+                const data = await GetSeatSelectApi(schedule.ScheduleId, token);
 
                 if (data && data.result) {
                     setSelectedSeats(data.result);
@@ -63,10 +62,8 @@ function BookingSeat({ seatData, setSeatData, selectedSeats, setSelectedSeats, a
     }, []);
 
     const getRoomSeat = async () => {
-        const schedule = JSON.parse(localStorage.getItem('schedule'));
-        // console.log(schedule);
-        if (schedule && schedule.value && schedule.value.ScheduleId) {
-            const data = await GetSeatApi(schedule.value.ScheduleId);
+        if (schedule && schedule.ScheduleId) {
+            const data = await GetSeatApi(schedule.ScheduleId);
 
             if (data && data.result) {
                 setSeatData(data.result);
@@ -93,14 +90,22 @@ function BookingSeat({ seatData, setSeatData, selectedSeats, setSelectedSeats, a
 
             // Xóa chọn ghế;
             deleteSeatStatus(seat.id, schedule.ScheduleId, token);
+            if (!selectedSeats || selectedSeats.length === 1) {
+                localStorage.removeItem('timestamp');
+            }
         } else {
             // Nếu chưa chọn thì thêm vào danh sách
             setSelectedSeats([...selectedSeats, seat]);
-            // console.log(seat, account, schedule);
             // cập nhật chọn ghế
             const now = new Date();
             const reservationTime = formatDateToCustomFormat(now);
-            const expiryTime = formatDateToCustomFormat(new Date(now.getTime() + 15 * 60000));
+            const date = new Date(Number(localStorage.getItem('timestamp')));
+            let expiryTime = formatDateToCustomFormat(date);
+            if (date < now) {
+                const newExpiry = new Date(now.getTime() + 10 * 60 * 1000);
+                expiryTime = formatDateToCustomFormat(newExpiry);
+            }
+            console.log(expiryTime);
             const seatIds = [];
             seatIds.push(seat.id);
 
@@ -132,55 +137,62 @@ function BookingSeat({ seatData, setSeatData, selectedSeats, setSelectedSeats, a
             <div className={cx('cinema-seat')}>
                 <div style={{ height: '10px' }}></div>
 
-                {Object.entries(groupedSeats).map(([row, seats]) => (
-                    <div className={cx('seat-info')} key={row}>
-                        <div className={cx('column')}>{row}</div>
-                        <div className={cx('row')}>
-                            {seats.map((seat) => {
-                                return (
-                                    <button
-                                        className={cx(
-                                            'seat',
-                                            {
-                                                active:
-                                                    selectedSeats.length > 0 &&
-                                                    selectedSeats.some((selectedSeat) => selectedSeat.id === seat.id),
-                                            },
-                                            {
-                                                active_buy:
-                                                    seat.seatReservations.length > 0 &&
-                                                    seat.seatReservations[0].status === 1,
-                                            },
-                                            {
-                                                select:
-                                                    seat.seatReservations.length > 0 &&
-                                                    seat.seatReservations[0].status === 0 &&
-                                                    seat.seatReservations[0].userId !== account.id,
-                                            },
-                                            {
-                                                active:
-                                                    seat.seatReservations.length > 0 &&
-                                                    seat.seatReservations[0].status === 0 &&
-                                                    seat.seatReservations[0].userId === account.id,
-                                            },
-                                        )}
-                                        key={seat.id}
-                                        onClick={() => handleSeatClick(seat)}
-                                        disabled={
-                                            seat.seatReservations.length > 0 &&
-                                            ((seat.seatReservations[0].userId !== account.id &&
-                                                seat.seatReservations[0].status === 0) ||
-                                                seat.seatReservations[0].status === 1)
-                                        }
-                                    >
-                                        {seat.name}
-                                    </button>
-                                );
-                            })}
+                {Object.entries(groupedSeats).length > 0 &&
+                    Object.entries(groupedSeats).map(([row, seats]) => (
+                        <div className={cx('seat-info')} key={row}>
+                            <div className={cx('column')}>{row}</div>
+                            <div className={cx('row')}>
+                                {seats.map((seat) => {
+                                    return (
+                                        <button
+                                            className={cx(
+                                                'seat',
+                                                {
+                                                    active:
+                                                        selectedSeats.length > 0 &&
+                                                        selectedSeats.some(
+                                                            (selectedSeat) => selectedSeat.id === seat.id,
+                                                        ),
+                                                },
+                                                {
+                                                    active_buy:
+                                                        seat.seatReservations.length > 0 &&
+                                                        seat.seatReservations[0].status === 1,
+                                                },
+                                                {
+                                                    select:
+                                                        seat.seatReservations.length > 0 &&
+                                                        seat.seatReservations[0].status === 0 &&
+                                                        seat.seatReservations[0].userId !== account.id &&
+                                                        new Date(seat.seatReservations[0].expiry_time).getTime() >
+                                                            new Date().getTime(),
+                                                },
+                                                {
+                                                    active:
+                                                        seat.seatReservations.length > 0 &&
+                                                        seat.seatReservations[0].status === 0 &&
+                                                        seat.seatReservations[0].userId === account.id &&
+                                                        new Date(seat.seatReservations[0].expiry_time).getTime() >
+                                                            new Date().getTime(),
+                                                },
+                                            )}
+                                            key={seat.id}
+                                            onClick={() => handleSeatClick(seat)}
+                                            disabled={
+                                                seat.seatReservations.length > 0 &&
+                                                ((seat.seatReservations[0].userId !== account.id &&
+                                                    seat.seatReservations[0].status === 0) ||
+                                                    seat.seatReservations[0].status === 1)
+                                            }
+                                        >
+                                            {seat.name}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                            <div className={cx('column')}>{row}</div>
                         </div>
-                        <div className={cx('column')}>{row}</div>
-                    </div>
-                ))}
+                    ))}
 
                 <div className={cx('screen')}>Màn hình</div>
                 <div className={cx('line')}></div>
