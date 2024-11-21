@@ -1,6 +1,6 @@
 import classNames from 'classnames/bind';
 import style from './Admins.module.scss';
-import TickPlacementBars, { ApexChart } from './Chart/Chart';
+import { ApexChart } from './Chart/Chart';
 import BasicLineChart from './Chart/LineChart';
 
 const cx = classNames.bind(style);

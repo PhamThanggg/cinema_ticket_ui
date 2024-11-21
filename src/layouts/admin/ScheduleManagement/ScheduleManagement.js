@@ -1,78 +1,142 @@
 import styles from './ScheduleManagement.module.scss';
 import classNames from 'classnames/bind';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
-import PaginationS from '~/components/Pagination';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { useState } from 'react';
+import { faPen, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { useEffect, useState } from 'react';
 import ScheduleAdd from './ScheduleAdd';
+import DropDown from '~/components/DropDown';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { DeleteScheduleApi, ScheduleSearchApi } from '~/service/ScheduleApi';
+import PaginationS from '~/components/Pagination';
+import { formatToApiTime } from '~/utils/dateFormatter';
+import { formatVND } from '~/utils/vndPrice';
+import { confirmAction } from '~/components/ConfirmAction/ConfirmAction';
+import { toast } from 'react-toastify';
+import { useAuth } from '~/components/Context/AuthContext';
 
 const cx = classNames.bind(styles);
 
-function ScheduleManagement() {
+function ScheduleManagement({ ...props }) {
+    const { state } = useAuth();
+    const { token } = state;
+    const navigate = useNavigate();
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const initialPage = Math.max(1, Number(queryParams.get('page')) || 1);
+    const [currentPage, setCurrentPage] = useState(initialPage);
+
     const [isDialogOpen, setDialogOpen] = useState(false);
+    const [cinemaValue, setCinemaValue] = useState([]);
+    const [roomValue, setRoomValue] = useState([]);
+    const [date, setDate] = useState('');
+    const [schedule, setSchedule] = useState(null);
+    const [scheduleId, setScheduleId] = useState(null);
+    const cinema = queryParams.get('cinema');
+    const roomId = queryParams.get('roomId');
+    const screeningDate = queryParams.get('screeningDate');
+
+    useEffect(() => {
+        const getSchedule = async () => {
+            if (cinema && roomId && screeningDate) {
+                const res = await ScheduleSearchApi(roomId, screeningDate, currentPage - 1, 10);
+                setSchedule(res);
+            } else {
+                setSchedule(null);
+            }
+        };
+
+        getSchedule();
+    }, [props.cinemas, props.rooms, roomId, date]);
+
+    useEffect(() => {
+        if (props.cinemas && props.cinemas.length > 0) {
+            const genreValues = props.cinemas.map((data) => ({
+                value: data.id,
+                name: data.name,
+            }));
+            setCinemaValue(genreValues);
+        }
+
+        if (props.rooms && props.rooms.length > 0) {
+            const genreValues = props.rooms.map((data) => ({
+                value: data.id,
+                name: data.name,
+            }));
+            setRoomValue(genreValues);
+        } else {
+            setRoomValue([]);
+        }
+    }, [props.cinemas, props.rooms]);
+
+    const handlePageChange = (newPage) => {
+        queryParams.set('page', newPage);
+
+        if (newPage < 1) return;
+        setCurrentPage(newPage);
+        navigate(`${location.pathname}?${queryParams.toString()}`);
+    };
+
+    const handleDateChange = (event) => {
+        const selectedDate = event.target.value;
+        setDate(selectedDate);
+
+        if (selectedDate) {
+            queryParams.set('screeningDate', selectedDate);
+        } else {
+            queryParams.delete('screeningDate');
+        }
+
+        navigate(`${location.pathname}?${queryParams.toString()}`);
+    };
 
     const handleOpenClick = (id) => {
-        console.log('ID được truyền vào:', id);
+        setScheduleId(id);
         setDialogOpen(true);
     };
 
     const handleCloseDialog = () => {
         setDialogOpen(false);
+        setScheduleId(null);
     };
-    const rows = [
-        { id: 1, name: 'John Doe', age: 30, occupation: 'Software Engineer' },
-        { id: 2, name: 'Jane Smith', age: 25, occupation: 'Designer' },
-        { id: 3, name: 'Mike Johnson', age: 35, occupation: 'Project Manager' },
-    ];
 
-    const handleDetailClick = (id) => {};
+    const handleDeleteClick = async (id) => {
+        const confirm = confirmAction();
+        if (confirm) {
+            const res = DeleteScheduleApi(id, token);
+            if (res) {
+                toast.success(res.result);
+            }
+        }
+    };
 
     return (
         <div>
             <div className={cx('nav')}>
-                Quản lý thể loại / <span>Danh sách thể loại</span>
+                Quản lý suất chiếu / <span>Danh sách suất chiếu</span>
             </div>
             <div className={cx('wrapper')}>
-                <div>
-                    <div className={cx('btn')}>
-                        <button onClick={handleOpenClick}>
-                            <FontAwesomeIcon icon={faPlus} className={cx('btn-icon')} />
-                            Tạo thể loại
-                        </button>
-                    </div>
-
+                <div style={{ margin: '10px', paddingTop: '10px', display: 'flex', justifyContent: 'space-between' }}>
                     <div className={cx('ctn-search')}>
-                        <div className={cx('ctn-input')}>
-                            <label className={cx('label')}>Rạp chiếu:</label>
-                            <select className={cx('input', 'select')}>
-                                <option value="1">Area 1</option>
-                                <option value="2">Area 2</option>
-                                <option value="3">Area 3</option>
-                                <option value="3">Area 3</option>
-                                <option value="3">Area 3</option>
-                                <option value="3">Area 3</option>
-                            </select>
-                        </div>
-
-                        <div className={cx('ctn-input')}>
-                            <label className={cx('label')}>Phòng chiếu:</label>
-                            <select className={cx('input', 'select')}>
-                                <option value="1">Area 1</option>
-                                <option value="2">Area 2</option>
-                                <option value="3">Area 3</option>
-                                <option value="3">Area 3</option>
-                                <option value="3">Area 3</option>
-                                <option value="3">Area 3</option>
-                            </select>
-                        </div>
+                        <DropDown searchName={'Chọn rạp chiếu'} data={cinemaValue} name={'cinema'} />
+                        <DropDown searchName={'Chọn phòng chiếu'} data={roomValue} name={'roomId'} />
 
                         <div className={cx('ctn-input')}>
                             <label className={cx('label')}>Ngày chiếu:</label>
-                            <input type="date" className={cx('input')} />
+                            <input type="date" className={cx('input1')} value={date} onChange={handleDateChange} />
                         </div>
                     </div>
 
+                    {cinema && roomId && (
+                        <div className={cx('btn')}>
+                            <button onClick={() => handleOpenClick(null)}>
+                                <FontAwesomeIcon icon={faPlus} className={cx('btn-icon')} />
+                                Tạo suất chiếu
+                            </button>
+                        </div>
+                    )}
+                </div>
+                {schedule && schedule.result && schedule.result.length > 0 ? (
                     <div className={cx('list')}>
                         <TableContainer component={Paper}>
                             <Table>
@@ -82,10 +146,16 @@ function ScheduleManagement() {
                                             <div className={cx('title_tb')}>STT</div>
                                         </TableCell>
                                         <TableCell>
-                                            <div className={cx('title_tb')}>ID</div>
+                                            <div className={cx('title_tb')}>Phòng chiếu</div>
                                         </TableCell>
                                         <TableCell>
-                                            <div className={cx('title_tb')}>Tên thể loại</div>
+                                            <div className={cx('title_tb')}>Phim</div>
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className={cx('title_tb')}>Suất chiếu</div>
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className={cx('title_tb')}>Giá vé cơ bản</div>
                                         </TableCell>
                                         <TableCell>
                                             <div className={cx('title_tb')}>Trạng thái</div>
@@ -96,30 +166,57 @@ function ScheduleManagement() {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {rows.map((row) => (
+                                    {schedule.result.map((row, index) => (
                                         <TableRow key={row.id}>
                                             <TableCell>
-                                                <div className={cx('stt_center', 'title_tb')}>{row.id}</div>
+                                                <div className={cx('stt_center', 'title_tb')}>
+                                                    {schedule.pageSize * (currentPage - 1) + index + 1}
+                                                </div>
                                             </TableCell>
                                             <TableCell>
-                                                <div className={cx('title_tb')}>{row.name}</div>
+                                                <div className={cx('title_tb')}>{row.cinemaRooms.name}</div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className={cx('title_tb')}>{row.movies.nameMovie}</div>
                                             </TableCell>
                                             <TableCell>
                                                 <div className={cx('title_tb')}>
-                                                    <button className={cx('time_title')}>{row.occupation}</button>
+                                                    <button className={cx('genre_title')}>
+                                                        {formatToApiTime(row.startTime)} -{' '}
+                                                        {formatToApiTime(row.endTime)}
+                                                    </button>
                                                 </div>
                                             </TableCell>
                                             <TableCell>
                                                 <div className={cx('title_tb')}>
-                                                    <button className={cx('status_title')}>{row.occupation}</button>
+                                                    <button className={cx('time_title')}>{formatVND(row.price)}</button>
                                                 </div>
                                             </TableCell>
                                             <TableCell>
-                                                <div
-                                                    onClick={() => handleDetailClick(row.id)}
-                                                    className={cx('title_tb', 'detail')}
-                                                >
-                                                    Xem chi tiết
+                                                <div className={cx('title_tb')}>
+                                                    <button className={cx('status_title')}>
+                                                        {row.status === 1
+                                                            ? 'Sắp chiếu'
+                                                            : row.status === 2
+                                                            ? 'Đang chiếu'
+                                                            : 'Đã chiếu'}
+                                                    </button>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className={cx('title_tb')}>
+                                                    <button
+                                                        className={cx('pen')}
+                                                        onClick={() => handleOpenClick(row.id)}
+                                                    >
+                                                        <FontAwesomeIcon icon={faPen} />
+                                                    </button>
+                                                    <button
+                                                        className={cx('delete')}
+                                                        onClick={() => handleDeleteClick(row.id)}
+                                                    >
+                                                        <FontAwesomeIcon icon={faTrash} />
+                                                    </button>
                                                 </div>
                                             </TableCell>
                                         </TableRow>
@@ -127,14 +224,30 @@ function ScheduleManagement() {
                                 </TableBody>
                             </Table>
                         </TableContainer>
-                        <div className={cx('pagination')}>
-                            <PaginationS />
-                        </div>
+                        {schedule.totalPages > 1 && (
+                            <div className={cx('pagination')}>
+                                <PaginationS
+                                    currentPage={currentPage}
+                                    totalPages={schedule?.totalPages || 0}
+                                    onPageChange={handlePageChange}
+                                />
+                            </div>
+                        )}
                     </div>
-                </div>
+                ) : (
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        Không có lịch chiếu nào vui lòng chọn phòng hoặc thời gian khác
+                    </div>
+                )}
             </div>
-
-            <ScheduleAdd open={isDialogOpen} handleClose={handleCloseDialog} />
+            <ScheduleAdd
+                open={isDialogOpen}
+                handleClose={handleCloseDialog}
+                roomId={roomId}
+                schedule={schedule}
+                scheduleId={scheduleId}
+                setSchedule={setSchedule}
+            />
         </div>
     );
 }

@@ -37,6 +37,21 @@ const GetCinemaRoomIdApi = async (cinemaId, page, limit) => {
     }
 };
 
+const GetAllCinemaRoomApi = async (cinemaId) => {
+    const options = {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    };
+
+    try {
+        const res = await request.get(`cinema_room/cinema/${cinemaId}`, options);
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 const CreateCinemaRoomApi = async (data, token) => {
     const options = {
         headers: {
@@ -53,4 +68,4 @@ const CreateCinemaRoomApi = async (data, token) => {
     }
 };
 
-export { GetCinemaRoomApi, CreateCinemaRoomApi, GetCinemaRoomIdApi };
+export { GetAllCinemaRoomApi, GetCinemaRoomApi, CreateCinemaRoomApi, GetCinemaRoomIdApi };

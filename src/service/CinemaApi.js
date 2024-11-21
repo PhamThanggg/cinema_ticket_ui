@@ -35,4 +35,19 @@ const CinemaScheduleApi = async (cinemaId, movieId, screeningDate) => {
     }
 };
 
-export { CinemaAreaApi, CinemaScheduleApi };
+const GetAllCinemaApi = async () => {
+    const options = {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    };
+
+    try {
+        const res = await request.get(`cinema`, options);
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export { GetAllCinemaApi, CinemaAreaApi, CinemaScheduleApi };

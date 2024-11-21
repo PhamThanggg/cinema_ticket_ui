@@ -6,7 +6,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faAngleDown,
     faAngleRight,
-    faCalendarDays,
     faCity,
     faClock,
     faCookie,
@@ -69,11 +68,7 @@ function Header({ toggleSidebar, isSidebarVisible }) {
         {
             label: 'Quản lý combo',
             icon: <FontAwesomeIcon icon={faCookie} className={cx('dashboard_icon')} />,
-            links: [
-                { label: 'Daily', path: '/reports/daily' },
-                { label: 'Weekly', path: '/reports/weekly' },
-                { label: 'Monthly', path: '/reports/monthly' },
-            ],
+            links: [{ label: 'Danh sách combo', path: routes.ListCombo }],
         },
         {
             label: 'Quản lý đơn hàng',

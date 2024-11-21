@@ -15,3 +15,14 @@ export function formatToApiDateTime(dateTime) {
     }
     return dateTime.replace('T', ' ') + ':00';
 }
+
+export function formatToApiTime(dateTime) {
+    const date = new Date(dateTime);
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+}
+
+export function formatDateTime(datee, time) {
+    return `${datee} ${time}:00`;
+}

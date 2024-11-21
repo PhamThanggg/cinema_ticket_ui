@@ -17,6 +17,7 @@ const routes = {
     ListMovie: '/Admin/MovieManagement/list-movie',
     ListSchedule: '/Admin/ScheduleManagement/list-schedule',
     ListGenre: '/Admin/GenreManagement/list-genre',
+    ListCombo: '/Admin/GenreManagement/list-combo',
     revenueMovie: '/Admin/revenue_movie',
     revenueCinema: '/Admin/revenue_cinema',
     MovieAdd: '/Admin/MovieManagement/add',
