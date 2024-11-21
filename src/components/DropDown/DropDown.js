@@ -1,19 +1,23 @@
 import React, { useState } from 'react';
-import { Select, MenuItem, FormControl, InputLabel, FormHelperText, Input } from '@mui/material';
+import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-const DropDown = ({ searchName }) => {
+const DropDown = ({ searchName, data, name }) => {
     const [selectedValue, setSelectedValue] = useState('');
-    const [error, setError] = useState(false);
+    const navigate = useNavigate();
+    const location = useLocation();
 
     const handleChange = (event) => {
-        setSelectedValue(event.target.value);
-        setError(false);
-    };
+        const value = event.target.value;
+        setSelectedValue(value);
 
-    const handleBlur = () => {
-        if (!selectedValue) {
-            setError(true);
+        const params = new URLSearchParams(location.search);
+        if (value) {
+            params.set(name, value);
+        } else {
+            params.delete(name);
         }
+        navigate(`${location.pathname}?${params.toString()}`);
     };
 
     return (
@@ -27,7 +31,6 @@ const DropDown = ({ searchName }) => {
                     id="dropdown"
                     value={selectedValue}
                     onChange={handleChange}
-                    onBlur={handleBlur}
                     label="Chọn thể loại"
                     fullWidth
                     sx={{
@@ -40,10 +43,12 @@ const DropDown = ({ searchName }) => {
                     <MenuItem value="">
                         <em>None</em>
                     </MenuItem>
-                    <MenuItem value={1}>Hành động</MenuItem>
-                    <MenuItem value={2}>Hài</MenuItem>
-                    <MenuItem value={3}>Kinh dị</MenuItem>
-                    <MenuItem value={4}>Lãng mạn</MenuItem>
+                    {data &&
+                        data.map((item) => (
+                            <MenuItem key={item.value} value={item.value}>
+                                {item.name}
+                            </MenuItem>
+                        ))}
                 </Select>
             </FormControl>
         </div>

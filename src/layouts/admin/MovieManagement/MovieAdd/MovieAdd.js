@@ -12,8 +12,16 @@ import { toast } from 'react-toastify';
 import { useAuth } from '~/components/Context/AuthContext';
 import { GetMoviePeopleApi } from '~/service/PersionService';
 import { formatToApiDateTime } from '~/utils/dateFormatter';
-import { CreateMovieApi } from '~/service/MovieService';
+import {
+    CreateMovieApi,
+    DeleteImageApi,
+    DeleteMovieApi,
+    MovieDetailApi,
+    UpdateImageApi,
+    UpdateMovieApi,
+} from '~/service/MovieService';
 import { GetGenreApi } from '~/service/GenreService';
+import { confirmAction } from '~/components/ConfirmAction/ConfirmAction';
 
 const cx = classNames.bind(styles);
 function MovieAdd() {
@@ -44,6 +52,12 @@ function MovieAdd() {
     const [actorApi, setActorApi] = useState(null);
     const [genreApi, setGenreApi] = useState(null);
 
+    //movie image
+    const [selectedImages, setSelectedImages] = useState([]);
+    const [image, setImage] = useState(null);
+    const [preview, setPreview] = useState([]);
+    const [uploading, setUploading] = useState(false);
+
     useEffect(() => {
         const getActor = async () => {
             const res = await GetMoviePeopleApi(null, 2, 0, 50);
@@ -65,28 +79,117 @@ function MovieAdd() {
                 setGenreApi(res.result);
             }
         };
-        // const getcinemaId = async () => {
-        //     if (cinemaId) {
-        //         try {
-        //             const res = await GetCinemaIdApi(cinemaId);
-        //             if (res && res.result) {
-        //                 setFormData({
-        //                     name_cinema: res.result.name,
-        //                     address: res.result.address,
-        //                     area_id: res.result.areaId,
-        //                     status: res.result.status,
-        //                 });
-        //             }
-        //         } catch (error) {
-        //             navigate(routes.CinemaManagement);
-        //         }
-        //     }
-        // };
+
+        const getMovieId = async () => {
+            if (movieId) {
+                try {
+                    const res = await MovieDetailApi(movieId);
+                    if (res && res.result) {
+                        setFormData({
+                            name: res.result.nameMovie || '',
+                            producer: res.result.producer || '',
+                            duration: res.result.duration || '',
+                            language: res.result.language || '',
+                            ageLimit: res.result.ageLimit || '',
+                            trailer: res.result.trailer || '',
+                            nation: res.result.nation || '',
+                            description: res.result.description || '',
+                            premiereDate: res.result.premiereDate || '',
+                            status: res.result.status || '',
+                        });
+
+                        if (res.result.images.length > 0) {
+                            const img = {
+                                id: res.result.images[0].id,
+                                imageUrl: res.result.images[0].imageUrl,
+                            };
+                            setImage(img);
+                        }
+
+                        if (res.result.genres.length > 0) {
+                            const genreMap = res.result.genres.map((data) => ({
+                                value: data.id,
+                                label: data.name,
+                            }));
+
+                            setGenre(genreMap);
+                        }
+
+                        if (res.result.moviePeople.length > 0) {
+                            const actorMap = res.result.moviePeople
+                                .map((mvpp) => {
+                                    if (mvpp.roleType && mvpp.roleType.name === 'Actor') {
+                                        return {
+                                            value: mvpp.id,
+                                            label: mvpp.name,
+                                        };
+                                    }
+                                    return null;
+                                })
+                                .filter((item) => item !== null);
+
+                            setActors(actorMap);
+                        }
+
+                        if (res.result.moviePeople.length > 0) {
+                            const directorMap = res.result.moviePeople
+                                .map((mvpp) => {
+                                    if (mvpp.roleType && mvpp.roleType.name === 'Director') {
+                                        return {
+                                            value: mvpp.id,
+                                            label: mvpp.name,
+                                        };
+                                    }
+                                    return null;
+                                })
+                                .filter((item) => item !== null);
+
+                            setDirectors(directorMap);
+                        }
+                    }
+                } catch (error) {
+                    // navigate(routes.ListMovie);
+                }
+            }
+        };
 
         getActor();
         getDirectorApi();
         getGenreApi();
+        getMovieId();
     }, []);
+
+    // Chọn ảnh
+    const handleImageChange = (e) => {
+        const files = Array.from(e.target.files);
+        setSelectedImages(files);
+
+        // Tạo preview cho tất cả ảnh đã chọn
+        const imagePreviews = files.map((file) => URL.createObjectURL(file));
+        setPreview(imagePreviews);
+    };
+
+    const handleUpload = async () => {
+        if (selectedImages.length === 0) {
+            toast.warning('Please select images first.');
+            return;
+        }
+
+        setUploading(true);
+        const formData = new FormData();
+
+        // Thêm từng file vào FormData
+        selectedImages.forEach((file, index) => {
+            formData.append('files', file);
+        });
+
+        const res = await UpdateImageApi(formData, movieId, token);
+        if (res) {
+            setImage(res.result[0]);
+            toast.success('Thêm ảnh thành công');
+        }
+        setUploading(false);
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -173,6 +276,8 @@ function MovieAdd() {
             duration: formData.duration,
             language: formData.duration,
             age_limit: formData.ageLimit,
+            trailer: formData.trailer,
+            nation: formData.nation,
             status: formData.status,
             description: formData.description,
             premiere_date: formatToApiDateTime(formData.premiereDate),
@@ -186,12 +291,40 @@ function MovieAdd() {
                 toast.success(res.message);
             }
         } else {
-            toast.success('Cập nhật ok');
+            const res = await UpdateMovieApi(data, movieId, token);
+            if (res && res.result) {
+                toast.success('Cập nhật thành công');
+            }
         }
     };
 
     const handleReturn = () => {
         navigate(routes.ListMovie);
+    };
+
+    const handleDeleteImg = async (id) => {
+        const confirm = await confirmAction();
+        if (confirm) {
+            const res = await DeleteImageApi(id, token);
+            if (res) {
+                toast.success(res.result);
+                setImage(null);
+            }
+        }
+    };
+
+    const handleDeleteMovie = async () => {
+        const confirm = await confirmAction('Xóa phim', 'Bạn có chắc muốn xóa phim này không?');
+        if (confirm) {
+            const res = await DeleteMovieApi(movieId, token);
+            if (res) {
+                toast.success(res.result);
+
+                setTimeout(() => {
+                    navigate(routes.ListMovie);
+                }, 2000);
+            }
+        }
     };
 
     if (!actorApi) {
@@ -216,10 +349,12 @@ function MovieAdd() {
                         </button> */}
                     </div>
                     <div className={cx('list')}>
-                        <button className={cx('btn_delete')}>
-                            <FontAwesomeIcon icon={faTrash} className={cx('icon_btn')} />
-                            Xóa phim
-                        </button>
+                        {movieId && (
+                            <button className={cx('btn_delete')} onClick={handleDeleteMovie}>
+                                <FontAwesomeIcon icon={faTrash} className={cx('icon_btn')} />
+                                Xóa phim
+                            </button>
+                        )}
                     </div>
                 </div>
 
@@ -412,6 +547,47 @@ function MovieAdd() {
                     <button className={cx('submit-button')} onClick={handleCreateMovie}>
                         {movieId ? 'Lưu' : 'Thêm mới'}
                     </button>
+                </div>
+                <div>
+                    <h3 className={cx('title_img')}>Thêm ảnh</h3>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        multiple // Cho phép chọn nhiều ảnh
+                        onChange={handleImageChange}
+                    />
+
+                    <div style={{ display: 'flex' }}>
+                        {preview.length > 0 && (
+                            <div style={{ marginTop: '10px', marginRight: '40px' }}>
+                                {preview.map((url, index) => (
+                                    <img
+                                        key={index}
+                                        src={url}
+                                        alt={`Preview ${index + 1}`}
+                                        style={{ maxWidth: '400px', margin: '5px' }}
+                                    />
+                                ))}
+                            </div>
+                        )}
+
+                        {image && (
+                            <div style={{ marginTop: '10px' }}>
+                                <img
+                                    src={image.imageUrl}
+                                    alt={`Preview`}
+                                    style={{ maxWidth: '400px', margin: '5px' }}
+                                />
+                                <button onClick={() => handleDeleteImg(image.id)}>Xóa ảnh</button>
+                            </div>
+                        )}
+                    </div>
+
+                    <div>
+                        <button onClick={handleUpload} className={cx('submit-button')} disabled={uploading}>
+                            {uploading ? 'Uploading...' : 'Upload'}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

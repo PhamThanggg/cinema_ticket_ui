@@ -3,30 +3,48 @@ import classNames from 'classnames/bind';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import PaginationS from '~/components/Pagination';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { useState } from 'react';
+import { faPen, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { useEffect, useState } from 'react';
 import GenreAdd from './GenreAdd';
+import { confirmAction } from '~/components/ConfirmAction/ConfirmAction';
+import { DeleteGenreApi } from '~/service/GenreService';
+import { useAuth } from '~/components/Context/AuthContext';
+import { toast } from 'react-toastify';
 
 const cx = classNames.bind(styles);
 
-function GenreManagement() {
+function GenreManagement({ genres, currentPage, handlePageChange }) {
+    const { state } = useAuth();
+    const { token } = state;
     const [isDialogOpen, setDialogOpen] = useState(false);
+    const [genreList, setGenreList] = useState(null);
+    const [genreId, setGenreId] = useState(null);
+
+    useEffect(() => {
+        setGenreList(genres.result);
+    }, []);
 
     const handleOpenClick = (id) => {
-        console.log('ID được truyền vào:', id);
+        if (id) {
+            setGenreId(id);
+        }
         setDialogOpen(true);
     };
 
+    const handleDeleteClick = async (id) => {
+        const confirm = confirmAction();
+        if (confirm) {
+            const res = DeleteGenreApi(id, token);
+            if (res) {
+                toast.success(res.result);
+            }
+        }
+    };
+
     const handleCloseDialog = () => {
+        setGenreId(null);
         setDialogOpen(false);
     };
-    const rows = [
-        { id: 1, name: 'John Doe', age: 30, occupation: 'Software Engineer' },
-        { id: 2, name: 'Jane Smith', age: 25, occupation: 'Designer' },
-        { id: 3, name: 'Mike Johnson', age: 35, occupation: 'Project Manager' },
-    ];
-
-    const handleDetailClick = (id) => {};
 
     return (
         <div>
@@ -36,7 +54,7 @@ function GenreManagement() {
             <div className={cx('wrapper')}>
                 <div>
                     <div className={cx('btn')}>
-                        <button onClick={handleOpenClick}>
+                        <button onClick={() => handleOpenClick(null)}>
                             <FontAwesomeIcon icon={faPlus} className={cx('btn-icon')} />
                             Tạo thể loại
                         </button>
@@ -64,45 +82,67 @@ function GenreManagement() {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {rows.map((row) => (
-                                        <TableRow key={row.id}>
-                                            <TableCell>
-                                                <div className={cx('stt_center', 'title_tb')}>{row.id}</div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className={cx('title_tb')}>{row.name}</div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className={cx('title_tb')}>
-                                                    <button className={cx('time_title')}>{row.occupation}</button>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className={cx('title_tb')}>
-                                                    <button className={cx('status_title')}>{row.occupation}</button>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div
-                                                    onClick={() => handleDetailClick(row.id)}
-                                                    className={cx('title_tb', 'detail')}
-                                                >
-                                                    Xem chi tiết
-                                                </div>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
+                                    {genreList &&
+                                        genreList.map((row, index) => (
+                                            <TableRow key={row.id}>
+                                                <TableCell>
+                                                    <div className={cx('stt_center', 'title_tb')}>
+                                                        {genres.pageSize * (currentPage - 1) + index + 1}
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className={cx('title_tb')}>{row.id}</div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className={cx('title_tb')}>
+                                                        <button className={cx('time_title')}>{row.name}</button>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className={cx('title_tb')}>
+                                                        <button className={cx('status_title')}>
+                                                            {row.status === 1 ? 'Hoạt động' : 'Không hoạt động'}
+                                                        </button>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className={cx('title_tb')}>
+                                                        <button
+                                                            className={cx('pen')}
+                                                            onClick={() => handleOpenClick(row.id)}
+                                                        >
+                                                            <FontAwesomeIcon icon={faPen} />
+                                                        </button>
+                                                        <button
+                                                            className={cx('delete')}
+                                                            onClick={() => handleDeleteClick(row.id)}
+                                                        >
+                                                            <FontAwesomeIcon icon={faTrash} />
+                                                        </button>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
                                 </TableBody>
                             </Table>
                         </TableContainer>
                         <div className={cx('pagination')}>
-                            <PaginationS />
+                            <PaginationS
+                                currentPage={currentPage}
+                                totalPages={genres?.totalPages || 0}
+                                onPageChange={handlePageChange}
+                            />
                         </div>
                     </div>
                 </div>
             </div>
 
-            <GenreAdd open={isDialogOpen} handleClose={handleCloseDialog} />
+            <GenreAdd
+                open={isDialogOpen}
+                handleClose={handleCloseDialog}
+                setGenreList={setGenreList}
+                genreId={genreId}
+            />
         </div>
     );
 }

@@ -6,25 +6,39 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import routes from '~/config/router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import SearchBar from '~/components/SearchBar';
 import DropDown from '~/components/DropDown';
 
 const cx = classNames.bind(styles);
-function ListMovie({ movies, currentPage, handlePageChange }) {
+function ListMovie({ movies, currentPage, handlePageChange, genres }) {
     const navigate = useNavigate();
     const [selectedRowId, setSelectedRowId] = useState(null);
+    const [genreValue, setGenreValue] = useState([]);
+    const [status, setStatus] = useState([
+        { value: 1, name: 'Sắp chiếu' },
+        { value: 2, name: 'Đang chiếu' },
+        { value: 3, name: 'Dừng chiếu' },
+    ]);
 
     const handleMovieAdd = () => {
         navigate(routes.MovieAdd);
     };
 
-    const handleDetailClick = (id) => {
-        setSelectedRowId(id);
-        navigate(routes.CinemaRoom, { state: { id } }); //const { movieId } = location.state || {};
+    const handleDetailClick = (movieId) => {
+        setSelectedRowId(movieId);
+        navigate(routes.MovieAdd, { state: { movieId } });
     };
 
-    console.log(movies);
+    useEffect(() => {
+        if (genres && genres.length > 0) {
+            const genreValues = genres.map((data) => ({
+                value: data.id,
+                name: data.name,
+            }));
+            setGenreValue(genreValues);
+        }
+    }, [genres]);
 
     return (
         <div>
@@ -42,9 +56,9 @@ function ListMovie({ movies, currentPage, handlePageChange }) {
                         </div>
 
                         <div className={cx('display_flex')}>
-                            <DropDown searchName={'Chọn trạng thái'} />
-                            <DropDown searchName={'Chọn thể loại'} />
-                            <SearchBar />
+                            <DropDown searchName={'Chọn trạng thái'} data={status} name={'status'} />
+                            <DropDown searchName={'Chọn thể loại'} data={genreValue} name={'genreId'} />
+                            <SearchBar name={'nameMovie'} />
                         </div>
                     </div>
                     <div className={cx('list')}>
@@ -78,10 +92,12 @@ function ListMovie({ movies, currentPage, handlePageChange }) {
                                 <TableBody>
                                     {movies &&
                                         movies.result &&
-                                        movies.result.map((row) => (
+                                        movies.result.map((row, index) => (
                                             <TableRow key={row.id}>
                                                 <TableCell>
-                                                    <div className={cx('stt_center', 'title_tb')}>{row.id}</div>
+                                                    <div className={cx('stt_center', 'title_tb')}>
+                                                        {index + movies.pageSize * (currentPage - 1)}
+                                                    </div>
                                                 </TableCell>
                                                 <TableCell>
                                                     <div className={cx('title_tb')}>{row.nameMovie}</div>

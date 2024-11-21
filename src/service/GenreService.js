@@ -40,11 +40,63 @@ const GenreDetailApi = async (GenreId) => {
     };
 
     try {
-        const res = await request.get(`Genre/${GenreId}`, options);
+        const res = await request.get(`genre/${GenreId}`, options);
         return res;
     } catch (error) {
         console.log(error);
     }
 };
 
-export { GenreDetailApi, GetGenreApi, CreateGenreApi };
+const GenreSearchApi = async (data) => {
+    const options = {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        params: {
+            name: data.name,
+            page: data.page,
+            limit: data.limit,
+        },
+    };
+
+    try {
+        const res = await request.get(`genre/search`, options);
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+const UpdateGenreApi = async (data, genreId, token) => {
+    const options = {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+    };
+
+    try {
+        const res = await request.put(`genre/${genreId}`, data, options);
+        return res;
+    } catch (error) {
+        toast.error(error.response.data.message);
+    }
+};
+
+const DeleteGenreApi = async (genreId, token) => {
+    const options = {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+    };
+
+    try {
+        const res = await request.remove(`genre/${genreId}`, options);
+        return res;
+    } catch (error) {
+        toast.error(error.response.data.message);
+    }
+};
+
+export { DeleteGenreApi, UpdateGenreApi, GenreSearchApi, GenreDetailApi, GetGenreApi, CreateGenreApi };

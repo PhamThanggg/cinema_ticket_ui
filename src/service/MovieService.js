@@ -92,4 +92,81 @@ const MovieDetailApi = async (movieId) => {
     }
 };
 
-export { MovieShowNowApi, MovieDetailApi, MovieAreaShowNowApi, CreateMovieApi, GetMovieSearchApi };
+const UpdateMovieApi = async (data, movieId, token) => {
+    const options = {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+    };
+
+    try {
+        const res = await request.put(`movie/${movieId}`, data, options);
+        return res;
+    } catch (error) {
+        toast.error(error.response.data.message);
+    }
+};
+
+const UpdateImageApi = async (data, movieId, token) => {
+    const options = {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`,
+        },
+    };
+
+    try {
+        const res = await request.post(`movie/upload_images/${movieId}`, data, options);
+        return res;
+    } catch (error) {
+        toast.error(error.response.data.message);
+    }
+};
+
+const DeleteImageApi = async (imageId, token) => {
+    const options = {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`,
+        },
+        params: {
+            ids: imageId,
+        },
+    };
+
+    try {
+        const res = await request.remove(`movie/image`, options);
+        return res;
+    } catch (error) {
+        toast.error(error.response.data.message);
+    }
+};
+
+const DeleteMovieApi = async (imageId, token) => {
+    const options = {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`,
+        },
+    };
+
+    try {
+        const res = await request.remove(`movie/${imageId}`, options);
+        return res;
+    } catch (error) {
+        toast.error(error.response.data.message);
+    }
+};
+
+export {
+    DeleteMovieApi,
+    DeleteImageApi,
+    UpdateImageApi,
+    MovieShowNowApi,
+    MovieDetailApi,
+    MovieAreaShowNowApi,
+    CreateMovieApi,
+    GetMovieSearchApi,
+    UpdateMovieApi,
+};

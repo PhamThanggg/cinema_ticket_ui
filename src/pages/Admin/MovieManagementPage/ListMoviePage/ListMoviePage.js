@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import ListMovie from '~/layouts/admin/MovieManagement/ListMovie';
 import { GetMovieSearchApi } from '~/service/MovieService';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { GetGenreApi } from '~/service/GenreService';
 
 function ListMoviePage() {
     const navigate = useNavigate();
@@ -10,10 +11,15 @@ function ListMoviePage() {
     const initialPage = Math.max(1, Number(queryParams.get('page')) || 1);
     const [currentPage, setCurrentPage] = useState(initialPage);
     const [movies, setMovies] = useState(null);
+    const [genres, setGenres] = useState(null);
 
     useEffect(() => {
         getMovieList();
-    }, [currentPage]);
+    }, [currentPage, location]);
+
+    useEffect(() => {
+        getGenreList();
+    }, []);
 
     const handlePageChange = (newPage) => {
         queryParams.set('page', newPage);
@@ -33,7 +39,7 @@ function ListMoviePage() {
             page: currentPage - 1,
             limit: 10,
             nameMovie: nameMovie || '',
-            status: status ? parseInt(status, 10) : null,
+            status: status ? parseInt(status, 10) - 1 : null,
             genreId: genreId ? parseInt(genreId, 10) : null,
             maxPrice: maxPrice ? parseInt(maxPrice, 10) : null,
         };
@@ -45,7 +51,15 @@ function ListMoviePage() {
         }
     };
 
-    return <ListMovie movies={movies} currentPage={currentPage} handlePageChange={handlePageChange} />;
+    const getGenreList = async () => {
+        const res = await GetGenreApi();
+
+        if (res) {
+            setGenres(res.result);
+        }
+    };
+
+    return <ListMovie movies={movies} currentPage={currentPage} handlePageChange={handlePageChange} genres={genres} />;
 }
 
 export default ListMoviePage;

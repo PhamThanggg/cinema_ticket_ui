@@ -1,7 +1,7 @@
 .wrapper {
     background-color: var(--white);
     border-radius: 3px;
-    margin: 5px 10px;
+    margin: 5px 10px 50px 10px;
 }
 
 .ctn {
@@ -51,6 +51,10 @@
     color: var(--white);
     border: 1px solid #cd2222;
     border-radius: 2px;
+
+    &:hover {
+        opacity: 0.8;
+    }
 }
 
 .icon_btn {
@@ -204,4 +208,10 @@
     display: flex;
     justify-content: center;
     margin: 20px 0 100px 0;
+}
+
+.title_img {
+    margin-bottom: 10px;
+    font-weight: 500;
+    color: var(--text-color);
 }

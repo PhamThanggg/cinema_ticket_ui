@@ -1,12 +1,27 @@
 import React, { useState } from 'react';
 import { TextField, IconButton } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import classNames from 'classnames/bind';
+import styles from './SearchBar.module.scss';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-const SearchBar = () => {
+const cx = classNames.bind(styles);
+
+const SearchBar = ({ name }) => {
+    const navigate = useNavigate();
+    const location = useLocation();
     const [searchValue, setSearchValue] = useState('');
 
     const handleSearch = () => {
-        console.log('Searching for:', searchValue);
+        const params = new URLSearchParams(location.search);
+
+        if (searchValue) {
+            params.set(name, searchValue);
+        } else {
+            params.delete(name);
+        }
+
+        navigate(`${location.pathname}?${params.toString()}`);
     };
 
     return (
@@ -32,6 +47,7 @@ const SearchBar = () => {
             />
             <IconButton
                 onClick={handleSearch}
+                className={cx('custom-icon-button')}
                 style={{ fontSize: '36px', padding: '10px', marginLeft: '2px', borderRadius: '4px' }}
             >
                 <SearchIcon />

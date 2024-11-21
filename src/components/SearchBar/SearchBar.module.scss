@@ -1,0 +1,12 @@
+.custom-icon-button {
+    font-size: 36px;
+    padding: 10px;
+    margin-left: 2px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+
+    &:hover {
+        background-color: rgb(9, 15, 179);
+        opacity: 0.8;
+    }
+}

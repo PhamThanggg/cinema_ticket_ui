@@ -10,5 +10,8 @@ export function formatDateToCustomFormat(date) {
 }
 
 export function formatToApiDateTime(dateTime) {
+    if (dateTime.length > 16) {
+        return dateTime.replace('T', ' ');
+    }
     return dateTime.replace('T', ' ') + ':00';
 }
