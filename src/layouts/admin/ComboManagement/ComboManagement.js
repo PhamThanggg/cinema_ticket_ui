@@ -3,18 +3,23 @@ import classNames from 'classnames/bind';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import PaginationS from '~/components/Pagination';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
 import ComboAdd from './ComboAdd';
 import DropDown from '~/components/DropDown';
 import { formatVND } from '~/utils/vndPrice';
+import { confirmAction } from '~/components/ConfirmAction/ConfirmAction';
+import { useLocation } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
 function ComboManagement({ ...props }) {
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [cinemaValue, setCinemaValue] = useState([]);
-
+    const [itemId, setItemId] = useState(null);
+    const cinemaId = queryParams.get('cinema');
     useEffect(() => {
         if (props.cinemas && props.cinemas.length > 0) {
             const genreValues = props.cinemas.map((data) => ({
@@ -24,16 +29,26 @@ function ComboManagement({ ...props }) {
             setCinemaValue(genreValues);
         }
     }, [props.cinemas]);
+
     const handleOpenClick = (id) => {
-        console.log('ID được truyền vào:', id);
+        setItemId(id);
         setDialogOpen(true);
     };
 
     const handleCloseDialog = () => {
         setDialogOpen(false);
+        setItemId(null);
     };
 
-    const handleDetailClick = (id) => {};
+    const handleDeleteClick = async (id) => {
+        const confirm = confirmAction();
+        // if (confirm) {
+        //     const res = DeleteScheduleApi(id, token);
+        //     if (res) {
+        //         toast.success(res.result);
+        //     }
+        // }
+    };
 
     return (
         <div>
@@ -45,12 +60,14 @@ function ComboManagement({ ...props }) {
                     <div className={cx('ctn-search', 'margin')}>
                         <DropDown searchName={'Chọn rạp chiếu'} data={cinemaValue} name={'cinema'} />
                     </div>
-                    <div className={cx('btn')}>
-                        <button onClick={handleOpenClick}>
-                            <FontAwesomeIcon icon={faPlus} className={cx('btn-icon')} />
-                            Tạo thể loại
-                        </button>
-                    </div>
+                    {props.cinemaId && (
+                        <div className={cx('btn')}>
+                            <button onClick={() => handleOpenClick(null)}>
+                                <FontAwesomeIcon icon={faPlus} className={cx('btn-icon')} />
+                                Tạo thể loại
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 <div className={cx('list')}>
@@ -98,11 +115,19 @@ function ComboManagement({ ...props }) {
                                                 </div>
                                             </TableCell>
                                             <TableCell>
-                                                <div
-                                                    onClick={() => handleDetailClick(row.id)}
-                                                    className={cx('title_tb', 'detail')}
-                                                >
-                                                    Xem chi tiết
+                                                <div className={cx('title_tb', 'flex')}>
+                                                    <button
+                                                        className={cx('pen')}
+                                                        onClick={() => handleOpenClick(row.id)}
+                                                    >
+                                                        <FontAwesomeIcon icon={faPen} />
+                                                    </button>
+                                                    <button
+                                                        className={cx('delete')}
+                                                        onClick={() => handleDeleteClick(row.id)}
+                                                    >
+                                                        <FontAwesomeIcon icon={faTrash} />
+                                                    </button>
                                                 </div>
                                             </TableCell>
                                         </TableRow>
@@ -116,7 +141,7 @@ function ComboManagement({ ...props }) {
                 </div>
             </div>
 
-            <ComboAdd open={isDialogOpen} handleClose={handleCloseDialog} />
+            <ComboAdd open={isDialogOpen} handleClose={handleCloseDialog} comboId={itemId} cinemaId={cinemaId} />
         </div>
     );
 }

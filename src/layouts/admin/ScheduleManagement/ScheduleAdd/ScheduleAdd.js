@@ -123,11 +123,11 @@ function GenreAdd({ open, handleClose, roomId, schedule, scheduleId, setSchedule
             }
         } else {
             const res = await CreateScheduleApi(data, token);
-            toast.success(res.message);
             if (res && res.result) {
-                if (schedule) {
-                    setSchedule((prevList) => [res.result, ...prevList]);
-                }
+                toast.success(res.message);
+                // if (schedule) {
+                //     setSchedule((prevList) => [res.result, ...prevList]);
+                // }
             }
         }
     };

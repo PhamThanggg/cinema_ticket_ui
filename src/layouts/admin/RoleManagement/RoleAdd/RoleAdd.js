@@ -1,6 +1,6 @@
 import { Dialog, DialogContent } from '@mui/material';
 import classNames from 'classnames/bind';
-import styles from './ScheduleAdd.module.scss';
+import styles from './RoleAdd.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
 

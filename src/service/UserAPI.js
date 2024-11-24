@@ -16,4 +16,26 @@ const getMyInfoApi = async (token) => {
     }
 };
 
-export { getMyInfoApi };
+const getUserSearchApi = async (data, token) => {
+    const options = {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+        params: {
+            page: data.page,
+            limit: data.limit,
+            name: data.name,
+            email: data.email,
+        },
+    };
+
+    try {
+        const res = await request.get(`users/search`, options);
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export { getUserSearchApi, getMyInfoApi };

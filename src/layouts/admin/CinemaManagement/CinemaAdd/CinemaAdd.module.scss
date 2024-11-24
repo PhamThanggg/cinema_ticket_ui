@@ -41,6 +41,10 @@
     border: 1px solid #ccc;
     margin-right: 10px;
     border-radius: 2px;
+
+    &:hover {
+        background-color: #f2f2f2;
+    }
 }
 
 .btn_delete {
@@ -51,6 +55,10 @@
     color: var(--white);
     border: 1px solid #cd2222;
     border-radius: 2px;
+
+    &:hover {
+        opacity: 0.9;
+    }
 }
 
 .icon_btn {
@@ -125,6 +133,10 @@
         background-color: rgb(9, 15, 179);
         color: var(--white);
         border-radius: 2px;
+
+        &:hover {
+            opacity: 0.8;
+        }
     }
 }
 
@@ -194,4 +206,28 @@
     display: flex;
     justify-content: center;
     margin: 20px 0 100px 0;
+}
+
+.genre_title {
+    background-color: rgb(177, 204, 255);
+    border: 1px solid rgb(109, 109, 255);
+    color: var(--blue);
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+.time_title {
+    background-color: rgb(255, 201, 217);
+    border: 1px solid rgb(255, 137, 137);
+    color: rgb(255, 55, 55);
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+.status_title {
+    background-color: rgb(180, 255, 177);
+    border: 1px solid rgb(74, 255, 24);
+    color: rgb(3, 178, 3);
+    padding: 0 2px;
+    border-radius: 2px;
 }

@@ -17,6 +17,9 @@ import RevenueCinemaPage from '~/pages/Admin/AdminHomePage/RevenueCinemaPage';
 import RevenueMoviePage from '~/pages/Admin/AdminHomePage/RevenueMoviePage';
 import MovieAddPage from '~/pages/Admin/MovieManagementPage/MovieAddPage/MovieAddPage';
 import ComboManagementPage from '~/pages/Admin/ComboManagementPage';
+import BookingManagementPage from '~/pages/Admin/BookingManagementPage';
+import UserManagementPage from '~/pages/Admin/UserManagementPage';
+import RoleManagementPage from '~/pages/Admin/RoleManagementPage';
 
 const publicRoutes = [
     { path: config.routes.home, component: Home },
@@ -43,6 +46,9 @@ export const adminRoutes = [
     { path: config.routes.revenueMovie, component: RevenueMoviePage },
     { path: config.routes.MovieAdd, component: MovieAddPage },
     { path: config.routes.ListCombo, component: ComboManagementPage },
+    { path: config.routes.ListBooking, component: BookingManagementPage },
+    { path: config.routes.ListUser, component: UserManagementPage },
+    { path: config.routes.ListRole, component: RoleManagementPage },
 ];
 
 export { publicRoutes, privateRoutes };

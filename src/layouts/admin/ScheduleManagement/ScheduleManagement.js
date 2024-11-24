@@ -27,6 +27,7 @@ function ScheduleManagement({ ...props }) {
     const [currentPage, setCurrentPage] = useState(initialPage);
 
     const [isDialogOpen, setDialogOpen] = useState(false);
+    const [areaValue, setAreaValue] = useState([]);
     const [cinemaValue, setCinemaValue] = useState([]);
     const [roomValue, setRoomValue] = useState([]);
     const [date, setDate] = useState('');
@@ -50,6 +51,14 @@ function ScheduleManagement({ ...props }) {
     }, [props.cinemas, props.rooms, roomId, date]);
 
     useEffect(() => {
+        if (props.areas && props.areas.length > 0) {
+            const areasValues = props.areas.map((data) => ({
+                value: data.id,
+                name: data.areaName,
+            }));
+            setAreaValue(areasValues);
+        }
+
         if (props.cinemas && props.cinemas.length > 0) {
             const genreValues = props.cinemas.map((data) => ({
                 value: data.id,
@@ -101,7 +110,7 @@ function ScheduleManagement({ ...props }) {
     };
 
     const handleDeleteClick = async (id) => {
-        const confirm = confirmAction();
+        const confirm = await confirmAction();
         if (confirm) {
             const res = DeleteScheduleApi(id, token);
             if (res) {
@@ -118,6 +127,7 @@ function ScheduleManagement({ ...props }) {
             <div className={cx('wrapper')}>
                 <div style={{ margin: '10px', paddingTop: '10px', display: 'flex', justifyContent: 'space-between' }}>
                     <div className={cx('ctn-search')}>
+                        <DropDown searchName={'Chọn khu vực'} data={areaValue} name={'area'} />
                         <DropDown searchName={'Chọn rạp chiếu'} data={cinemaValue} name={'cinema'} />
                         <DropDown searchName={'Chọn phòng chiếu'} data={roomValue} name={'roomId'} />
 

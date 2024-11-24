@@ -1,11 +1,11 @@
-import styles from './ScheduleManagement.module.scss';
+import styles from './RoleManagement.module.scss';
 import classNames from 'classnames/bind';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import PaginationS from '~/components/Pagination';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
-import ScheduleAdd from './ScheduleAdd';
+import ScheduleAdd from './RoleAdd';
 import DropDown from '~/components/DropDown';
 
 const cx = classNames.bind(styles);

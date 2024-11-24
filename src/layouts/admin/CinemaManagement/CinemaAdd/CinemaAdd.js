@@ -13,9 +13,10 @@ import { useLocation } from 'react-router-dom';
 import { GetAreaApi } from '~/service/AreaService';
 import Loading from '~/components/Loading';
 import { toast } from 'react-toastify';
-import { CreateCinemaApi, GetCinemaIdApi } from '~/service/CinemaService';
+import { CreateCinemaApi, DeleteCinemaApi, GetCinemaIdApi } from '~/service/CinemaService';
 import { useAuth } from '~/components/Context/AuthContext';
-import { GetCinemaRoomApi } from '~/service/CinemaServiceRoom';
+import { DeleteCinemaRoomApi, GetCinemaRoomApi } from '~/service/CinemaServiceRoom';
+import { confirmAction } from '~/components/ConfirmAction/ConfirmAction';
 
 const cx = classNames.bind(styles);
 function CinemaAdd() {
@@ -161,6 +162,26 @@ function CinemaAdd() {
         }
     };
 
+    const handleDeleteClick = async (id) => {
+        const confirm = await confirmAction();
+        if (confirm) {
+            const res = DeleteCinemaApi(id, token);
+            if (res) {
+                toast.success(res.result);
+            }
+        }
+    };
+
+    const handleDeleteRoomClick = async (id) => {
+        const confirm = confirmAction();
+        if (confirm) {
+            const res = DeleteCinemaRoomApi(id, token);
+            if (res) {
+                toast.success(res.result);
+            }
+        }
+    };
+
     if (!area) {
         return <Loading />;
     }
@@ -182,7 +203,7 @@ function CinemaAdd() {
                         </button> */}
                     </div>
                     <div className={cx('list')}>
-                        <button className={cx('btn_delete')}>
+                        <button className={cx('btn_delete')} onClick={() => handleDeleteClick(cinemaId)}>
                             <FontAwesomeIcon icon={faTrash} className={cx('icon_btn')} />
                             Xóa rạp chiếu
                         </button>
@@ -297,15 +318,19 @@ function CinemaAdd() {
                                                     <div className={cx('title_tb')}>{row.name}</div>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <div className={cx('title_tb')}>{row.createdDate}</div>
+                                                    <button className={cx('time_title')}>
+                                                        <div className={cx('title_tb')}>{row.createdDate}</div>
+                                                    </button>
                                                 </TableCell>
                                                 <TableCell>
                                                     <div className={cx('title_tb')}>
-                                                        {row.status === 0
-                                                            ? 'Hoạt động'
-                                                            : row.status === 1
-                                                            ? 'Dừng hoạt động'
-                                                            : 'Đang bảo trì'}
+                                                        <button className={cx('status_title')}>
+                                                            {row.status === 0
+                                                                ? 'Hoạt động'
+                                                                : row.status === 1
+                                                                ? 'Dừng hoạt động'
+                                                                : 'Đang bảo trì'}
+                                                        </button>
                                                     </div>
                                                 </TableCell>
                                                 <TableCell>
@@ -322,7 +347,10 @@ function CinemaAdd() {
                                                         >
                                                             <FontAwesomeIcon icon={faPen} />
                                                         </button>
-                                                        <button className={cx('delete')}>
+                                                        <button
+                                                            className={cx('delete')}
+                                                            onClick={() => handleDeleteRoomClick(row.id)}
+                                                        >
                                                             <FontAwesomeIcon icon={faTrash} />
                                                         </button>
                                                     </div>

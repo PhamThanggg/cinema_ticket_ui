@@ -20,7 +20,7 @@ const GetCinemaApi = async (name, page, limit) => {
     }
 };
 
-const GetCinemaIdApi = async (cinemaId, page, limit) => {
+const GetCinemaIdApi = async (cinemaId) => {
     const options = {
         headers: {
             'Content-Type': 'application/json',
@@ -29,6 +29,21 @@ const GetCinemaIdApi = async (cinemaId, page, limit) => {
 
     try {
         const res = await request.get(`cinema/${cinemaId}`, options);
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+const GetCinemaAreaApi = async (areaId) => {
+    const options = {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    };
+
+    try {
+        const res = await request.get(`cinema/area/${areaId}`, options);
         return res;
     } catch (error) {
         console.log(error);
@@ -51,4 +66,20 @@ const CreateCinemaApi = async (data, token) => {
     }
 };
 
-export { GetCinemaApi, CreateCinemaApi, GetCinemaIdApi };
+const DeleteCinemaApi = async (cinemaId, token) => {
+    const options = {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+    };
+
+    try {
+        const res = await request.remove(`cinema/${cinemaId}`, options);
+        return res;
+    } catch (error) {
+        toast.error(error.response.data.message);
+    }
+};
+
+export { DeleteCinemaApi, GetCinemaAreaApi, GetCinemaApi, CreateCinemaApi, GetCinemaIdApi };

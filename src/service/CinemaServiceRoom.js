@@ -68,4 +68,20 @@ const CreateCinemaRoomApi = async (data, token) => {
     }
 };
 
-export { GetAllCinemaRoomApi, GetCinemaRoomApi, CreateCinemaRoomApi, GetCinemaRoomIdApi };
+const DeleteCinemaRoomApi = async (roomId, token) => {
+    const options = {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+    };
+
+    try {
+        const res = await request.remove(`cinema_room/${roomId}`, options);
+        return res;
+    } catch (error) {
+        toast.error(error.response.data.message);
+    }
+};
+
+export { DeleteCinemaRoomApi, GetAllCinemaRoomApi, GetCinemaRoomApi, CreateCinemaRoomApi, GetCinemaRoomIdApi };

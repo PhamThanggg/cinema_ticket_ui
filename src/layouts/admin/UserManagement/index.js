@@ -1,1 +1,1 @@
-export { default } from './ScheduleManagement';
+export { default } from './UserManagement';

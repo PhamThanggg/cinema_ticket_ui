@@ -36,4 +36,29 @@ const GetInvoiceApi = async (page, limit, token) => {
     }
 };
 
-export { CreateInvoiceApi, GetInvoiceApi };
+const GetInvoiceSearchApi = async (data, token) => {
+    const options = {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+        params: {
+            page: data.page,
+            limit: data.limit,
+            invoiceId: data.invoiceId,
+            movieName: data.movieName,
+            cinemaId: data.cinemaId,
+            status: data.status,
+            date: data.data,
+        },
+    };
+
+    try {
+        const res = await request.get('invoice', options);
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export { GetInvoiceSearchApi, CreateInvoiceApi, GetInvoiceApi };

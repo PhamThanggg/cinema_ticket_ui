@@ -49,7 +49,7 @@ function ListMovie({ movies, currentPage, handlePageChange, genres }) {
                 <div>
                     <div className={cx('btn')}>
                         <div>
-                            <button onClick={handleMovieAdd}>
+                            <button onClick={handleMovieAdd} className={cx('btn-add')}>
                                 <FontAwesomeIcon icon={faPlus} className={cx('btn-icon')} />
                                 Tạo phim
                             </button>

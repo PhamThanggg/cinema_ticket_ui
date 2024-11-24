@@ -7,7 +7,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
-const SearchBar = ({ name }) => {
+const SearchBar = ({ name, label }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const [searchValue, setSearchValue] = useState('');
@@ -25,13 +25,13 @@ const SearchBar = ({ name }) => {
     };
 
     return (
-        <div style={{ display: 'flex', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', width: '260px' }}>
             <TextField
                 variant="outlined"
                 size="small"
                 placeholder="Search..."
                 value={searchValue}
-                label="Search"
+                label={label ? label : 'Search'}
                 InputProps={{
                     style: {
                         fontSize: '13px',

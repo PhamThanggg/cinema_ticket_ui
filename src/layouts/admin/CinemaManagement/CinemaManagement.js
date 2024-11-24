@@ -85,15 +85,19 @@ function CinemaManagement({ ...prop }) {
                                                     <div className={cx('title_tb')}>{row.address}</div>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <div className={cx('title_tb')}>{row.createdDate}</div>
+                                                    <div className={cx('title_tb')}>
+                                                        <button className={cx('time_title')}>{row.createdDate}</button>
+                                                    </div>
                                                 </TableCell>
                                                 <TableCell>
                                                     <div className={cx('title_tb')}>
-                                                        {row.status === 0
-                                                            ? 'Đóng cửa'
-                                                            : row.status === 1
-                                                            ? 'Mở cửa'
-                                                            : 'Bảo trì'}
+                                                        <button className={cx('status_title')}>
+                                                            {row.status === 0
+                                                                ? 'Đóng cửa'
+                                                                : row.status === 1
+                                                                ? 'Mở cửa'
+                                                                : 'Bảo trì'}
+                                                        </button>
                                                     </div>
                                                 </TableCell>
                                                 <TableCell>

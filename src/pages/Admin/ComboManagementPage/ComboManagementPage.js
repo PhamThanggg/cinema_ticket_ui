@@ -35,7 +35,7 @@ function ComboManagementPage() {
             setCinemas(res.result);
         }
     };
-    return <ComboManagement combos={combos} cinemas={cinemas} />;
+    return <ComboManagement combos={combos} cinemas={cinemas} cinemaId={cinemaId} />;
 }
 
 export default ComboManagementPage;

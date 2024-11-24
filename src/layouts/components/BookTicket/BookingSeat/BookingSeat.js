@@ -1,7 +1,7 @@
 import classNames from 'classnames/bind';
 import styles from './BookinSeat.module.scss';
 import { useEffect, useState } from 'react';
-import { deleteSeatStatus, GetSeatApi, updateSeatStatus } from '~/service/SeatService';
+import { deleteSeatStatus, GetSeatApi, GetSeatBoughtApi, updateSeatStatus } from '~/service/SeatService';
 import Loading from '~/components/Loading';
 import SockJS from 'sockjs-client';
 import { Stomp } from '@stomp/stompjs';
@@ -15,6 +15,8 @@ function BookingSeat({ seatData, setSeatData, selectedSeats, setSelectedSeats, a
     const { state } = useAuth();
     const { token } = state;
     const [schedule, setSchedule] = useState(JSON.parse(localStorage.getItem('schedule')) || '');
+    const [selectedSeatBought, setSelectedSeatBought] = useState([]);
+    const [selectedSeatAll, setSelectedSeatAll] = useState([]);
 
     useEffect(() => {
         getRoomSeat();
@@ -26,16 +28,19 @@ function BookingSeat({ seatData, setSeatData, selectedSeats, setSelectedSeats, a
         // Kết nối STOMP
         stompClient.connect({}, () => {
             console.log('Connected to WebSocket');
-            // Subscribe tới topic '/topic/seats'
             stompClient.subscribe('/topic/seats', (message) => {
                 const updatedSeats = JSON.parse(message.body);
-
-                // Cập nhật danh sách ghế
+                console.log(updatedSeats);
                 setSeatData((prevSeatData) => {
                     return prevSeatData.map(
                         (seat) => updatedSeats.find((updatedSeat) => updatedSeat.id === seat.id) || seat,
                     );
                 });
+                setSelectedSeatAll((prevSeatAll) =>
+                    prevSeatAll.filter(
+                        (selectedSeat) => !updatedSeats.some((updatedSeat) => updatedSeat.id === selectedSeat.id),
+                    ),
+                );
             });
         });
 
@@ -50,10 +55,14 @@ function BookingSeat({ seatData, setSeatData, selectedSeats, setSelectedSeats, a
     useEffect(() => {
         const getSeatSelect = async () => {
             if (schedule && schedule.ScheduleId) {
-                const data = await GetSeatSelectApi(schedule.ScheduleId, token);
+                const data = await GetSeatSelectApi(schedule.ScheduleId, 0, token);
+                const data2 = await GetSeatBoughtApi(schedule.ScheduleId, 1, token);
 
                 if (data && data.result) {
-                    setSelectedSeats(data.result);
+                    setSelectedSeatAll(data.result);
+                }
+                if (data2 && data2.result) {
+                    setSelectedSeatBought(data2.result);
                 }
             }
         };
@@ -71,6 +80,8 @@ function BookingSeat({ seatData, setSeatData, selectedSeats, setSelectedSeats, a
         }
     };
 
+    console.log(seatData);
+
     if (seatData) {
         var groupedSeats = seatData.reduce((acc, seat) => {
             if (!acc[seat.row]) {
@@ -82,7 +93,8 @@ function BookingSeat({ seatData, setSeatData, selectedSeats, setSelectedSeats, a
         }, {});
     }
 
-    const handleSeatClick = (seat) => {
+    const handleSeatClick = async (seat) => {
+        console.log(seat);
         // Kiểm tra ghế đã được chọn hay chưa
         if (selectedSeats.length > 0 && selectedSeats.some((selectedSeat) => selectedSeat.id === seat.id)) {
             // Nếu đã chọn thì bỏ chọn
@@ -95,7 +107,6 @@ function BookingSeat({ seatData, setSeatData, selectedSeats, setSelectedSeats, a
             }
         } else {
             // Nếu chưa chọn thì thêm vào danh sách
-            setSelectedSeats([...selectedSeats, seat]);
             // cập nhật chọn ghế
             const now = new Date();
             const reservationTime = formatDateToCustomFormat(now);
@@ -117,7 +128,14 @@ function BookingSeat({ seatData, setSeatData, selectedSeats, setSelectedSeats, a
                 reservation_time: reservationTime,
                 expiry_time: expiryTime,
             };
-            updateSeatStatus(data, token);
+            const res = await updateSeatStatus(data, token);
+            if (res && res.result) {
+                if (Array.isArray(res.result)) {
+                    setSelectedSeats([...selectedSeats, ...res.result]);
+                } else if (res) {
+                    setSelectedSeats([...selectedSeats, res.result]);
+                }
+            }
         }
     };
 
@@ -156,33 +174,67 @@ function BookingSeat({ seatData, setSeatData, selectedSeats, setSelectedSeats, a
                                                 },
                                                 {
                                                     active_buy:
-                                                        seat.seatReservations.length > 0 &&
-                                                        seat.seatReservations[0].status === 1,
+                                                        selectedSeatBought.length > 0 &&
+                                                        selectedSeatBought.some(
+                                                            (selectedSeat) =>
+                                                                selectedSeat.seatReservations.status === 1 &&
+                                                                selectedSeat.id === seat.id,
+                                                        ),
                                                 },
                                                 {
                                                     select:
-                                                        seat.seatReservations.length > 0 &&
-                                                        seat.seatReservations[0].status === 0 &&
-                                                        seat.seatReservations[0].userId !== account.id &&
-                                                        new Date(seat.seatReservations[0].expiry_time).getTime() >
+                                                        selectedSeatAll.length > 0 &&
+                                                        selectedSeatAll.some(
+                                                            (selectedSeat) =>
+                                                                selectedSeat.seatReservations.status === 0 &&
+                                                                selectedSeat.seatReservations.userId !== account.id &&
+                                                                selectedSeat.id === seat.id &&
+                                                                new Date(
+                                                                    selectedSeat.seatReservations.expiry_time,
+                                                                ).getTime() > new Date().getTime(),
+                                                        ),
+                                                },
+                                                {
+                                                    select:
+                                                        seat.seatReservations &&
+                                                        seat.seatReservations.status === 0 &&
+                                                        seat.seatReservations.userId !== account.id &&
+                                                        new Date(seat.seatReservations.expiry_time).getTime() >
                                                             new Date().getTime(),
                                                 },
                                                 {
                                                     active:
-                                                        seat.seatReservations.length > 0 &&
-                                                        seat.seatReservations[0].status === 0 &&
-                                                        seat.seatReservations[0].userId === account.id &&
-                                                        new Date(seat.seatReservations[0].expiry_time).getTime() >
-                                                            new Date().getTime(),
+                                                        selectedSeats.length > 0 &&
+                                                        selectedSeats.some(
+                                                            (selectedSeat) =>
+                                                                selectedSeat.seatReservations.status === 0 &&
+                                                                selectedSeat.seatReservations.userId === account.id &&
+                                                                selectedSeat.id === seat.id &&
+                                                                new Date(
+                                                                    selectedSeat.seatReservations.expiry_time,
+                                                                ).getTime() > new Date().getTime(),
+                                                        ),
                                                 },
                                             )}
                                             key={seat.id}
                                             onClick={() => handleSeatClick(seat)}
                                             disabled={
-                                                seat.seatReservations.length > 0 &&
-                                                ((seat.seatReservations[0].userId !== account.id &&
-                                                    seat.seatReservations[0].status === 0) ||
-                                                    seat.seatReservations[0].status === 1)
+                                                (selectedSeatAll.length > 0 &&
+                                                    selectedSeatAll.some(
+                                                        (selectedSeat) =>
+                                                            selectedSeat.seatReservations.status === 0 &&
+                                                            selectedSeat.seatReservations.userId !== account.id &&
+                                                            selectedSeat.id === seat.id &&
+                                                            new Date(
+                                                                selectedSeat.seatReservations.expiry_time,
+                                                            ).getTime() > new Date().getTime(),
+                                                    )) ||
+                                                (selectedSeatBought.length > 0 &&
+                                                    selectedSeatBought.some(
+                                                        (selectedSeat) =>
+                                                            selectedSeat.seatReservations.status === 1 &&
+                                                            selectedSeat.id === seat.id,
+                                                    ))
                                             }
                                         >
                                             {seat.name}

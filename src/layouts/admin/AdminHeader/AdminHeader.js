@@ -73,29 +73,17 @@ function Header({ toggleSidebar, isSidebarVisible }) {
         {
             label: 'Quản lý đơn hàng',
             icon: <FontAwesomeIcon icon={faReceipt} className={cx('dashboard_icon')} />,
-            links: [
-                { label: 'Daily', path: '/reports/daily' },
-                { label: 'Weekly', path: '/reports/weekly' },
-                { label: 'Monthly', path: '/reports/monthly' },
-            ],
+            links: [{ label: 'Danh sách đơn hàng', path: routes.ListBooking }],
         },
         {
             label: 'Quản lý người dùng',
             icon: <FontAwesomeIcon icon={faUser} className={cx('dashboard_icon')} />,
-            links: [
-                { label: 'Daily', path: '/reports/daily' },
-                { label: 'Weekly', path: '/reports/weekly' },
-                { label: 'Monthly', path: '/reports/monthly' },
-            ],
+            links: [{ label: 'Danh sách người dùng', path: routes.ListUser }],
         },
         {
             label: 'Quản lý quyền',
             icon: <FontAwesomeIcon icon={faShield} className={cx('dashboard_icon')} />,
-            links: [
-                { label: 'Daily', path: '/reports/daily' },
-                { label: 'Weekly', path: '/reports/weekly' },
-                { label: 'Monthly', path: '/reports/monthly' },
-            ],
+            links: [{ label: 'Danh sách vai trò', path: routes.ListRole }],
         },
     ];
 

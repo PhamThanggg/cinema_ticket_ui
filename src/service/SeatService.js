@@ -33,7 +33,7 @@ const GetSeatRoomApi = async (roomId) => {
     }
 };
 
-const GetSeatSelectApi = async (scheduleId, token) => {
+const GetSeatSelectApi = async (scheduleId, status, token) => {
     const options = {
         headers: {
             'Content-Type': 'application/json',
@@ -41,11 +41,32 @@ const GetSeatSelectApi = async (scheduleId, token) => {
         },
         params: {
             schedule_id: scheduleId,
+            status: status,
         },
     };
 
     try {
         const res = await request.get(`cinema_seat/seatBooked`, options);
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+const GetSeatBoughtApi = async (scheduleId, status, token) => {
+    const options = {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+        params: {
+            schedule_id: scheduleId,
+            status: status,
+        },
+    };
+
+    try {
+        const res = await request.get(`cinema_seat/seatBought`, options);
         return res;
     } catch (error) {
         console.log(error);
@@ -89,4 +110,4 @@ const deleteSeatStatus = async (data, scheduleId, token) => {
     }
 };
 
-export { GetSeatApi, updateSeatStatus, deleteSeatStatus, GetSeatSelectApi, GetSeatRoomApi };
+export { GetSeatBoughtApi, GetSeatApi, updateSeatStatus, deleteSeatStatus, GetSeatSelectApi, GetSeatRoomApi };
