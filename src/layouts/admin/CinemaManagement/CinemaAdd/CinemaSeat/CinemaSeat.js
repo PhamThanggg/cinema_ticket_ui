@@ -12,6 +12,8 @@ const cx = classNames.bind(styles);
 
 function CinemaSeat({ open, handleClose, roomId }) {
     const [seatData, setSeatData] = useState(null);
+    const [seat, setSeat] = useState(null);
+    const [groupedSeats, setGroupedSeats] = useState({});
 
     useEffect(() => {
         const getRoomSeat = async () => {
@@ -27,26 +29,31 @@ function CinemaSeat({ open, handleClose, roomId }) {
         getRoomSeat();
     }, [roomId]);
 
-    if (seatData) {
-        var groupedSeats = seatData.reduce((acc, seat) => {
-            if (!acc[seat.row]) {
-                acc[seat.row] = [];
-            }
+    useEffect(() => {
+        if (seatData) {
+            const grouped = seatData.reduce((acc, seat) => {
+                if (!acc[seat.row]) {
+                    acc[seat.row] = [];
+                }
 
-            acc[seat.row].push(seat);
-            return acc;
-        }, {});
-    }
+                acc[seat.row].push(seat);
+                return acc;
+            }, {});
+
+            setGroupedSeats(grouped);
+        }
+    }, [seatData]);
 
     // hiện dialog seat
     const [isDialogOpen, setDialogOpen] = useState(false);
 
-    const handleLoginClick = (id) => {
-        console.log('ID được truyền vào:', id);
+    const handleLoginClick = (seat) => {
+        setSeat(seat);
         setDialogOpen(true);
     };
 
     const handleCloseDialog = () => {
+        setSeat(null);
         setDialogOpen(false);
     };
 
@@ -63,6 +70,7 @@ function CinemaSeat({ open, handleClose, roomId }) {
                 sx={{
                     '& .MuiDialog-container': {
                         '& .MuiPaper-root': {
+                            zIndex: 1000,
                             width: '100%',
                             maxWidth: '1000px',
                             top: '-10%',
@@ -86,13 +94,36 @@ function CinemaSeat({ open, handleClose, roomId }) {
                                         <div className={cx('column')}>{row}</div>
                                         <div className={cx('row')}>
                                             {seats.map((seat) => {
-                                                return (
+                                                return seat.status === 1 ? (
                                                     <button
-                                                        className={cx('seat')}
+                                                        className={cx(
+                                                            'seat',
+                                                            seat.seatType.id === 2
+                                                                ? 'vip'
+                                                                : seat.seatType.id === 3
+                                                                ? 'double'
+                                                                : '',
+                                                        )}
                                                         key={seat.id}
-                                                        onClick={() => handleLoginClick(seat.id)}
+                                                        onClick={() => handleLoginClick(seat)}
                                                     >
-                                                        {seat.name}
+                                                        {seat.seatType.id === 3 ? 'x-y' : seat.name}
+                                                    </button>
+                                                ) : seat.status === 2 ? (
+                                                    <button
+                                                        className={cx('seat-space')}
+                                                        key={seat.id}
+                                                        onClick={() => handleLoginClick(seat)}
+                                                    >
+                                                        --
+                                                    </button>
+                                                ) : (
+                                                    <button
+                                                        className={cx('seat-space')}
+                                                        key={seat.id}
+                                                        onClick={() => handleLoginClick(seat)}
+                                                    >
+                                                        X
                                                     </button>
                                                 );
                                             })}
@@ -113,6 +144,14 @@ function CinemaSeat({ open, handleClose, roomId }) {
                                         <div className={cx('status-color', 'pink')}></div>
                                         <span className={cx('status-name')}>Ghế đang chọn</span>
                                     </div>
+                                    <div className={cx('status')}>
+                                        <div> -- </div>
+                                        <span className={cx('status-name')}>Khoảng trắng</span>
+                                    </div>
+                                    <div className={cx('status')}>
+                                        <div>X</div>
+                                        <span className={cx('status-name')}>Ghế bị xóa</span>
+                                    </div>
                                 </div>
 
                                 <div className={cx('seat-type')}>
@@ -125,7 +164,7 @@ function CinemaSeat({ open, handleClose, roomId }) {
                                         <span className={cx('type-name')}>Ghế vip</span>
                                     </div>
                                     <div className={cx('type')}>
-                                        <div className={cx('type-color', 'double')}></div>
+                                        <div className={cx('type-color', 'double')}>x - y</div>
                                         <span className={cx('type-name')}>Ghế đôi</span>
                                     </div>
                                 </div>
@@ -135,12 +174,21 @@ function CinemaSeat({ open, handleClose, roomId }) {
                     </div>
 
                     <div className={cx('btn_center')}>
-                        <button className={cx('btn_save')}>Lưu</button>
+                        <button className={cx('btn_save')} onClick={() => handleLoginClick(null)}>
+                            Thêm ghế
+                        </button>
                     </div>
                 </DialogContent>
             </Dialog>
 
-            <CinemaSeatDetail open={isDialogOpen} handleClose={handleCloseDialog} />
+            <CinemaSeatDetail
+                open={isDialogOpen}
+                handleClose={handleCloseDialog}
+                setSeatData={setSeatData}
+                seat={seat}
+                roomId={roomId}
+                handleCloseDialog={handleCloseDialog}
+            />
         </div>
     );
 }

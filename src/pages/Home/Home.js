@@ -21,8 +21,8 @@ function Home() {
 
     const getMovieShowNow = async () => {
         try {
-            const showNowApi = await MovieShowNowApi(0, 0, 4);
-            const comming = await MovieShowNowApi(1, 0, 4);
+            const showNowApi = await MovieShowNowApi(1, 0, 4);
+            const comming = await MovieShowNowApi(0, 0, 4);
 
             setRes(showNowApi);
             setResC(comming);
@@ -39,8 +39,8 @@ function Home() {
         <div className={cx('wrapper')}>
             <Slider />
             <div className={cx('wrapper-movie')}>
-                <Movie movieType={movieType} showBuyTicketButton={true} movieData={res.result} />
-                <Movie movieType={movieType2} showBuyTicketButton={false} movieData={resC.result} />
+                <Movie movieType={movieType} showBuyTicketButton={true} movieData={res.result} status={0} />
+                <Movie movieType={movieType2} showBuyTicketButton={false} movieData={resC.result} status={1} />
                 <Promotion />
             </div>
         </div>

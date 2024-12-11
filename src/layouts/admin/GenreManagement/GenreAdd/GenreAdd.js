@@ -105,10 +105,17 @@ function GenreAdd({ open, handleClose, setGenreList, genreId }) {
                 <button className={cx('btn-close')} onClick={handleClose}>
                     <FontAwesomeIcon icon={faClose} />
                 </button>
-                <div className={cx('title')}>{!genreId ? 'Tạo thể loại' : 'Sửa thể loại'}</div>
+                <div className={cx('title_ctn_glb')}>
+                    <div className={cx('title')}>{!genreId ? 'Tạo thể loại' : 'Sửa thể loại'}</div>
+                    <div className={cx('star_title_glb')}>
+                        (dấu <span className={cx('star_css_glb')}>*</span> là trường bắt buộc)
+                    </div>
+                </div>
                 <div className={cx('form')}>
                     <div className={cx('ctn-input')}>
-                        <label className={cx('label')}>Tên thể loại</label>
+                        <label className={cx('label')}>
+                            Tên thể loại <span className={cx('star_css_glb')}>*</span>
+                        </label>
                         <div className={cx('input')}>
                             <input
                                 className={cx('input-txt')}
@@ -121,7 +128,9 @@ function GenreAdd({ open, handleClose, setGenreList, genreId }) {
                         </div>
                     </div>
                     <div className={cx('ctn-input')}>
-                        <label className={cx('label')}>Chọn trạng thái:</label>
+                        <label className={cx('label')}>
+                            Chọn trạng thái: <span className={cx('star_css_glb')}>*</span>
+                        </label>
                         <select
                             className={cx('input', 'select')}
                             name="status"

@@ -32,6 +32,8 @@ function Confirmation() {
         localStorage.removeItem('totalPrice');
         localStorage.removeItem('timestamp');
         localStorage.removeItem('itemBooked');
+        localStorage.removeItem('star');
+        localStorage.removeItem('promotion');
 
         const confirmPayment = async () => {
             try {

@@ -32,7 +32,6 @@ function Slide() {
         'https://cdn.galaxycine.vn/media/2024/8/29/2048_1724920527246.jpg',
         'https://cdn.galaxycine.vn/media/2024/9/9/cam-2048_1725872495016.jpg',
         'https://cdn.galaxycine.vn/media/2024/9/9/shopee-pay-1_1725853205539.jpg',
-        'https://phenikaa-uni.edu.vn:3600/pu/vi/quoc-te-phu-nu-201024.jpg',
     ];
 
     const settings = {

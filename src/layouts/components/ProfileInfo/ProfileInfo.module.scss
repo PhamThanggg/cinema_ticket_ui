@@ -12,7 +12,9 @@
 }
 
 .wrapper-start {
+    margin-top: 20px;
     width: 385px;
+    height: 450px;
     border-radius: 10px;
     background-color: var(--white);
     --tw-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
@@ -46,6 +48,7 @@
 .name {
     font-size: 18px;
     font-weight: 600;
+    color: var(--text-color);
 }
 
 .name-stars {
@@ -71,6 +74,7 @@
 
 .total-txt {
     font-weight: 700;
+    color: var(--text-color);
 }
 
 .total-number {
@@ -193,6 +197,7 @@
 }
 
 .card__item__ticket {
+    margin-top: 5px;
     display: flex;
     align-items: center;
     width: 100%;
@@ -273,6 +278,7 @@
 
 .pagination {
     margin-top: 20px;
+    padding-bottom: 20px;
     display: flex;
     justify-content: center;
 }

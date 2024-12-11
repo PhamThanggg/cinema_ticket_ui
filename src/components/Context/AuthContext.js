@@ -3,6 +3,7 @@ import { IntrospectApi } from '~/service/auth';
 import { toast } from 'react-toastify';
 import { getMyInfoApi } from '~/service/UserAPI';
 import Loading from '../Loading';
+import { jwtDecode } from 'jwt-decode';
 
 const AuthContext = createContext();
 
@@ -18,6 +19,8 @@ const authReducer = (state, action) => {
             return { ...state, user: action.payload, isAuthenticated: true, token: action.payload.token };
         case 'LOADING':
             return { ...state, loading: action.payload };
+        case 'SET_PERMISSION':
+            return { ...state, permission: action.payload };
         default:
             return state;
     }
@@ -28,6 +31,7 @@ export const AuthProvider = ({ children }) => {
         user: null,
         isAuthenticated: !!localStorage.getItem('token'),
         account: null,
+        permission: [],
         loading: true,
         token: localStorage.getItem('token'),
     });
@@ -39,7 +43,10 @@ export const AuthProvider = ({ children }) => {
                 try {
                     const validToken = await IntrospectApi(token);
                     if (validToken && validToken.result.introspect) {
+                        const permissions = parsePermissionsFromToken(token);
+
                         dispatch({ type: 'LOGIN', payload: { ...validToken, token } });
+                        dispatch({ type: 'SET_PERMISSION', payload: permissions });
                         await getMyInfo(token);
                     } else {
                         logout();
@@ -69,13 +76,26 @@ export const AuthProvider = ({ children }) => {
 
     const login = (userData) => {
         localStorage.setItem('token', userData.token);
+        const permissions = parsePermissionsFromToken(userData.token);
+
         dispatch({ type: 'LOGIN', payload: userData });
+        dispatch({ type: 'SET_PERMISSION', payload: permissions });
         getMyInfo(userData.token);
     };
 
     const logout = () => {
         localStorage.removeItem('token');
         dispatch({ type: 'LOGOUT' });
+    };
+
+    const parsePermissionsFromToken = (token) => {
+        try {
+            const decoded = jwtDecode(token);
+            return decoded.scope ? decoded.scope.split(' ') : [];
+        } catch (error) {
+            console.error('Error decoding token:', error);
+            return [];
+        }
     };
 
     if (state.loading) {

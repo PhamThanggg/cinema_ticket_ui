@@ -3,6 +3,7 @@ import styles from './FoodSelection.module.scss';
 import QuantityInput from '~/components/QuantityInput';
 import { useEffect, useState } from 'react';
 import { GetItemApi } from '~/service/ItemService';
+import { formatVND } from '~/utils/vndPrice';
 
 const cx = classNames.bind(styles);
 
@@ -68,7 +69,7 @@ function FoodSelection({ setItem }) {
                                 <div className={cx('title')}>
                                     <p className={cx('name')}>{data?.name || ''}</p>
                                     <p className={cx('des')}>{data?.description || ''}</p>
-                                    <p className={cx('price')}>Giá: {data?.price || 10000} ₫</p>
+                                    <p className={cx('price')}>Giá: {formatVND(data?.price || 10000)} </p>
                                 </div>
                             </div>
                             <div className={cx('quantity')}>

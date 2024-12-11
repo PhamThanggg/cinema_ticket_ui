@@ -13,22 +13,26 @@ import { useLocation } from 'react-router-dom';
 import { GetAreaApi } from '~/service/AreaService';
 import Loading from '~/components/Loading';
 import { toast } from 'react-toastify';
-import { CreateCinemaApi, DeleteCinemaApi, GetCinemaIdApi } from '~/service/CinemaService';
+import { CreateCinemaApi, DeleteCinemaApi, GetCinemaIdApi, UpdateCinema } from '~/service/CinemaService';
 import { useAuth } from '~/components/Context/AuthContext';
 import { DeleteCinemaRoomApi, GetCinemaRoomApi } from '~/service/CinemaServiceRoom';
 import { confirmAction } from '~/components/ConfirmAction/ConfirmAction';
+import DropDown from '~/components/DropDown';
+import SearchBar from '~/components/SearchBar';
 
 const cx = classNames.bind(styles);
 function CinemaAdd() {
     const navigate = useNavigate();
     const location = useLocation();
-    const { cinemaId } = location.state || {};
+    // const { cinemaId } = location.state || {};
+    const [cinemaId, setCinemaId] = useState(
+        location.state?.cinemaId || new URLSearchParams(location.search).get('cinemaId'),
+    );
     const { state } = useAuth();
     const { token } = state;
     const queryParams = new URLSearchParams(location.search);
     const initialPage = Math.max(1, Number(queryParams.get('page')) || 1);
     const [currentPage, setCurrentPage] = useState(initialPage);
-
     const [formData, setFormData] = useState({
         name_cinema: '',
         address: '',
@@ -39,6 +43,14 @@ function CinemaAdd() {
     const [area, setArea] = useState(null);
     const [cinemaRoom, setCinemaRoom] = useState(null);
     const [roomId, setRoomId] = useState(null);
+    const [room, setRoom] = useState(null);
+    const [reRender, setReRender] = useState(true);
+
+    const [status, setStatus] = useState([
+        { value: 1, name: 'Hoạt động' },
+        { value: 2, name: 'Dừng hoạt động' },
+        { value: 3, name: 'Đang bảo trì' },
+    ]);
 
     useEffect(() => {
         const getArea = async () => {
@@ -47,17 +59,6 @@ function CinemaAdd() {
                 setArea(getArea.result);
             } catch (error) {
                 console.log('Error get area');
-            }
-        };
-
-        const getCinemaRoom = async () => {
-            try {
-                const res = await GetCinemaRoomApi(null, cinemaId, currentPage - 1, 8);
-                if (res) {
-                    setCinemaRoom(res);
-                }
-            } catch (error) {
-                console.log('Error get cinema room');
             }
         };
 
@@ -81,8 +82,24 @@ function CinemaAdd() {
 
         getArea();
         getcinemaId();
-        getCinemaRoom();
     }, []);
+
+    useEffect(() => {
+        const status = queryParams.get('status');
+        const name = queryParams.get('name');
+        const getCinemaRoom = async () => {
+            try {
+                const res = await GetCinemaRoomApi(name, status - 1, cinemaId, currentPage - 1, 10);
+                if (res) {
+                    setCinemaRoom(res);
+                }
+            } catch (error) {
+                console.log('Error get cinema room');
+            }
+        };
+
+        getCinemaRoom();
+    }, [reRender, location]);
 
     const handlePageChange = (newPage) => {
         if (newPage < 1) return;
@@ -122,17 +139,19 @@ function CinemaAdd() {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isDialogSeatOpen, setDialogSeatOpen] = useState(false);
 
-    const handleLoginClick = (id) => {
-        console.log('ID được truyền vào:', id);
+    const handleLoginClick = (id, room) => {
+        setRoom(room);
+        setRoomId(id);
         setDialogOpen(true);
     };
 
     const handleCloseDialog = () => {
+        setRoom(null);
+        setRoomId(null);
         setDialogOpen(false);
     };
 
     const handleSeatClick = (id) => {
-        console.log('ID được truyền vào:', id);
         setRoomId(id);
         setDialogSeatOpen(true);
     };
@@ -155,29 +174,35 @@ function CinemaAdd() {
         if (!cinemaId) {
             const res = await CreateCinemaApi(data, token);
             if (res) {
-                toast.success(res.message);
+                toast.success('Thêm rạp thành công');
+                navigate(routes.CinemaManagement);
             }
         } else {
-            toast.success('Cập nhật ok');
+            const res = await UpdateCinema(cinemaId, data, token);
+            if (res) {
+                toast.success('Cập nhật thành công');
+            }
         }
     };
 
     const handleDeleteClick = async (id) => {
         const confirm = await confirmAction();
         if (confirm) {
-            const res = DeleteCinemaApi(id, token);
+            const res = await DeleteCinemaApi(id, token);
             if (res) {
-                toast.success(res.result);
+                toast.success('Xóa rạp thành công');
+                navigate(routes.CinemaManagement);
             }
         }
     };
 
     const handleDeleteRoomClick = async (id) => {
-        const confirm = confirmAction();
+        const confirm = await confirmAction();
         if (confirm) {
-            const res = DeleteCinemaRoomApi(id, token);
+            const res = await DeleteCinemaRoomApi(id, token);
             if (res) {
-                toast.success(res.result);
+                toast.success('Xóa phòng thành công');
+                setReRender((prev) => !prev);
             }
         }
     };
@@ -212,7 +237,9 @@ function CinemaAdd() {
 
                 <div className={cx('form-container')}>
                     <div className={cx('form-group')}>
-                        <label htmlFor="name_cinema">Tên rạp chiếu:</label>
+                        <label htmlFor="name_cinema">
+                            Tên rạp chiếu: <span className={cx('star_css_glb')}>*</span>
+                        </label>
                         <input
                             type="text"
                             id="name_cinema"
@@ -224,7 +251,9 @@ function CinemaAdd() {
                     </div>
 
                     <div className={cx('form-group')}>
-                        <label htmlFor="address">Địa chỉ chi tiết:</label>
+                        <label htmlFor="address">
+                            Địa chỉ chi tiết: <span className={cx('star_css_glb')}>*</span>
+                        </label>
                         <input
                             type="text"
                             id="address"
@@ -236,7 +265,9 @@ function CinemaAdd() {
                     </div>
 
                     <div className={cx('form-group')}>
-                        <label htmlFor="status">Trạng thái:</label>
+                        <label htmlFor="status">
+                            Trạng thái: <span className={cx('star_css_glb')}>*</span>
+                        </label>
                         <select
                             id="status"
                             name="status"
@@ -251,7 +282,9 @@ function CinemaAdd() {
                     </div>
 
                     <div className={cx('form-group')}>
-                        <label htmlFor="area_id">Khu vực:</label>
+                        <label htmlFor="area_id">
+                            Khu vực: <span className={cx('star_css_glb')}>*</span>
+                        </label>
                         <select
                             id="area_id"
                             name="area_id"
@@ -275,13 +308,17 @@ function CinemaAdd() {
 
                 {cinemaId && (
                     <div className={cx('list')}>
+                        <p style={{ marginBottom: '10px' }}>Danh sách phòng chiếu</p>
                         <div className={cx('title')}>
-                            <p>Danh sách phòng chiếu</p>
                             <div className={cx('btn_list')}>
-                                <button onClick={() => handleLoginClick(cinemaId)}>
+                                <button onClick={() => handleLoginClick(null)}>
                                     <FontAwesomeIcon icon={faPlus} className={cx('icon_btn')} />
                                     Tạo phòng chiếu
                                 </button>
+                            </div>
+                            <div style={{ display: 'flex' }}>
+                                <DropDown searchName={'Chọn trạng thái'} data={status} name={'status'} />
+                                <SearchBar name="name" label={'Nhập tên phòng'} />
                             </div>
                         </div>
                         <TableContainer component={Paper}>
@@ -343,7 +380,7 @@ function CinemaAdd() {
                                                         </button>
                                                         <button
                                                             className={cx('pen')}
-                                                            onClick={() => handleLoginClick(row.id)}
+                                                            onClick={() => handleLoginClick(row.id, row)}
                                                         >
                                                             <FontAwesomeIcon icon={faPen} />
                                                         </button>
@@ -359,6 +396,11 @@ function CinemaAdd() {
                                         ))}
                                 </TableBody>
                             </Table>
+                            {cinemaRoom && cinemaRoom.result.length < 1 && (
+                                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                    Không có phòng chiếu nào
+                                </div>
+                            )}
                         </TableContainer>
                         <div className={cx('pagination')}>
                             {cinemaRoom && cinemaRoom.totalPages > 1 && (
@@ -370,9 +412,21 @@ function CinemaAdd() {
                             )}
                         </div>
 
-                        <CinemaRoom open={isDialogOpen} handleClose={handleCloseDialog} cinemaId={cinemaId} />
+                        <CinemaRoom
+                            open={isDialogOpen}
+                            handleClose={handleCloseDialog}
+                            cinemaId={cinemaId}
+                            roomId={roomId}
+                            room={room}
+                            setReRender={setReRender}
+                        />
                         {roomId && (
-                            <CinemaSeat open={isDialogSeatOpen} handleClose={handleCloseSeatDialog} roomId={roomId} />
+                            <CinemaSeat
+                                open={isDialogSeatOpen}
+                                handleClose={handleCloseSeatDialog}
+                                roomId={roomId}
+                                cinemaId={cinemaId}
+                            />
                         )}
                     </div>
                 )}

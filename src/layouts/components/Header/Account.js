@@ -47,10 +47,10 @@ function Account({ offSet }) {
             render={(attrs) => (
                 <div className={cx('dropdown-menu')} tabIndex="-1" {...attrs}>
                     <ul className={cx('menu-list-respon')}>
-                        <Link to={'/profile'}>
+                        <Link to={'/profile#personalInfo'}>
                             <li className={cx('menu-item')}>Tài khoản</li>
                         </Link>
-                        <Link to={'/profile'}>
+                        <Link to={'/profile#ticketInfo'}>
                             <li className={cx('menu-item')}>Lịch Sử</li>
                         </Link>
                         <li className={cx('menu-item')} onClick={handleLogout}>
@@ -69,7 +69,7 @@ function Account({ offSet }) {
                     </span>
                     <span className={cx('username')}>
                         <img className={cx('image-gift')} src={images.gift} alt="name" />
-                        <span style={{ marginLeft: '5px' }}>{`0 Stars`}</span>
+                        <span style={{ marginLeft: '5px' }}>{account?.star} Stars</span>
                     </span>
                 </div>
             </div>

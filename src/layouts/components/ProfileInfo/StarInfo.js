@@ -2,11 +2,29 @@ import classNames from 'classnames/bind';
 import styles from './ProfileInfo.module.scss';
 import images from '~/assets/image';
 import { useAuth } from '~/components/Context/AuthContext';
+import { useEffect, useState } from 'react';
+import { GetInvoiceTotalPriceaApi } from '~/service/InvocieService';
+import { formatVND } from '~/utils/vndPrice';
 
 const cx = classNames.bind(styles);
 
 function StarInfo() {
-    const { account } = useAuth();
+    const { state } = useAuth();
+    const { token, account } = state;
+    const [total, setTotal] = useState(0);
+
+    useEffect(() => {
+        const getTotalPrice = async () => {
+            const res = await GetInvoiceTotalPriceaApi(token);
+
+            if (res && res.result) {
+                setTotal(res.result);
+            }
+        };
+
+        getTotalPrice();
+    }, []);
+
     return (
         <div className={cx('wrap')}>
             <div className={cx('ctn')}>
@@ -23,15 +41,13 @@ function StarInfo() {
                 <div className={cx('acc-name')}>
                     <p className={cx('name')}>{account?.fullName || ''}</p>
                 </div>
-                <div className={cx('name-stars')}>50 Stars</div>
+                <div className={cx('name-stars')}>{account?.star} Stars</div>
 
                 <div className={cx('line')}></div>
 
                 <div className={cx('total-pay')}>
                     <span className={cx('total-txt')}>Tổng chỉ tiêu {2024}</span>
-                    <span className={cx('total-number')}>
-                        0 <u>đ</u>
-                    </span>
+                    <span className={cx('total-number')}>{formatVND(total)}</span>
                 </div>
 
                 <div className={cx('Rating_rating')}>

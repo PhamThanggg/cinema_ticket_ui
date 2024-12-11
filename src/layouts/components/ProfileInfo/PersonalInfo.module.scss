@@ -38,6 +38,18 @@
     height: 38px;
     border-radius: 3px;
     margin-bottom: 15px;
+
+    span {
+        font-size: 14px;
+        width: 130px;
+        padding: 10px 0;
+        color: var(--primary);
+        cursor: pointer;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
 }
 
 .input-txt {
@@ -45,13 +57,12 @@
     height: 100%;
     padding: 0 10px;
     border-radius: 3px;
-    display: flex;
-    justify-content: center;
     align-items: center;
     font-size: 16px;
+    color: var(--text-color);
 }
 
-.input.focused {
+input_date .input.focused {
     border-color: var(--primary);
 }
 
@@ -141,6 +152,7 @@
 .label-res {
     font-size: 12px;
     font-weight: 600;
+    color: var(--text-color);
 }
 
 .input-txt-date {

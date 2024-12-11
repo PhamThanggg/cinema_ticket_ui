@@ -8,6 +8,7 @@ import Register from '~/layouts/components/AuthDialog/Register';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import LuckyWheel from '~/components/LuckyWheel/LuckyWheel';
 
 const cx = classNames.bind(styles);
 
@@ -42,6 +43,7 @@ function DefaultLayout({ children }) {
                 <Register open={isDialogOpen} handleClose={handleCloseDialog} handleLogin={toggleForm} />
             )}
             <ToastContainer
+                style={{ marginTop: '40px' }}
                 position="top-right"
                 autoClose={3000}
                 hideProgressBar={false}
@@ -56,6 +58,7 @@ function DefaultLayout({ children }) {
             <div className={cx('container')}>
                 <div className={cx('content')}>{children}</div>
             </div>
+            {/* <LuckyWheel /> */}
             <Footer />
         </div>
     );

@@ -36,7 +36,7 @@ const MovieShowNowApi = async (status, page, limit) => {
     }
 };
 
-const MovieAreaShowNowApi = async (areaId, status, page, limit) => {
+const MovieAreaShowNowApi = async (areaId, status, genreId, name, page, limit) => {
     const options = {
         headers: {
             'Content-Type': 'application/json',
@@ -44,11 +44,15 @@ const MovieAreaShowNowApi = async (areaId, status, page, limit) => {
         params: {
             page: page,
             limit: limit,
+            status: status,
+            areaId: areaId,
+            genreId: genreId,
+            name: name,
         },
     };
 
     try {
-        const res = await request.get(`movie/show-area/${status}/${areaId}`, options);
+        const res = await request.get(`movie/show-movie`, options);
         return res;
     } catch (error) {
         console.log(error);

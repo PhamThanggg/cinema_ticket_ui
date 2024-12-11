@@ -54,11 +54,11 @@ function Register({ open, handleClose, handleLogin }) {
     };
 
     const handleMaleClick = () => {
-        setGender('male');
+        setGender('Nam');
     };
 
     const handleFemaleClick = () => {
-        setGender('female');
+        setGender('Nữ');
     };
 
     //gender
@@ -202,8 +202,8 @@ function Register({ open, handleClose, handleLogin }) {
                             <div className={cx('gender-male')} onClick={handleMaleClick}>
                                 <input
                                     type="radio"
-                                    value="male"
-                                    checked={gender === 'male'}
+                                    value="Nam"
+                                    checked={gender === 'Nam'}
                                     onChange={handleGenderChange}
                                 />
                                 <span className={cx('male')}>Nam</span>
@@ -211,8 +211,8 @@ function Register({ open, handleClose, handleLogin }) {
                             <div className={cx('gender-female')} onClick={handleFemaleClick}>
                                 <input
                                     type="radio"
-                                    value="female"
-                                    checked={gender === 'female'}
+                                    value="Nữ"
+                                    checked={gender === 'Nữ'}
                                     onChange={handleGenderChange}
                                 />
                                 <span className={cx('female')}>Nữ</span>

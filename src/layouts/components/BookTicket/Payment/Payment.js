@@ -1,14 +1,69 @@
 import classNames from 'classnames/bind';
 import styles from './Payment.module.scss';
+import { useAuth } from '~/components/Context/AuthContext';
+import { useState } from 'react';
+import { toast } from 'react-toastify';
+import { PromotionApi } from '~/service/PromotionService';
 
 const cx = classNames.bind(styles);
 
-function Payment({ selectedPaymentMethod, setSelectedPaymentMethod }) {
+function Payment({ selectedPaymentMethod, setSelectedPaymentMethod, ...props }) {
+    const { state } = useAuth();
+    const { account } = state;
+    const [promotion, setPromotion] = useState('');
+    const [star, setStar] = useState(null);
+
     const handleRadioChange = (e) => {
         const value = e.target.value;
         // Nếu radio đã được chọn lại thì bỏ chọn
         setSelectedPaymentMethod(selectedPaymentMethod === value ? '' : value);
     };
+
+    const handlePromotion = async () => {
+        if (!promotion.trim()) {
+            toast.warning('Bạn chưa nhập mã giảm giá');
+            return;
+        } else if (promotion.length < 3 || promotion.length > 30) {
+            toast.warning('Vui lòng nhập trong khoảng từ 3 - 30 ký tự');
+            return;
+        }
+
+        const res = await PromotionApi(promotion);
+        if (res && res.result && res.result.promotionType !== 'CODE') {
+            toast.warning('Mã giảm giá không hợp lệ');
+            return;
+        } else if (res && res.result && res.result.min && res.result.max) {
+            if (props.totalPrice < res.result.min || props.totalPrice > res.result.max) {
+                toast.warning('Bạn không đủ điều kiện sử dụng mã giảm giá');
+                return;
+            }
+        }
+
+        if (res && res.result && res.result.promotionType === 'CODE') {
+            props.setPromotion(res.result);
+            localStorage.setItem('promotion', JSON.stringify(res.result));
+            toast.success('Đã áp dụng mã giảm giá');
+        }
+    };
+
+    const handleStar = () => {
+        if (star === null || star === '') {
+            toast.warning('Bạn chưa nhập điểm star');
+            return;
+        } else if (star < 20 || star > 100) {
+            toast.warning('Bạn chỉ được đổi từ 20 - 100 điểm');
+            return;
+        }
+
+        if (account.star > star) {
+            props.setStar(star);
+            localStorage.setItem('star', star);
+            toast.success('Đã áp dụng điểm star');
+        } else {
+            toast.success('Bạn không đủ điểm star');
+        }
+    };
+
     return (
         <div>
             <div className={cx('wrapper')}>
@@ -17,13 +72,21 @@ function Payment({ selectedPaymentMethod, setSelectedPaymentMethod }) {
                     <div className={cx('ctn')}>
                         <div className={cx('ctn_input')}>
                             <div className={cx('code')}>Mã khuyến mãi</div>
-                            <input className={cx('input')} type="text" />
-                            <button className={cx('btn')}>Áp dụng</button>
+                            <input className={cx('input')} type="text" onChange={(e) => setPromotion(e.target.value)} />
+                            <button className={cx('btn')} onClick={handlePromotion}>
+                                Áp dụng
+                            </button>
 
                             <div className={cx('star')}>Áp dụng điểm stars</div>
-                            <input className={cx('input_star')} type="text" />
-                            <button className={cx('btn_start')}>ÁP dụng</button>
-                            <p style={{ fontSize: '14px', opacity: '0.9' }}>Bạn đang có 0 điểm Stars</p>
+                            <input
+                                className={cx('input_star')}
+                                type="number"
+                                onChange={(e) => setStar(e.target.value)}
+                            />
+                            <button className={cx('btn_start')} onClick={handleStar}>
+                                ÁP dụng
+                            </button>
+                            <p style={{ fontSize: '14px', opacity: '0.9' }}>Bạn đang có {account.star} điểm Stars</p>
                         </div>
                         <div className={cx('star_ctn')}>
                             <div>Lưu ý: </div>

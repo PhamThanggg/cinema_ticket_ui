@@ -12,6 +12,9 @@ function CinemaManagementPage() {
     const queryParams = new URLSearchParams(location.search);
     const initialPage = Math.max(1, Number(queryParams.get('page')) || 1);
     const [currentPage, setCurrentPage] = useState(initialPage);
+    const status = queryParams.get('status');
+    const areaId = queryParams.get('areaId');
+    const name = queryParams.get('name');
 
     const handlePageChange = (newPage) => {
         if (newPage < 1) return;
@@ -21,7 +24,7 @@ function CinemaManagementPage() {
 
     useEffect(() => {
         const getCinema = async () => {
-            const res = await GetCinemaApi(null, currentPage - 1, 8);
+            const res = await GetCinemaApi(name, status - 1, areaId, currentPage - 1, 10);
             if (res) {
                 setCinemas(res);
             }
@@ -30,7 +33,7 @@ function CinemaManagementPage() {
         getCinema();
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentPage]);
+    }, [currentPage, location, status, areaId, name]);
 
     if (!cinemas) {
         return <Loading />;

@@ -6,12 +6,12 @@ import { faClose } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
 import { GetRoomTypeApi } from '~/service/RoomTypeService';
 import { toast } from 'react-toastify';
-import { CreateCinemaRoomApi } from '~/service/CinemaServiceRoom';
+import { CreateCinemaRoomApi, UpdateRoom } from '~/service/CinemaServiceRoom';
 import { useAuth } from '~/components/Context/AuthContext';
 
 const cx = classNames.bind(styles);
 
-function CinemaRoom({ open, handleClose, cinemaId }) {
+function CinemaRoom({ open, handleClose, cinemaId, roomId, room, ...props }) {
     const { state } = useAuth();
     const { token } = state;
     const [roomType, setRoomType] = useState(null);
@@ -33,22 +33,42 @@ function CinemaRoom({ open, handleClose, cinemaId }) {
 
         getRoomType();
     }, []);
+    console.log(room);
+    useEffect(() => {
+        if (room) {
+            setFormData({
+                name: room.name,
+                room_type: room.roomTypeId,
+                status: room.status,
+            });
+        } else {
+            setFormData({
+                name: '',
+                room_type: 0,
+                status: 0,
+                row: '',
+                colunm: '',
+            });
+        }
+    }, [room]);
 
     const validate = () => {
         if (!formData.name.trim()) {
-            return 'Room name is required.';
+            return 'Tên phòng là bắt buộc.';
         }
         if (formData.room_type === 0) {
-            return 'Room type must be selected';
+            return 'Vui lòng chọn loại phòng';
         }
         if (formData.status === undefined || formData.status === null) {
-            return 'Status must be selected.';
+            return 'Vui lòng chọn trạng thái.';
         }
-        if (!formData.row) {
-            return 'Row is required.';
-        }
-        if (!formData.colunm) {
-            return 'Colunm is required.';
+        if (!roomId) {
+            if (!formData.row) {
+                return 'Số ghế trong 1 hàng là bắt buộc.';
+            }
+            if (!formData.colunm) {
+                return 'Số ghế trong 1 cột là bắt buộc.';
+            }
         }
         return null;
     };
@@ -76,16 +96,25 @@ function CinemaRoom({ open, handleClose, cinemaId }) {
             status: formData.status,
             id_cinema: cinemaId,
             id_room_type: formData.room_type,
-            row: formData.row,
-            column: formData.colunm,
+            row: formData.row || 10,
+            column: formData.colunm || 10,
         };
-        const res = await CreateCinemaRoomApi(data, token);
 
-        if (res && res.result) {
-            toast.success(res.message);
+        if (room && roomId) {
+            const res = await UpdateRoom(data, roomId, token);
+            if (res && res.result) {
+                props.setReRender((prev) => !prev);
+                toast.success('Sửa phòng thành công');
+            }
+        } else {
+            const res = await CreateCinemaRoomApi(data, token);
+            if (res && res.result) {
+                props.setReRender((prev) => !prev);
+                handleClose();
+                toast.success('Thêm phòng thành công');
+            }
         }
     };
-
     return (
         <Dialog
             open={open}
@@ -106,10 +135,17 @@ function CinemaRoom({ open, handleClose, cinemaId }) {
                 <button className={cx('btn-close')} onClick={handleClose}>
                     <FontAwesomeIcon icon={faClose} />
                 </button>
-                <div className={cx('title')}>Tạo phòng chiếu</div>
+                <div className={cx('title_ctn_glb')}>
+                    <div className={cx('title')}>{roomId ? 'Sửa phòng chiếu' : 'Tạo phòng chiếu'}</div>
+                    <div className={cx('star_title_glb')}>
+                        (dấu <span className={cx('star_css_glb')}>*</span> là bắt buộc)
+                    </div>
+                </div>
                 <div className={cx('form')}>
                     <div className={cx('ctn-input')}>
-                        <label className={cx('label')}>Tên phòng chiếu</label>
+                        <label className={cx('label')}>
+                            Tên phòng chiếu <span className={cx('star_css_glb')}>*</span>
+                        </label>
                         <div className={cx('input')}>
                             <input
                                 className={cx('input-txt')}
@@ -122,7 +158,9 @@ function CinemaRoom({ open, handleClose, cinemaId }) {
                         </div>
                     </div>
                     <div className={cx('ctn-input')}>
-                        <label className={cx('label')}>Chọn loại phòng:</label>
+                        <label className={cx('label')}>
+                            Chọn loại phòng: <span className={cx('star_css_glb')}>*</span>
+                        </label>
                         <select
                             className={cx('input', 'select')}
                             name="room_type"
@@ -139,7 +177,9 @@ function CinemaRoom({ open, handleClose, cinemaId }) {
                         </select>
                     </div>
                     <div className={cx('ctn-input')}>
-                        <label className={cx('label')}>Chọn trạng thái:</label>
+                        <label className={cx('label')}>
+                            Chọn trạng thái: <span className={cx('star_css_glb')}>*</span>
+                        </label>
                         <select
                             className={cx('input', 'select')}
                             name="status"
@@ -151,38 +191,47 @@ function CinemaRoom({ open, handleClose, cinemaId }) {
                             <option value="2">Đang bảo trì</option>
                         </select>
                     </div>
-                    <div className={cx('ctn-input')}>
-                        <label className={cx('label')}>Nhập số ghế trong 1 hàng</label>
-                        <div className={cx('input')}>
-                            <input
-                                className={cx('input-txt')}
-                                type="text"
-                                placeholder="Nhập số hàng"
-                                name="row"
-                                value={formData.row}
-                                onChange={handleChange}
-                            />
-                        </div>
-                    </div>
 
-                    <div className={cx('ctn-input')}>
-                        <label className={cx('label')}>Nhập số ghế trong 1 cột</label>
-                        <div className={cx('input')}>
-                            <input
-                                className={cx('input-txt')}
-                                type="text"
-                                placeholder="Nhập số cột"
-                                name="colunm"
-                                value={formData.colunm}
-                                onChange={handleChange}
-                            />
-                        </div>
-                    </div>
+                    {!roomId && (
+                        <>
+                            {' '}
+                            <div className={cx('ctn-input')}>
+                                <label className={cx('label')}>
+                                    Nhập số ghế trong 1 hàng <span className={cx('star_css_glb')}>*</span>
+                                </label>
+                                <div className={cx('input')}>
+                                    <input
+                                        className={cx('input-txt')}
+                                        type="text"
+                                        placeholder="Nhập số hàng"
+                                        name="row"
+                                        value={formData.row}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                            </div>
+                            <div className={cx('ctn-input')}>
+                                <label className={cx('label')}>
+                                    Nhập số ghế trong 1 cột <span className={cx('star_css_glb')}>*</span>
+                                </label>
+                                <div className={cx('input')}>
+                                    <input
+                                        className={cx('input-txt')}
+                                        type="text"
+                                        placeholder="Nhập số cột"
+                                        name="colunm"
+                                        value={formData.colunm}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                            </div>
+                        </>
+                    )}
                 </div>
 
                 <div className={cx('btn_center')}>
                     <button className={cx('btn_save')} onClick={handleCreateCinema}>
-                        Thêm mới
+                        {roomId ? 'Lưu' : ' Thêm mới'}
                     </button>
                 </div>
             </DialogContent>

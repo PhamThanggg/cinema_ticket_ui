@@ -158,6 +158,26 @@
     margin: 15px 0;
 }
 
+.line-star {
+    height: 0.05em;
+    background-color: #ccc;
+    width: 100%;
+    margin-top: 15px;
+}
+
+.line-end {
+    height: 0.05em;
+    background-color: #ccc;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.line-discount {
+    height: 0.05em;
+    background-color: #ccc;
+    width: 100%;
+}
+
 .order-seat {
     display: flex;
     justify-content: space-between;
@@ -170,6 +190,14 @@
     justify-content: space-between;
     font-size: 15px;
     color: #4d4d4d;
+}
+
+.hover-star {
+    padding: 15px 0;
+    cursor: pointer;
+    &:hover {
+        background-color: #f1f1f1;
+    }
 }
 
 .order-total {

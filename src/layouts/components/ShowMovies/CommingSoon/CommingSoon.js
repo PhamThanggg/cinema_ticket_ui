@@ -24,14 +24,22 @@ function CommingSoon({ showComingApi, currentPage, handlePageChange, onAreaChang
                                 />
                             ))}
                         </div>
+                        {showComingApi.result.length < 1 && (
+                            <div style={{ display: 'flex', justifyContent: 'center', margin: '100px 0 150px 0' }}>
+                                Không có bộ phim nào
+                            </div>
+                        )}
                     </div>
-                    <div className={cx('pagination')}>
-                        <PaginationS
-                            currentPage={currentPage}
-                            totalPages={showComingApi.totalPages}
-                            onPageChange={handlePageChange}
-                        />
-                    </div>
+
+                    {showComingApi.result.length > 0 && (
+                        <div className={cx('pagination')}>
+                            <PaginationS
+                                currentPage={currentPage}
+                                totalPages={showComingApi.totalPages}
+                                onPageChange={handlePageChange}
+                            />
+                        </div>
+                    )}
                 </div>
             </div>
         </ShowMovies>

@@ -227,15 +227,15 @@ function MovieAdd() {
         if (formData.ageLimit === undefined || formData.ageLimit === null) {
             return 'Age limit must be selected.';
         }
-        if (!formData.trailer.trim()) {
-            return 'Trailer URL is required.';
-        }
-        if (!formData.nation.trim()) {
-            return 'Nation is required.';
-        }
-        if (!formData.description.trim()) {
-            return 'Description is required.';
-        }
+        // if (!formData.trailer.trim()) {
+        //     return 'Trailer URL is required.';
+        // }
+        // if (!formData.nation.trim()) {
+        //     return 'Nation is required.';
+        // }
+        // if (!formData.description.trim()) {
+        //     return 'Description is required.';
+        // }
         if (!formData.premiereDate.trim()) {
             return 'Premiere date is required.';
         }
@@ -358,10 +358,15 @@ function MovieAdd() {
                     </div>
                 </div>
 
+                <div className={cx('star_title_glb')} style={{ margin: '10px' }}>
+                    Lưu ý: (dấu <span className={cx('star_css_glb')}>*</span> là trường bắt buộc)
+                </div>
                 <div className={cx('form-container')}>
                     <div className={cx('form-row')}>
                         <div className={cx('form-group')}>
-                            <label htmlFor="name_cinema">Tên phim:</label>
+                            <label htmlFor="name_cinema">
+                                Tên phim: <span className={cx('star_css_glb')}>*</span>
+                            </label>
                             <input
                                 type="text"
                                 id="name"
@@ -373,7 +378,9 @@ function MovieAdd() {
                         </div>
 
                         <div className={cx('form-group')}>
-                            <label htmlFor="address">Nhà sản xuất:</label>
+                            <label htmlFor="address">
+                                Nhà sản xuất: <span className={cx('star_css_glb')}>*</span>
+                            </label>
                             <input
                                 type="text"
                                 id="producer"
@@ -385,7 +392,9 @@ function MovieAdd() {
                         </div>
 
                         <div className={cx('form-group')}>
-                            <label htmlFor="address">Ngôn ngữ:</label>
+                            <label htmlFor="address">
+                                Ngôn ngữ: <span className={cx('star_css_glb')}>*</span>
+                            </label>
                             <input
                                 type="text"
                                 id="language"
@@ -397,7 +406,9 @@ function MovieAdd() {
                         </div>
 
                         <div className={cx('form-group')}>
-                            <label htmlFor="address">Giới hạn tuổi:</label>
+                            <label htmlFor="address">
+                                Giới hạn tuổi: <span className={cx('star_css_glb')}>*</span>
+                            </label>
                             <input
                                 type="number"
                                 id="ageLimit"
@@ -409,7 +420,9 @@ function MovieAdd() {
                         </div>
 
                         <div className={cx('form-group')}>
-                            <label htmlFor="address">Thời lượng phim: (nhập số phút)</label>
+                            <label htmlFor="address">
+                                Thời lượng phim: (nhập số phút) <span className={cx('star_css_glb')}>*</span>
+                            </label>
                             <input
                                 type="number"
                                 id="duration"
@@ -445,7 +458,9 @@ function MovieAdd() {
                         </div>
 
                         <div className={cx('form-group')}>
-                            <label htmlFor="address">Ngày công chiếu:</label>
+                            <label htmlFor="address">
+                                Ngày công chiếu: <span className={cx('star_css_glb')}>*</span>
+                            </label>
                             <input
                                 type="datetime-local"
                                 id="premiereDate"
@@ -457,7 +472,9 @@ function MovieAdd() {
                         </div>
 
                         <div className={cx('form-group')}>
-                            <label htmlFor="status">Trạng thái:</label>
+                            <label htmlFor="status">
+                                Trạng thái: <span className={cx('star_css_glb')}>*</span>
+                            </label>
                             <select
                                 id="status"
                                 name="status"
@@ -472,7 +489,9 @@ function MovieAdd() {
                         </div>
 
                         <div className={cx('form-group')}>
-                            <label htmlFor="status">Thể loại:</label>
+                            <label htmlFor="status">
+                                Thể loại: <span className={cx('star_css_glb')}>*</span>
+                            </label>
                             <Select
                                 id="genre"
                                 name="genre"

@@ -1,39 +1,73 @@
 import classNames from 'classnames/bind';
 import styles from './ProfileInfo.module.scss';
-import Pagination from '@mui/material/Pagination';
-import Stack from '@mui/material/Stack';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import TicketDetail from './TicketDetail';
-import PaginationItem from '@mui/material/PaginationItem';
-import { useMediaQuery } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
-
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '~/components/Context/AuthContext';
+import { GetInvoiceApi } from '~/service/InvocieService';
+import Loading from '~/components/Loading';
+import PaginationS from '~/components/Pagination';
+import { formatToApiTime, getDayOfWeek } from '~/utils/dateFormatter';
 const cx = classNames.bind(styles);
 
-function TicketInfo({ invoiceData }) {
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+function TicketInfo() {
+    const { state } = useAuth();
+    const { token } = state;
+    const navigate = useNavigate();
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const initialPage = Math.max(1, Number(queryParams.get('page')) || 1);
+    const [currentPage, setCurrentPage] = useState(initialPage);
 
     const [isDialogOpen, setDialogOpen] = useState(false);
+    const [invoice, setInvoice] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [invoiceDetail, setInvoiceDetail] = useState(null);
 
-    const handleTicketDetailClick = () => {
+    useEffect(() => {
+        const getSeatSelect = async () => {
+            const data = await GetInvoiceApi(currentPage - 1, 3, token);
+
+            if (data) {
+                setInvoice(data);
+            }
+        };
+        setLoading(true);
+        getSeatSelect();
+        setLoading(false);
+    }, [currentPage, location]);
+
+    const handlePageChange = (newPage) => {
+        queryParams.set('page', newPage);
+
+        if (newPage < 1) return;
+        setCurrentPage(newPage);
+        navigate(`${location.pathname}?${queryParams.toString()}`);
+    };
+
+    const handleTicketDetailClick = (invoice) => {
+        setInvoiceDetail(invoice);
         setDialogOpen(true);
     };
 
     const handleCloseDialog = () => {
+        setInvoiceDetail(null);
         setDialogOpen(false);
     };
 
-    console.log(invoiceData);
+    if (loading) {
+        return <Loading />;
+    }
 
     return (
         <div>
-            <TicketDetail open={isDialogOpen} handleClose={handleCloseDialog} />
+            <TicketDetail open={isDialogOpen} handleClose={handleCloseDialog} invoice={invoiceDetail} />
 
             <div className={cx('rounded')}>
-                {invoiceData &&
-                    invoiceData.map((data, index) => (
-                        <div className={cx('card__item__ticket')}>
+                {invoice &&
+                    invoice.result &&
+                    invoice.result.map((data, index) => (
+                        <div className={cx('card__item__ticket')} key={index}>
                             <img
                                 className={cx('image-card')}
                                 alt=""
@@ -54,14 +88,19 @@ function TicketInfo({ invoiceData }) {
                                 <div className={cx('order')}>
                                     <div className={cx('order-detail')}>
                                         <p className={cx('order-txt')}>
-                                            Galaxy Huynh Tan Phat <span className={cx('order-cinema')}>- Rạp 4</span>
+                                            {data?.schedule?.cinemaRooms.cinema.name}{' '}
+                                            <span className={cx('order-cinema')}>
+                                                - {data?.schedule?.cinemaRooms.name}
+                                            </span>
                                         </p>
                                         <p className={cx('order-time')}>
-                                            14:00 - <span>thứ hai</span>, 02/09/2024
+                                            {formatToApiTime(data?.schedule?.startTime)} -{' '}
+                                            <span>{getDayOfWeek(data?.schedule?.screeningDate)}</span>,{' '}
+                                            {data?.schedule?.screeningDate}
                                         </p>
                                         <p></p>
                                     </div>
-                                    <span className={cx('order-btn')} onClick={handleTicketDetailClick}>
+                                    <span className={cx('order-btn')} onClick={() => handleTicketDetailClick(data)}>
                                         Chi tiết
                                     </span>
                                 </div>
@@ -70,30 +109,11 @@ function TicketInfo({ invoiceData }) {
                     ))}
 
                 <div className={cx('pagination')}>
-                    <Stack spacing={2}>
-                        <Pagination
-                            count={100}
-                            size={isMobile ? 'small' : 'large'}
-                            renderItem={(item) => <PaginationItem {...item} />}
-                            sx={{
-                                '& .MuiPaginationItem-root': {
-                                    fontSize: {
-                                        xs: '12px',
-                                        sm: '14px',
-                                        md: '16px',
-                                    },
-                                    '& svg': {
-                                        fontSize: {
-                                            xs: '16px',
-                                            sm: '18px',
-                                            md: '20px',
-                                        },
-                                    },
-                                    margin: '0 0px',
-                                },
-                            }}
-                        />
-                    </Stack>
+                    <PaginationS
+                        currentPage={currentPage}
+                        totalPages={invoice?.totalPages || 0}
+                        onPageChange={handlePageChange}
+                    />
                 </div>
             </div>
         </div>

@@ -7,6 +7,7 @@ import MovieBooking from './MovieBooking';
 import DateSlider from '../../../../components/DateTime/DateTime';
 import { MovieAreaShowNowApi } from '~/service/MovieService';
 import { CinemaAreaApi, CinemaScheduleApi } from '~/service/CinemaApi';
+import { Autocomplete, TextField } from '@mui/material';
 
 const cx = classNames.bind(styles);
 
@@ -34,6 +35,7 @@ function MovieCinemaTime({ dataArea, setAreaData, setMovieData, setScheduleData 
     //quản lý movie chọn
     const [selectedIndex, setSelectedIndex] = useState(null);
 
+    console.log(cinemSchedule);
     useEffect(() => {
         if (activeArea) {
             getCinema();
@@ -80,7 +82,7 @@ function MovieCinemaTime({ dataArea, setAreaData, setMovieData, setScheduleData 
         setSelectSchedule(null);
     };
 
-    const handleSelectCinema = (cinema) => {
+    const handleSelectCinema = (event, cinema) => {
         setSelectCinema(cinema);
     };
 
@@ -94,10 +96,10 @@ function MovieCinemaTime({ dataArea, setAreaData, setMovieData, setScheduleData 
     };
 
     const getCinema = async () => {
-        const data = await CinemaAreaApi(activeArea.id);
+        const res = await CinemaAreaApi(activeArea.id);
 
-        if (data && data.result) {
-            setCinema(data.result);
+        if (res && res.result) {
+            setCinema(res.result);
         }
     };
 
@@ -109,7 +111,6 @@ function MovieCinemaTime({ dataArea, setAreaData, setMovieData, setScheduleData 
         }
     };
 
-    // console.log(selectCinema, selectMovie, selectedDate);
     const getCinemaSchedule = async () => {
         const data = await CinemaScheduleApi(selectCinema?.id || null, selectMovie?.id || null, selectedDate);
         if (data && data.result) {
@@ -155,7 +156,7 @@ function MovieCinemaTime({ dataArea, setAreaData, setMovieData, setScheduleData 
             }
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isVisible]);
+    }, [isVisible, cinemSchedule]);
 
     return (
         <div className={cx('wrapper')}>
@@ -242,75 +243,92 @@ function MovieCinemaTime({ dataArea, setAreaData, setMovieData, setScheduleData 
                 >
                     <div className={cx('booking-time')}>
                         <div className={cx('booking-cinema')}>
-                            <select
-                                className={cx('cinema-select')}
-                                onChange={(e) => {
-                                    const selectedOption = JSON.parse(e.target.value);
-                                    handleSelectCinema(selectedOption);
-                                }}
-                            >
-                                <option key={0} value={JSON.stringify({ id: null, name: null })}>
-                                    Tất cả các rạp
-                                </option>
-                                {cinema ? (
-                                    cinema.map((data, index) => (
-                                        <option key={index} value={JSON.stringify({ id: data.id, name: data.name })}>
-                                            {data.name}
-                                        </option>
-                                    ))
-                                ) : (
-                                    <option key={1} value={null}>
-                                        Không có rạp nào
-                                    </option>
+                            <Autocomplete
+                                id="searchable-dropdown"
+                                options={cinema}
+                                getOptionLabel={(option) => option.name || ''}
+                                value={selectCinema}
+                                onChange={handleSelectCinema}
+                                isOptionEqualToValue={(option, value) => option.id === value?.id}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        label={'Chọn rạp'}
+                                        variant="outlined"
+                                        fullWidth
+                                        InputLabelProps={{
+                                            style: { fontSize: '13px', top: '-7px' },
+                                        }}
+                                        sx={{
+                                            fontSize: '13px',
+                                            width: '250px',
+                                            height: '0.35em',
+                                            marginRight: '10px',
+                                        }}
+                                    />
                                 )}
-                            </select>
+                                sx={{
+                                    width: '140px',
+                                    height: '35px',
+                                    marginRight: '10px',
+                                    '& .MuiOutlinedInput-root': {
+                                        fontSize: '13px',
+                                        height: '35px',
+                                    },
+                                }}
+                            />
                         </div>
                         <div className={cx('booking-date')}>
                             <DateSlider onDateSelect={handleDateSelect} />
                         </div>
 
-                        {cinemSchedule
-                            ? cinemSchedule.map((data, index) => (
-                                  <div key={index} className={cx('cinema-schedule')}>
-                                      <div className={cx('cinema-name')}>
-                                          <div className={cx('name-detail')}>
-                                              {data.cinemaName}
-                                              {/* <span className={cx('name-pd')}>{schedule.type}</span> */}
-                                          </div>
-                                      </div>
-                                      <div className={cx('hour')}>
-                                          {data.schedules.map((schedule, scheduleIndex) => {
-                                              const date = new Date(schedule.startTime);
-                                              const hours = date.getHours().toString().padStart(2, '0');
-                                              const minutes = date.getMinutes().toString().padStart(2, '0');
-                                              const formattedTime = `${hours}:${minutes}`;
-                                              return (
-                                                  <button
-                                                      key={scheduleIndex}
-                                                      className={cx('btn-hour', {
-                                                          active: selectSchedule?.ScheduleId === schedule?.id,
-                                                      })}
-                                                      onClick={() =>
-                                                          handleSelectSchedule({
-                                                              ScheduleId: schedule.id,
-                                                              startTime: schedule.startTime,
-                                                              roomId: schedule.cinemaRooms.id,
-                                                              roomName: schedule.cinemaRooms.name,
-                                                              cinemaId: schedule.cinemaRooms.cinema.id,
-                                                              cinemaName: schedule.cinemaRooms.cinema.name,
-                                                              cinemaAdress: schedule.cinemaRooms.cinema.address,
-                                                              price: schedule.price,
-                                                          })
-                                                      }
-                                                  >
-                                                      {formattedTime}
-                                                  </button>
-                                              );
-                                          })}
-                                      </div>
-                                  </div>
-                              ))
-                            : ''}
+                        {cinemSchedule &&
+                            cinemSchedule.map((data) => (
+                                <div key={data.cinemaId} className={cx('cinema-schedule')}>
+                                    <div className={cx('cinema-name')}>
+                                        <div className={cx('name-detail')}>
+                                            {data.cinemaName}
+                                            {/* <span className={cx('name-pd')}>{schedule.type}</span> */}
+                                        </div>
+                                    </div>
+                                    <div className={cx('hour')}>
+                                        {data.schedules.map((schedule, scheduleIndex) => {
+                                            const date = new Date(schedule.startTime);
+                                            const hours = date.getHours().toString().padStart(2, '0');
+                                            const minutes = date.getMinutes().toString().padStart(2, '0');
+                                            const formattedTime = `${hours}:${minutes}`;
+                                            return (
+                                                <button
+                                                    key={scheduleIndex}
+                                                    className={cx('btn-hour', {
+                                                        active: selectSchedule?.ScheduleId === schedule?.id,
+                                                    })}
+                                                    onClick={() =>
+                                                        handleSelectSchedule({
+                                                            ScheduleId: schedule.id,
+                                                            startTime: schedule.startTime,
+                                                            roomId: schedule.cinemaRooms.id,
+                                                            roomName: schedule.cinemaRooms.name,
+                                                            cinemaId: schedule.cinemaRooms.cinema.id,
+                                                            cinemaName: schedule.cinemaRooms.cinema.name,
+                                                            cinemaAdress: schedule.cinemaRooms.cinema.address,
+                                                            price: schedule.price,
+                                                        })
+                                                    }
+                                                >
+                                                    {formattedTime}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            ))}
+
+                        {cinemSchedule && cinemSchedule.length < 1 && (
+                            <div style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
+                                Không có suất chiếu nào
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

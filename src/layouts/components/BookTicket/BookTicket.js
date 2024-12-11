@@ -12,6 +12,8 @@ import { useAuth } from '~/components/Context/AuthContext';
 import { PaymentVNPay } from '~/service/PaymentService';
 import { CreateInvoiceApi } from '~/service/InvocieService';
 import { formatDateToCustomFormat } from '~/utils/dateFormatter';
+import { formatVND } from '~/utils/vndPrice';
+import { confirmAction } from '~/components/ConfirmAction/ConfirmAction';
 
 const cx = classNames.bind(styles);
 
@@ -36,10 +38,26 @@ function BookTicket({ dataArea }) {
 
     const [item, setItem] = useState([]);
 
+    const [regularSeats, setRegularSeats] = useState([]);
+    const [vipSeats, setVipSeats] = useState([]);
+    const [doubleSeats, setDoubleSeats] = useState([]);
+    const [priceRegular, setPriceRegular] = useState(0);
+    const [priceVip, setPriceVip] = useState(0);
+    const [priceDouble, setPriceDouble] = useState(0);
+
+    const [promotion, setPromotion] = useState('');
+    const [star, setStar] = useState(null);
+
     const currentIndex = tabs.indexOf(activeTab);
-    if (selectedSeats && selectedSeats.length > 0) {
-        var seatNumbers = selectedSeats.map((seat) => seat.name).join(', ');
-    }
+    const [visible, setVisible] = useState(false);
+
+    const handleMouseEnter = () => {
+        setVisible(true);
+    };
+
+    const handleMouseLeave = () => {
+        setVisible(false);
+    };
 
     useEffect(() => {
         if (!area && !movie && !schedule) {
@@ -49,6 +67,8 @@ function BookTicket({ dataArea }) {
             const storedSeat = localStorage.getItem('seat');
             const storedTotalPrice = localStorage.getItem('totalPrice');
             const storedItem = localStorage.getItem('itemBooked');
+            const storedStar = localStorage.getItem('start');
+            const storedPromotion = localStorage.getItem('promotion');
 
             if (storedArea && storedMovie && storedSchedule) {
                 setArea(JSON.parse(storedArea));
@@ -63,6 +83,14 @@ function BookTicket({ dataArea }) {
 
             if (storedItem) {
                 setItem(JSON.parse(storedItem));
+            }
+
+            if (storedPromotion) {
+                setPromotion(JSON.parse(storedPromotion));
+            }
+
+            if (storedStar) {
+                setStar(storedStar);
             }
         }
     }, []);
@@ -140,10 +168,21 @@ function BookTicket({ dataArea }) {
                 });
             }
 
+            totalPrice += itemTotal;
+            if (star && star >= 20 && star <= 100) {
+                totalPrice -= star * 1000;
+            }
+
+            if (promotion && promotion.discountType === 'PHAN_TRAM') {
+                totalPrice -= (totalPrice * promotion.discount) / 100;
+            } else if (promotion && promotion.discountType === 'TIEN') {
+                totalPrice -= promotion.discount;
+            }
+
             setTotal(totalPrice);
-            setTotalAll(total + itemTotal);
+            setTotalAll(totalPrice);
         }
-    }, [selectedSeats, total, schedule, item]);
+    }, [selectedSeats, total, schedule, item, promotion, star]);
 
     useEffect(() => {
         if (selectedSeats && selectedSeats.length > 0) {
@@ -202,6 +241,8 @@ function BookTicket({ dataArea }) {
                     cinema_id: schedule.cinemaId,
                     invoiceItems: itemBuy,
                     paymentExpirationTime: expiryTime,
+                    promotionId: promotion.id || null,
+                    star: star,
                 };
 
                 const orderRes = await CreateInvoiceApi(orderData, token);
@@ -264,6 +305,42 @@ function BookTicket({ dataArea }) {
         return () => clearInterval(timer);
     }, [expiryTime, timeLeft, navigate, selectedSeats]);
 
+    useEffect(() => {
+        if (selectedSeats && selectedSeats.length > 0 && schedule) {
+            const regularSeats = selectedSeats.filter((seat) => seat.seatType.id === 1);
+            const vipSeats = selectedSeats.filter((seat) => seat.seatType.id === 2);
+            const doubleSeats = selectedSeats.filter((seat) => seat.seatType.id === 3);
+
+            if (regularSeats && regularSeats.length > 0) {
+                setRegularSeats(regularSeats);
+                const regularTotal = regularSeats.reduce((sum, seat) => sum + seat.seatType.price + schedule.price, 0);
+                setPriceRegular(regularTotal);
+            } else {
+                setRegularSeats([]);
+            }
+
+            if (vipSeats && vipSeats.length > 0) {
+                setVipSeats(vipSeats);
+                const vipTotal = vipSeats.reduce((sum, seat) => sum + seat.seatType.price + schedule.price, 0);
+                setPriceVip(vipTotal);
+            } else {
+                setVipSeats([]);
+            }
+
+            if (doubleSeats && doubleSeats.length > 0) {
+                setDoubleSeats(doubleSeats);
+                const doubleTotal = doubleSeats.reduce((sum, seat) => sum + seat.seatType.price + schedule.price, 0);
+                setPriceDouble(doubleTotal);
+            } else {
+                setDoubleSeats([]);
+            }
+        } else {
+            setRegularSeats([]);
+            setVipSeats([]);
+            setDoubleSeats([]);
+        }
+    }, [selectedSeats]);
+
     const cleanUpAndNavigate = () => {
         localStorage.removeItem('area');
         localStorage.removeItem('movie');
@@ -272,8 +349,28 @@ function BookTicket({ dataArea }) {
         localStorage.removeItem('totalPrice');
         localStorage.removeItem('timestamp');
         localStorage.removeItem('itemBooked');
+        localStorage.removeItem('star');
+        localStorage.removeItem('promotion');
         navigate('/booking');
         window.location.reload();
+    };
+
+    const handleRemoveStar = async () => {
+        const res = await confirmAction('Bỏ áp dụng điểm star', null);
+        if (res) {
+            localStorage.removeItem('star');
+            setStar(null);
+            toast.success('Đã bỏ áp dụng điểm star');
+        }
+    };
+
+    const handleRemoveDiscount = async () => {
+        const res = await confirmAction('Bỏ áp dụng mã giảm giá', null);
+        if (res) {
+            localStorage.removeItem('promotion');
+            setPromotion('');
+            toast.success('Đã bỏ áp dụng mã giảm giá');
+        }
     };
 
     return (
@@ -326,6 +423,8 @@ function BookTicket({ dataArea }) {
                         <Payment
                             selectedPaymentMethod={selectedPaymentMethod}
                             setSelectedPaymentMethod={setSelectedPaymentMethod}
+                            setPromotion={setPromotion}
+                            setStar={setStar}
                         />
                     )}
                 </div>
@@ -361,47 +460,118 @@ function BookTicket({ dataArea }) {
 
                             {schedule && <OrderTime dateString={schedule?.startTime || ''} />}
 
-                            {selectedSeats && selectedSeats.length > 0 && (
+                            {regularSeats && regularSeats.length > 0 && (
                                 <div>
                                     <div className={cx('line')}></div>
                                     <div className={cx('order-seat')}>
                                         <div>
                                             <p className={cx('seat-type')}>
-                                                <b>{selectedSeats && selectedSeats.length}x</b> Ghế đơn
+                                                <b>{regularSeats && regularSeats.length}x</b> Ghế thường
                                             </p>
                                             <p className={cx('seat')}>
-                                                Ghế: <b>{seatNumbers}</b>
+                                                Ghế: <b>{regularSeats.map((seat) => seat.name).join(', ')}</b>
                                             </p>
                                         </div>
                                         <div className={cx('price-seat')}>
-                                            <b>{total} ₫</b>
+                                            <b>{formatVND(priceRegular)}</b>
                                         </div>
                                     </div>
                                 </div>
                             )}
 
-                            <div className={cx('line')}></div>
+                            {vipSeats && vipSeats.length > 0 && (
+                                <div>
+                                    <div className={cx('line')}></div>
+                                    <div className={cx('order-seat')}>
+                                        <div>
+                                            <p className={cx('seat-type')}>
+                                                <b>{vipSeats && vipSeats.length}x</b> Ghế vip
+                                            </p>
+                                            <p className={cx('seat')}>
+                                                Ghế: <b>{vipSeats.map((seat) => seat.name).join(', ')}</b>
+                                            </p>
+                                        </div>
+                                        <div className={cx('price-seat')}>
+                                            <b>{formatVND(priceVip)}</b>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {doubleSeats && doubleSeats.length > 0 && (
+                                <div>
+                                    <div className={cx('line')}></div>
+                                    <div className={cx('order-seat')}>
+                                        <div>
+                                            <p className={cx('seat-type')}>
+                                                <b>{doubleSeats && doubleSeats.length}x</b> Ghế đôi
+                                            </p>
+                                            <p className={cx('seat')}>
+                                                Ghế: <b>{doubleSeats.map((seat) => seat.name).join(', ')}</b>
+                                            </p>
+                                        </div>
+                                        <div className={cx('price-seat')}>
+                                            <b>{formatVND(priceDouble)}</b>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
                             {item &&
                                 item.length > 0 &&
                                 item.map(
                                     (data, index) =>
                                         data.count !== 0 && (
-                                            <div className={cx('order-food')} key={index}>
-                                                <div className={cx('food-name')}>
-                                                    <b>{data.count}X</b> {data.item.name}
+                                            <>
+                                                <div className={cx('line')}></div>
+                                                <div className={cx('order-food')} key={index}>
+                                                    <div className={cx('food-name')}>
+                                                        <b>{data.count}X</b> {data.item.name}
+                                                    </div>
+                                                    <p className={cx('food-price')}>
+                                                        {formatVND(data.item.price * data?.count || 1)}
+                                                    </p>
                                                 </div>
-                                                <p className={cx('food-price')}>
-                                                    {data.item.price * data?.count || 1} ₫
-                                                </p>
-                                            </div>
+                                            </>
                                         ),
                                 )}
 
-                            {item && item.length > 0 && <div className={cx('line')}></div>}
+                            {star && (
+                                <>
+                                    <div className={cx('line-star')}></div>
+                                    <div className={cx('order-food', 'hover-star')} onClick={handleRemoveStar}>
+                                        <div className={cx('food-name')}>Điểm Star</div>
+                                        <p className={cx('food-price')}>-{formatVND(star * 1000)}</p>
+                                    </div>
+                                </>
+                            )}
+                            {promotion && (
+                                <>
+                                    {star ? (
+                                        <div className={cx('line-discount')}></div>
+                                    ) : (
+                                        <div className={cx('line-star')}></div>
+                                    )}
+                                    <div className={cx('order-food', 'hover-star')} onClick={handleRemoveDiscount}>
+                                        <div className={cx('food-name')}>Giảm giá</div>
+                                        <p className={cx('food-price')}>
+                                            {promotion.discountType === 'PHAN_TRAM'
+                                                ? `${promotion.discount}%`
+                                                : `-${promotion.discount}`}
+                                        </p>
+                                    </div>
+                                </>
+                            )}
+
+                            {star || promotion ? (
+                                <div className={cx('line-end')}></div>
+                            ) : (
+                                <div className={cx('line')}></div>
+                            )}
 
                             <div className={cx('order-total')}>
                                 <div className={cx('total-name')}>Tổng cộng</div>
-                                <p className={cx('total-price')}> {totalAll} ₫</p>
+                                <p className={cx('total-price')}> {formatVND(totalAll)}</p>
                             </div>
                         </div>
 

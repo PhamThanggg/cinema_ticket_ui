@@ -1,3 +1,4 @@
+import { toast } from 'react-toastify';
 import * as request from '~/utils/request';
 
 const getMyInfoApi = async (token) => {
@@ -38,4 +39,36 @@ const getUserSearchApi = async (data, token) => {
     }
 };
 
-export { getUserSearchApi, getMyInfoApi };
+const UpdateUserApi = async (data, userId, token) => {
+    const options = {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+    };
+
+    try {
+        const res = await request.put(`users/${userId}`, data, options);
+        return res;
+    } catch (error) {
+        toast.error(error.response.data.message);
+    }
+};
+
+const UpdatePasswordApi = async (data, token) => {
+    const options = {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+    };
+
+    try {
+        const res = await request.put(`users/change-pass`, data, options);
+        return res;
+    } catch (error) {
+        toast.error(error.response.data.message);
+    }
+};
+
+export { UpdatePasswordApi, UpdateUserApi, getUserSearchApi, getMyInfoApi };

@@ -8,6 +8,17 @@ import DefaultLayoutAdmin from './layouts/DefaultLayoutAdmin/DefaultLayoutAdmin'
 
 function AppRoutes() {
     const { state } = useAuth();
+    const permissions = [
+        'ROLE_ADMIN',
+        'MANAGE_SEAT',
+        'MANAGE_SHOWTIME',
+        'MANAGE_ACCOUNT',
+        'MANAGE_REPORT',
+        'MANAGE_TICKET',
+        'MANAGE_ITEM',
+        'CHECK_TICKET',
+        'MANAGE_MOVIE',
+    ];
 
     return (
         <Routes>
@@ -75,9 +86,13 @@ function AppRoutes() {
                         key={index}
                         path={route.path}
                         element={
-                            <Layout>
-                                <Page />
-                            </Layout>
+                            state.isAuthenticated && state.permission.some((perm) => permissions.includes(perm)) ? (
+                                <Layout>
+                                    <Page />
+                                </Layout>
+                            ) : (
+                                <Navigate to="/" replace />
+                            )
                         }
                     />
                 );

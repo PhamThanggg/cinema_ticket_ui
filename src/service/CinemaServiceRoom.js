@@ -1,7 +1,7 @@
 import { toast } from 'react-toastify';
 import * as request from '~/utils/request';
 
-const GetCinemaRoomApi = async (name, cinemaId, page, limit) => {
+const GetCinemaRoomApi = async (name, status, cinemaId, page, limit) => {
     const options = {
         headers: {
             'Content-Type': 'application/json',
@@ -9,6 +9,7 @@ const GetCinemaRoomApi = async (name, cinemaId, page, limit) => {
         params: {
             name: name,
             cinema_id: cinemaId,
+            status: status >= 0 ? status : null,
             page: page,
             limit: limit,
         },
@@ -83,5 +84,29 @@ const DeleteCinemaRoomApi = async (roomId, token) => {
         toast.error(error.response.data.message);
     }
 };
+const UpdateRoom = async (data, roomId, token) => {
+    const options = {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+    };
 
-export { DeleteCinemaRoomApi, GetAllCinemaRoomApi, GetCinemaRoomApi, CreateCinemaRoomApi, GetCinemaRoomIdApi };
+    try {
+        const res = await request.put(`cinema_room/${roomId}`, data, {
+            headers: options.headers,
+        });
+        return res;
+    } catch (error) {
+        toast.error(error.response.data.message);
+    }
+};
+
+export {
+    UpdateRoom,
+    DeleteCinemaRoomApi,
+    GetAllCinemaRoomApi,
+    GetCinemaRoomApi,
+    CreateCinemaRoomApi,
+    GetCinemaRoomIdApi,
+};

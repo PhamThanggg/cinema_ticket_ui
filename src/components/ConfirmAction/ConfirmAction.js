@@ -11,6 +11,12 @@ export const confirmAction = async (title, text) => {
         showCancelButton: true,
         confirmButtonText: 'Đồng ý!',
         cancelButtonText: 'Không!',
+        didOpen: () => {
+            const popup = document.querySelector('.swal2-container');
+            if (popup) {
+                popup.style.zIndex = '9999';
+            }
+        },
     });
 
     return result.isConfirmed;

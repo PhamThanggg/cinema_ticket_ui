@@ -61,4 +61,20 @@ const GetInvoiceSearchApi = async (data, token) => {
     }
 };
 
-export { GetInvoiceSearchApi, CreateInvoiceApi, GetInvoiceApi };
+const GetInvoiceTotalPriceaApi = async (token) => {
+    const options = {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+    };
+
+    try {
+        const res = await request.get('invoice/totalPrice', options);
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export { GetInvoiceTotalPriceaApi, GetInvoiceSearchApi, CreateInvoiceApi, GetInvoiceApi };

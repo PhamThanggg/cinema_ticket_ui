@@ -26,3 +26,14 @@ export function formatToApiTime(dateTime) {
 export function formatDateTime(datee, time) {
     return `${datee} ${time}:00`;
 }
+
+export function getDayOfWeek(dateString) {
+    const date = new Date(dateString);
+
+    const daysOfWeek = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+
+    // Lấy thứ trong tuần (0 = Chủ Nhật, 6 = Thứ Bảy)
+    const dayIndex = date.getDay();
+
+    return daysOfWeek[dayIndex];
+}

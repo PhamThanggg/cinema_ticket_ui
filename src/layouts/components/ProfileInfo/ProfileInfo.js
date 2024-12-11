@@ -1,6 +1,6 @@
 import classNames from 'classnames/bind';
 import styles from './ProfileInfo.module.scss';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import TicketInfo from './TicketInfo';
 import PersonalInfo from './PersonalInfo';
 import { useState } from 'react';
@@ -9,8 +9,11 @@ import StarInfo from './StarInfo';
 
 const cx = classNames.bind(styles);
 
-function ProfileInfo({ invoiceData }) {
-    const [activeTab, setActiveTab] = useState('ticketInfo');
+function ProfileInfo() {
+    const location = useLocation();
+    const hash = location.hash;
+
+    const [activeTab, setActiveTab] = useState(hash.startsWith('#') ? hash.substring(1) : 'ticketInfo');
 
     return (
         <div className={cx('wrapper')}>
@@ -61,7 +64,7 @@ function ProfileInfo({ invoiceData }) {
                         <div className={cx('nav-line')}></div>
 
                         {/* children */}
-                        {activeTab === 'ticketInfo' && <TicketInfo invoiceData={invoiceData} />}
+                        {activeTab === 'ticketInfo' && <TicketInfo />}
                         {activeTab === 'personalInfo' && <PersonalInfo />}
                         {activeTab === 'notification' && <Notification />}
                         {/* {activeTab === 'reward' && <Reward />} */}

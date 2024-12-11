@@ -1,3 +1,4 @@
+import { toast } from 'react-toastify';
 import * as request from '~/utils/request';
 
 const GetSeatApi = async (scheduleId) => {
@@ -74,7 +75,7 @@ const GetSeatBoughtApi = async (scheduleId, status, token) => {
 };
 
 const updateSeatStatus = async (data, token) => {
-    // console.log(data.expiry_time);
+    // booking
     const options = {
         headers: {
             'Content-Type': 'application/json',
@@ -93,6 +94,7 @@ const updateSeatStatus = async (data, token) => {
 };
 
 const deleteSeatStatus = async (data, scheduleId, token) => {
+    // booking
     const options = {
         headers: {
             'Content-Type': 'application/json',
@@ -110,4 +112,70 @@ const deleteSeatStatus = async (data, scheduleId, token) => {
     }
 };
 
-export { GetSeatBoughtApi, GetSeatApi, updateSeatStatus, deleteSeatStatus, GetSeatSelectApi, GetSeatRoomApi };
+const UpdateSeat = async (data, seatId, token) => {
+    // booking
+    const options = {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+    };
+
+    try {
+        const res = await request.put(`cinema_seat/${seatId}`, data, {
+            headers: options.headers,
+        });
+        return res;
+    } catch (error) {
+        toast.error(error.response.data.message);
+    }
+};
+
+const CreateSeat = async (data, token) => {
+    const options = {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+    };
+
+    try {
+        const res = await request.post(`cinema_seat`, data, {
+            headers: options.headers,
+        });
+        return res;
+    } catch (error) {
+        toast.error(error.response.data.message);
+    }
+};
+
+const DeleteSeat = async (seatId, token) => {
+    // booking
+    const options = {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+    };
+
+    try {
+        const res = await request.remove(`cinema_seat/${seatId}`, {
+            headers: options.headers,
+        });
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export {
+    DeleteSeat,
+    CreateSeat,
+    UpdateSeat,
+    GetSeatBoughtApi,
+    GetSeatApi,
+    updateSeatStatus,
+    deleteSeatStatus,
+    GetSeatSelectApi,
+    GetSeatRoomApi,
+};

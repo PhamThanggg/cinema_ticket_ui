@@ -80,7 +80,7 @@ function BookingSeat({ seatData, setSeatData, selectedSeats, setSelectedSeats, a
         }
     };
 
-    console.log(seatData);
+    // console.log(seatData);
 
     if (seatData) {
         var groupedSeats = seatData.reduce((acc, seat) => {
@@ -161,10 +161,11 @@ function BookingSeat({ seatData, setSeatData, selectedSeats, setSelectedSeats, a
                             <div className={cx('column')}>{row}</div>
                             <div className={cx('row')}>
                                 {seats.map((seat) => {
-                                    return (
+                                    return seat.status === 1 ? (
                                         <button
                                             className={cx(
                                                 'seat',
+                                                seat.seatType.id === 2 ? 'vip' : seat.seatType.id === 3 ? 'double' : '',
                                                 {
                                                     active:
                                                         selectedSeats.length > 0 &&
@@ -239,6 +240,10 @@ function BookingSeat({ seatData, setSeatData, selectedSeats, setSelectedSeats, a
                                         >
                                             {seat.name}
                                         </button>
+                                    ) : seat.status === 2 ? (
+                                        <button className={cx('seat-space')} key={seat.id}></button>
+                                    ) : (
+                                        ''
                                     );
                                 })}
                             </div>

@@ -83,6 +83,28 @@ li {
     list-style: none;
 }
 
+.star_css_glb {
+    color: #df0e62;
+    margin-left: 5px;
+}
+
+.title_ctn_glb {
+    display: flex;
+    align-items: center;
+}
+
+.star_title_glb {
+    margin-left: 5px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    color: #232323;
+
+    span {
+        margin-right: 5px;
+    }
+}
+
 // fonts
 @font-face {
     font-family: ProximaNova;

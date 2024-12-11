@@ -32,30 +32,32 @@ function ItemMovie({ showBuyTicketButton, movieItemData, movieId = 10 }) {
     return (
         <div className={cw('col', 'pc-3', 't-6', 'm-12')}>
             <div className={cx('wrapper-item', 'margin-rsp')}>
-                <div className={cx('item-link')} onClick={handlePlayTrailer}>
-                    <div className={cx('ctn-image')}>
-                        <img
-                            className={cx('image')}
-                            src={
-                                movieItemData.images[0] !== undefined
-                                    ? movieItemData.images[0].imageUrl
-                                    : 'https://www.galaxycine.vn/_next/static/media/not_found.f844bf41.jpg'
-                            }
-                            alt="Name"
-                        ></img>
-                        <div className={cx('img-hover')}>
-                            <FontAwesomeIcon className={cx('play')} icon={faCirclePlay} />
-                            {showBuyTicketButton && (
-                                <Button primary className={cx('buy-ticket')} onClick={handleBuyTicketClick}>
-                                    Mua vé ngay
-                                </Button>
-                            )}
+                <div className={cx('item-link')}>
+                    <div onClick={handlePlayTrailer}>
+                        <div className={cx('ctn-image')}>
+                            <img
+                                className={cx('image')}
+                                src={
+                                    movieItemData.images[0] !== undefined
+                                        ? movieItemData.images[0].imageUrl
+                                        : 'https://www.galaxycine.vn/_next/static/media/not_found.f844bf41.jpg'
+                                }
+                                alt="Name"
+                            ></img>
+                            <div className={cx('img-hover')}>
+                                <FontAwesomeIcon className={cx('play')} icon={faCirclePlay} />
+                                {showBuyTicketButton && (
+                                    <Button primary className={cx('buy-ticket')} onClick={handleBuyTicketClick}>
+                                        Mua vé ngay
+                                    </Button>
+                                )}
+                            </div>
+                        </div>
+                        <div className={cx('meta')}>
+                            <span className={cx('age-limit', 'T18')}>T{movieItemData.ageLimit}</span>
                         </div>
                     </div>
-                    <div className={cx('meta')}>
-                        <span className={cx('age-limit', 'T18')}>T{movieItemData.ageLimit}</span>
-                    </div>
-                    <h4 className={cx('title')}>
+                    <h4 className={cx('title')} onClick={handleBuyTicketClick}>
                         <span className={cx('tooltip')}>{movieItemData.nameMovie}</span>
                     </h4>
                 </div>

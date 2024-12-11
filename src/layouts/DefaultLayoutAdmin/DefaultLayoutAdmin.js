@@ -20,6 +20,7 @@ function DefaultLayoutAdmin({ children }) {
                 <div className={cx('content')}>{children}</div>
             </div>
             <ToastContainer
+                style={{ marginTop: '40px' }}
                 position="top-right"
                 autoClose={3000}
                 hideProgressBar={false}
