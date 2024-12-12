@@ -434,6 +434,20 @@ function MovieAdd() {
                         </div>
 
                         <div className={cx('form-group')}>
+                            <label htmlFor="address">
+                                Ngày công chiếu: <span className={cx('star_css_glb')}>*</span>
+                            </label>
+                            <input
+                                type="datetime-local"
+                                id="premiereDate"
+                                name="premiereDate"
+                                value={formData.premiereDate}
+                                onChange={handleChange}
+                                className={cx('input')}
+                            />
+                        </div>
+
+                        <div className={cx('form-group')}>
                             <label htmlFor="address">Trailer:</label>
                             <input
                                 type="text"
@@ -452,20 +466,6 @@ function MovieAdd() {
                                 id="nation"
                                 name="nation"
                                 value={formData.nation}
-                                onChange={handleChange}
-                                className={cx('input')}
-                            />
-                        </div>
-
-                        <div className={cx('form-group')}>
-                            <label htmlFor="address">
-                                Ngày công chiếu: <span className={cx('star_css_glb')}>*</span>
-                            </label>
-                            <input
-                                type="datetime-local"
-                                id="premiereDate"
-                                name="premiereDate"
-                                value={formData.premiereDate}
                                 onChange={handleChange}
                                 className={cx('input')}
                             />

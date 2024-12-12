@@ -136,7 +136,7 @@
     display: flex;
     font-size: 1.4rem;
     font-weight: 400;
-    justify-content: center;
+    // justify-content: center;
     align-items: center;
     color: var(--black);
     opacity: 0.8;
@@ -380,6 +380,7 @@
     padding: 8px 12px;
     cursor: pointer;
     color: var(--text-color);
+    border-left: 5px solid transparent;
 
     &:hover {
         color: var(--primary);

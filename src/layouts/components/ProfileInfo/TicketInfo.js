@@ -108,13 +108,19 @@ function TicketInfo() {
                         </div>
                     ))}
 
-                <div className={cx('pagination')}>
-                    <PaginationS
-                        currentPage={currentPage}
-                        totalPages={invoice?.totalPages || 0}
-                        onPageChange={handlePageChange}
-                    />
-                </div>
+                {invoice && invoice.result && invoice.result.length < 1 && (
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>Chưa có giao dịch nào</div>
+                )}
+
+                {invoice && invoice.result && invoice.result.length > 0 && (
+                    <div className={cx('pagination')}>
+                        <PaginationS
+                            currentPage={currentPage}
+                            totalPages={invoice?.totalPages || 0}
+                            onPageChange={handlePageChange}
+                        />
+                    </div>
+                )}
             </div>
         </div>
     );

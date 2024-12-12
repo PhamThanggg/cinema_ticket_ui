@@ -24,6 +24,10 @@ const routes = {
     revenueMovie: '/Admin/revenue_movie',
     revenueCinema: '/Admin/revenue_cinema',
     MovieAdd: '/Admin/MovieManagement/add',
+    ListPromotion: '/Admin/PromotionManagement/list-genre',
+    ListActor: '/Admin/ActorManagement/list-genre',
+
+    ListArea: '/Admin/CinemaManagement/list-area',
 };
 
 export default routes;

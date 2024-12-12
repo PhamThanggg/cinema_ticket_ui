@@ -10,10 +10,11 @@ import { confirmAction } from '~/components/ConfirmAction/ConfirmAction';
 import { DeleteGenreApi } from '~/service/GenreService';
 import { useAuth } from '~/components/Context/AuthContext';
 import { toast } from 'react-toastify';
+import SearchBar from '~/components/SearchBar';
 
 const cx = classNames.bind(styles);
 
-function GenreManagement({ genres, currentPage, handlePageChange }) {
+function GenreManagement({ genres, currentPage, handlePageChange, ...props }) {
     const { state } = useAuth();
     const { token } = state;
     const [isDialogOpen, setDialogOpen] = useState(false);
@@ -22,7 +23,7 @@ function GenreManagement({ genres, currentPage, handlePageChange }) {
 
     useEffect(() => {
         setGenreList(genres.result);
-    }, []);
+    }, [genres]);
 
     const handleOpenClick = (id) => {
         if (id) {
@@ -54,10 +55,13 @@ function GenreManagement({ genres, currentPage, handlePageChange }) {
             <div className={cx('wrapper')}>
                 <div>
                     <div className={cx('btn')}>
-                        <button onClick={() => handleOpenClick(null)}>
+                        <button className={cx('button')} onClick={() => handleOpenClick(null)}>
                             <FontAwesomeIcon icon={faPlus} className={cx('btn-icon')} />
                             Tạo thể loại
                         </button>
+                        <div className={cx('display_flex')}>
+                            <SearchBar name={'name'} label="Nhập thể loại" />
+                        </div>
                     </div>
                     <div className={cx('list')}>
                         <TableContainer component={Paper}>
@@ -65,11 +69,9 @@ function GenreManagement({ genres, currentPage, handlePageChange }) {
                                 <TableHead>
                                     <TableRow className={cx('bgr')}>
                                         <TableCell className={cx('stt')}>
-                                            <div className={cx('title_tb')}>STT</div>
+                                            <div className={cx('title_tb', 'stt_center')}>STT</div>
                                         </TableCell>
-                                        <TableCell>
-                                            <div className={cx('title_tb')}>ID</div>
-                                        </TableCell>
+
                                         <TableCell>
                                             <div className={cx('title_tb')}>Tên thể loại</div>
                                         </TableCell>
@@ -90,9 +92,7 @@ function GenreManagement({ genres, currentPage, handlePageChange }) {
                                                         {genres.pageSize * (currentPage - 1) + index + 1}
                                                     </div>
                                                 </TableCell>
-                                                <TableCell>
-                                                    <div className={cx('title_tb')}>{row.id}</div>
-                                                </TableCell>
+
                                                 <TableCell>
                                                     <div className={cx('title_tb')}>
                                                         <button className={cx('time_title')}>{row.name}</button>
@@ -125,14 +125,21 @@ function GenreManagement({ genres, currentPage, handlePageChange }) {
                                         ))}
                                 </TableBody>
                             </Table>
+                            {genreList && genreList.length < 1 && (
+                                <div style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
+                                    Không có thể loại nào
+                                </div>
+                            )}
                         </TableContainer>
-                        <div className={cx('pagination')}>
-                            <PaginationS
-                                currentPage={currentPage}
-                                totalPages={genres?.totalPages || 0}
-                                onPageChange={handlePageChange}
-                            />
-                        </div>
+                        {genreList && genreList.length > 0 && (
+                            <div className={cx('pagination')}>
+                                <PaginationS
+                                    currentPage={currentPage}
+                                    totalPages={genres?.totalPages || 0}
+                                    onPageChange={handlePageChange}
+                                />
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -142,6 +149,7 @@ function GenreManagement({ genres, currentPage, handlePageChange }) {
                 handleClose={handleCloseDialog}
                 setGenreList={setGenreList}
                 genreId={genreId}
+                setLoadList={props.setLoadList}
             />
         </div>
     );

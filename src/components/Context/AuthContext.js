@@ -4,15 +4,22 @@ import { toast } from 'react-toastify';
 import { getMyInfoApi } from '~/service/UserAPI';
 import Loading from '../Loading';
 import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
 
 const authReducer = (state, action) => {
     switch (action.type) {
         case 'LOGIN':
-            return { ...state, user: action.payload, isAuthenticated: true, token: action.payload.token };
+            return {
+                ...state,
+                user: action.payload,
+                isAuthenticated: true,
+                isAdmin: action.payload.isAdmin,
+                token: action.payload.token,
+            };
         case 'LOGOUT':
-            return { ...state, user: null, isAuthenticated: false, account: null };
+            return { ...state, user: null, isAuthenticated: false, account: null, loading: false, isAdmin: false };
         case 'SET_ACCOUNT':
             return { ...state, account: action.payload };
         case 'REFRESH_TOKEN':
@@ -27,9 +34,11 @@ const authReducer = (state, action) => {
 };
 
 export const AuthProvider = ({ children }) => {
+    const navigate = useNavigate();
     const [state, dispatch] = useReducer(authReducer, {
         user: null,
         isAuthenticated: !!localStorage.getItem('token'),
+        isAdmin: false,
         account: null,
         permission: [],
         loading: true,
@@ -44,17 +53,19 @@ export const AuthProvider = ({ children }) => {
                     const validToken = await IntrospectApi(token);
                     if (validToken && validToken.result.introspect) {
                         const permissions = parsePermissionsFromToken(token);
+                        const isAdmin = permissions.some((perm) => permissionss.includes(perm));
 
-                        dispatch({ type: 'LOGIN', payload: { ...validToken, token } });
+                        dispatch({ type: 'LOGIN', payload: { ...validToken, token, isAdmin } });
                         dispatch({ type: 'SET_PERMISSION', payload: permissions });
                         await getMyInfo(token);
                     } else {
-                        logout();
-                        toast.error('Phiên đăng nhập đã hết, vui lòng đăng nhập lại.');
+                        handleLogoutAndRedirect();
                     }
                 } catch (error) {
                     console.error('Lỗi khi kiểm tra token:', error);
-                    logout();
+                    handleLogoutAndRedirect();
+                } finally {
+                    dispatch({ type: 'LOADING', payload: false });
                 }
             } else {
                 dispatch({ type: 'LOADING', payload: false });
@@ -62,6 +73,28 @@ export const AuthProvider = ({ children }) => {
         };
         checkToken();
     }, []);
+
+    useEffect(() => {
+        const checkToken = () => {
+            const token = state.token;
+            if (token) {
+                const decoded = jwtDecode(token);
+                const currentTime = Math.floor(Date.now() / 1000);
+                if (decoded.exp < currentTime) {
+                    handleLogoutAndRedirect();
+                }
+            }
+        };
+
+        const intervalId = setInterval(checkToken, 5 * 60 * 1000);
+        return () => clearInterval(intervalId);
+    }, [state.token, navigate]);
+
+    const handleLogoutAndRedirect = () => {
+        logout();
+        toast.error('Phiên đăng nhập đã hết, vui lòng đăng nhập lại.');
+        navigate('/');
+    };
 
     const getMyInfo = async (token) => {
         try {
@@ -77,8 +110,9 @@ export const AuthProvider = ({ children }) => {
     const login = (userData) => {
         localStorage.setItem('token', userData.token);
         const permissions = parsePermissionsFromToken(userData.token);
+        const isAdmin = permissions.some((perm) => permissionss.includes(perm));
 
-        dispatch({ type: 'LOGIN', payload: userData });
+        dispatch({ type: 'LOGIN', payload: { user: userData, token: userData.token, isAdmin } });
         dispatch({ type: 'SET_PERMISSION', payload: permissions });
         getMyInfo(userData.token);
     };
@@ -97,6 +131,17 @@ export const AuthProvider = ({ children }) => {
             return [];
         }
     };
+    const permissionss = [
+        'ROLE_ADMIN',
+        'MANAGE_SEAT',
+        'MANAGE_SHOWTIME',
+        'MANAGE_ACCOUNT',
+        'MANAGE_REPORT',
+        'MANAGE_TICKET',
+        'MANAGE_ITEM',
+        'CHECK_TICKET',
+        'MANAGE_MOVIE',
+    ];
 
     if (state.loading) {
         return <Loading />;

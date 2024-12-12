@@ -1,53 +1,21 @@
-// import { useLocation } from 'react-router-dom';
 import classNames from 'classnames/bind';
 import styles from './MovieDetails.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAngleDown, faCirclePlay, faClose } from '@fortawesome/free-solid-svg-icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ClockIcon, ScheduleIcon, StarIcon } from '~/components/Icon';
-// import { height } from '@mui/system';
 import DateTime from '~/components/DateTime/DateTime';
+import { GetAreaApi } from '~/service/AreaService';
+import Loading from '~/components/Loading';
+import { Autocomplete, TextField } from '@mui/material';
+import { CinemaAreaApi, CinemaScheduleApi } from '~/service/CinemaApi';
+import { faCirclePlay, faClose } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from 'react-router-dom';
+import routes from '~/config/router';
 
 const cx = classNames.bind(styles);
 
-function MovieDetail({ movieData, areaData }) {
-    const [showTrailer, setShowTrailer] = useState(false);
-    const handlePlayTrailer = () => {
-        setShowTrailer(true);
-    };
-
-    const handleCloseTrailer = () => {
-        setShowTrailer(false);
-    };
-
-    // begin select option arae and cimema
-    const [selectedLocation, setSelectedLocation] = useState('Toàn quốc');
-
-    const handleChange = (event) => {
-        setSelectedLocation(event.target.value);
-    };
-
-    const [selectedCinema, setSelectedCinema] = useState('All Rạp');
-
-    const handleChangeCinema = (event) => {
-        setSelectedCinema(event.target.value);
-    };
-
-    const locations = [{ id: 0, areaName: 'Toàn quốc' }, ...areaData];
-
-    const cinemas = [
-        'All Rạp',
-        'TP Hồ Chí Minh',
-        'Nghệ An',
-        'Thừa Thiên Huế',
-        'An Giang',
-        'Bà Rịa - Vũng Tàu',
-        'Hải Phòng',
-        'Đà Nẵng',
-        'Khánh Hòa',
-    ];
-    // end select option arae and cimema
-
+function MovieDetail({ movieData }) {
+    const navigate = useNavigate();
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         const day = date.getDate().toString().padStart(2, '0');
@@ -56,15 +24,102 @@ function MovieDetail({ movieData, areaData }) {
 
         return `${day}/${month}/${year}`;
     };
-
-    // set chọn schedule
     const today = new Date();
     const [selectedDate, setSelectedDate] = useState(formatDate(today));
+    const [showTrailer, setShowTrailer] = useState(false);
+    const [area, setArea] = useState([]);
+    const [cinema, setCinema] = useState([]);
+    const [cinemSchedule, setCinemSchedule] = useState(null);
+    const [selectArea, setSelectArea] = useState(null);
+    const [selectCinema, setSelectCinema] = useState(null);
 
+    const [areaLocal, setAreaLocal] = useState(null);
+
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        const getArea = async () => {
+            const res = await GetAreaApi();
+            if (res && res.result) {
+                setArea(res.result);
+            }
+        };
+
+        setLoading(true);
+        getArea();
+        setLoading(false);
+    }, []);
+
+    useEffect(() => {
+        const getRoom = async () => {
+            if (selectArea) {
+                const res = await CinemaAreaApi(selectArea.id);
+
+                if (res && res.result) {
+                    setCinema(res.result);
+                }
+            } else {
+                setCinema([]);
+            }
+        };
+
+        setLoading(true);
+        getRoom();
+        setLoading(false);
+    }, [selectArea]);
+
+    useEffect(() => {
+        const getCinemaSchedule = async () => {
+            const data = await CinemaScheduleApi(selectCinema?.id || null, movieData?.id || null, selectedDate);
+            if (data && data.result) {
+                setCinemSchedule(data.result);
+            }
+        };
+
+        getCinemaSchedule();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectCinema, selectedDate]);
+
+    const handleSelectCinema = (event, cinema) => {
+        setSelectCinema(cinema);
+    };
+
+    const handleSelectArea = (event, area) => {
+        setSelectArea(area);
+        if (area) {
+            setAreaLocal({ id: area.id, name: area.areaName });
+        } else {
+            setAreaLocal(null);
+        }
+    };
+
+    const handlePlayTrailer = () => {
+        setShowTrailer(true);
+    };
+
+    const handleCloseTrailer = () => {
+        setShowTrailer(false);
+    };
+
+    // set chọn schedule
     const handleDateSelect = (date) => {
         setSelectedDate(date);
     };
-    console.log('Selected Date:', selectedDate);
+
+    const handleSelectSchedule = (data) => {
+        if (areaLocal) {
+            localStorage.setItem('area', JSON.stringify(areaLocal));
+        }
+
+        localStorage.setItem('movie', JSON.stringify(movieData));
+        localStorage.setItem('schedule', JSON.stringify(data));
+
+        navigate('/Booking#bookingSeat');
+    };
+
+    if (loading) {
+        return <Loading />;
+    }
 
     return (
         <div className={cx('wrapper')}>
@@ -155,7 +210,7 @@ function MovieDetail({ movieData, areaData }) {
                         <div className={cx('movie-nd')}>Nội dung phim</div>
                         <p className={cx('nd')}>{movieData.description}</p>
 
-                        <div style={{ height: '200px', marginTop: '20px' }}>Comment</div>
+                        {/* <div style={{ height: '200px', marginTop: '20px' }}>Comment</div> */}
                     </div>
 
                     <div className={cx('right_ctn')}>
@@ -165,78 +220,125 @@ function MovieDetail({ movieData, areaData }) {
                                 <DateTime count={4} onDateSelect={handleDateSelect} />
                             </div>
                             <div className={cx('select')}>
-                                <div className={cx('show_area')}>
-                                    <select
-                                        className={cx('location-select')}
-                                        value={selectedLocation}
-                                        onChange={handleChange}
-                                    >
-                                        {locations.map((location, index) => (
-                                            <option key={location.id} value={location.areaName}>
-                                                {location.areaName}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    <span className={cx('custom-arrow')}>
-                                        <FontAwesomeIcon icon={faAngleDown} />
-                                    </span>
-                                </div>
+                                <Autocomplete
+                                    id="searchable-dropdown"
+                                    options={area}
+                                    getOptionLabel={(option) => option.areaName || ''}
+                                    value={selectArea}
+                                    onChange={handleSelectArea}
+                                    isOptionEqualToValue={(option, value) => option.id === value?.id}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            label={'Chọn khu vực'}
+                                            variant="outlined"
+                                            fullWidth
+                                            InputLabelProps={{
+                                                style: { fontSize: '13px', top: '-7px' },
+                                            }}
+                                            sx={{
+                                                fontSize: '13px',
+                                                width: '230px',
+                                                height: '0.35em',
+                                                marginRight: '10px',
+                                            }}
+                                        />
+                                    )}
+                                    sx={{
+                                        width: '140px',
+                                        height: '35px',
+                                        marginRight: '10px',
+                                        '& .MuiOutlinedInput-root': {
+                                            fontSize: '13px',
+                                            height: '35px',
+                                        },
+                                    }}
+                                />
 
-                                <div className={cx('show_area')}>
-                                    <select
-                                        className={cx('location-select')}
-                                        value={selectedCinema}
-                                        onChange={handleChangeCinema}
-                                    >
-                                        {cinemas.map((location, index) => (
-                                            <option key={index} value={location}>
-                                                {location}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    <span className={cx('custom-arrow')}>
-                                        <FontAwesomeIcon icon={faAngleDown} />
-                                    </span>
-                                </div>
+                                <Autocomplete
+                                    id="searchable-dropdown"
+                                    options={cinema}
+                                    getOptionLabel={(option) => option.name || ''}
+                                    value={selectCinema}
+                                    onChange={handleSelectCinema}
+                                    isOptionEqualToValue={(option, value) => option.id === value?.id}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            label={'Chọn rạp'}
+                                            variant="outlined"
+                                            fullWidth
+                                            InputLabelProps={{
+                                                style: { fontSize: '13px', top: '-7px' },
+                                            }}
+                                            sx={{
+                                                fontSize: '13px',
+                                                width: '230px',
+                                                height: '0.35em',
+                                                marginRight: '10px',
+                                            }}
+                                        />
+                                    )}
+                                    sx={{
+                                        width: '220px',
+                                        height: '35px',
+                                        marginRight: '10px',
+                                        '& .MuiOutlinedInput-root': {
+                                            fontSize: '13px',
+                                            height: '35px',
+                                        },
+                                    }}
+                                />
                             </div>
 
                             <div className={cx('line')}></div>
 
-                            <div className={cx('wrapper_schedule')}>
-                                <div className={cx('cinema_schedule')}>
-                                    <h3 className={cx('cinema_name')}>Rap Ha Noi</h3>
-                                    <div className={cx('showing')}>
-                                        <div className={cx('showing-title')}>2D phụ đề</div>
-                                        <button className={cx('showing_time')}>10:30</button>
-                                        <button className={cx('showing_time')}>10:30</button>
-                                        <button className={cx('showing_time')}>10:30</button>
-                                        <button className={cx('showing_time')}>10:30</button>
-                                        <button className={cx('showing_time')}>10:30</button>
-                                        <button className={cx('showing_time')}>10:30</button>
-                                        <button className={cx('showing_time')}>10:30</button>
-                                        <button className={cx('showing_time')}>10:30</button>
-                                        <button className={cx('showing_time')}>10:30</button>
-                                    </div>
-                                </div>
-                            </div>
+                            {cinemSchedule &&
+                                cinemSchedule.map((data, index) => (
+                                    <div key={data.cinemaId}>
+                                        <div className={cx('cinema_schedule')}>
+                                            <h3 className={cx('cinema_name')}>{data.cinemaName}</h3>
+                                            <div className={cx('showing')}>
+                                                {/* <div className={cx('showing-title')}>2D phụ đề</div> */}
+                                                {data.schedules.map((schedule, scheduleIndex) => {
+                                                    const scheduleTime = new Date(schedule.startTime).getTime();
+                                                    const currentTime = Date.now();
+                                                    if (scheduleTime < currentTime) {
+                                                        return null;
+                                                    }
 
-                            <div className={cx('wrapper_schedule')}>
-                                <div className={cx('cinema_schedule')}>
-                                    <h3 className={cx('cinema_name')}>Rap Ha Noi</h3>
-                                    <div className={cx('showing')}>
-                                        <div className={cx('showing-title')}>2D phụ đề</div>
-                                        <button className={cx('showing_time')}>10:30</button>
-                                        <button className={cx('showing_time')}>10:30</button>
-                                        <button className={cx('showing_time')}>10:30</button>
-                                        <button className={cx('showing_time')}>10:30</button>
-                                        <button className={cx('showing_time')}>10:30</button>
-                                        <button className={cx('showing_time')}>10:30</button>
-                                        <button className={cx('showing_time')}>10:30</button>
-                                        <button className={cx('showing_time')}>10:30</button>
-                                        <button className={cx('showing_time')}>10:30</button>
+                                                    const date = new Date(schedule.startTime);
+                                                    const hours = date.getHours().toString().padStart(2, '0');
+                                                    const minutes = date.getMinutes().toString().padStart(2, '0');
+                                                    const formattedTime = `${hours}:${minutes}`;
+                                                    return (
+                                                        <button
+                                                            key={scheduleIndex}
+                                                            className={cx('showing_time')}
+                                                            onClick={() =>
+                                                                handleSelectSchedule({
+                                                                    ScheduleId: schedule.id,
+                                                                    startTime: schedule.startTime,
+                                                                    roomId: schedule.cinemaRooms.id,
+                                                                    roomName: schedule.cinemaRooms.name,
+                                                                    cinemaId: schedule.cinemaRooms.cinema.id,
+                                                                    cinemaName: schedule.cinemaRooms.cinema.name,
+                                                                    cinemaAdress: schedule.cinemaRooms.cinema.address,
+                                                                    price: schedule.price,
+                                                                })
+                                                            }
+                                                        >
+                                                            {formattedTime}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                        {index + 1 < cinemSchedule.length && (
+                                            <div className={cx('wrapper_schedule')}></div>
+                                        )}
                                     </div>
-                                </div>
-                            </div>
+                                ))}
                         </div>
                     </div>
                 </div>

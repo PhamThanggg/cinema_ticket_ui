@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-const DropDownSearch = ({ searchName, data, name }) => {
+const DropDownSearch = ({ searchName, data, name, ...props }) => {
     const [selectedValue, setSelectedValue] = useState(null);
     const navigate = useNavigate();
     const location = useLocation();
@@ -39,14 +39,14 @@ const DropDownSearch = ({ searchName, data, name }) => {
                         }}
                         sx={{
                             fontSize: '13px',
-                            width: '140px',
+                            width: props.width ? props.width : '140px',
                             height: '0.35em',
                             marginRight: '10px',
                         }}
                     />
                 )}
                 sx={{
-                    width: '140px',
+                    width: props.width ? props.width : '140px',
                     height: '35px',
                     marginRight: '10px',
                     '& .MuiOutlinedInput-root': {

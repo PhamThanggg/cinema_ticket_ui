@@ -32,7 +32,7 @@ function MovieBooking({ movieData, handleSelectMovie, selectedIndex }) {
         className: 'center',
         centerMode: true,
         dots: true, // Hiển thị các chấm tròn để chuyển ảnh
-        infinite: true, // Cho phép vòng lặp lại slider
+        infinite: movieData && movieData.length < 4 ? false : true, // Cho phép vòng lặp lại slider
         speed: 500, // Tốc độ chuyển ảnh
         slidesToShow: 4, // Số ảnh hiển thị mỗi lần
         slidesToScroll: 1, // Số ảnh cuộn mỗi lần

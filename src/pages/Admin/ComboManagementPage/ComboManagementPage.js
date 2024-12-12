@@ -11,6 +11,7 @@ function ComboManagementPage() {
 
     const [combos, setCombos] = useState(null);
     const [cinemas, setCinemas] = useState(null);
+    const [loadList, setLoadList] = useState(true);
 
     useEffect(() => {
         getCinemaList();
@@ -18,7 +19,7 @@ function ComboManagementPage() {
 
     useEffect(() => {
         getComboList();
-    }, [cinemaId]);
+    }, [cinemaId, loadList]);
 
     const getComboList = async () => {
         if (cinemaId) {
@@ -35,7 +36,7 @@ function ComboManagementPage() {
             setCinemas(res.result);
         }
     };
-    return <ComboManagement combos={combos} cinemas={cinemas} cinemaId={cinemaId} />;
+    return <ComboManagement combos={combos} cinemas={cinemas} cinemaId={cinemaId} setLoadList={setLoadList} />;
 }
 
 export default ComboManagementPage;

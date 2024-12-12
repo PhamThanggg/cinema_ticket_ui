@@ -28,6 +28,7 @@ const getUserSearchApi = async (data, token) => {
             limit: data.limit,
             name: data.name,
             email: data.email,
+            roleId: data.roleId,
         },
     };
 
@@ -71,4 +72,36 @@ const UpdatePasswordApi = async (data, token) => {
     }
 };
 
-export { UpdatePasswordApi, UpdateUserApi, getUserSearchApi, getMyInfoApi };
+const AddRoleApi = async (userId, data, token) => {
+    const options = {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+    };
+
+    try {
+        const res = await request.put(`users/addRole/${userId}`, data, options);
+        return res;
+    } catch (error) {
+        toast.error(error.response.data.message);
+    }
+};
+
+const DeleteUser = async (userId, token) => {
+    const options = {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+    };
+
+    try {
+        const res = await request.remove(`users/${userId}`, options);
+        return res;
+    } catch (error) {
+        toast.error(error.response.data.message);
+    }
+};
+
+export { DeleteUser, AddRoleApi, UpdatePasswordApi, UpdateUserApi, getUserSearchApi, getMyInfoApi };

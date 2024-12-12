@@ -49,15 +49,8 @@ function BookTicket({ dataArea }) {
     const [star, setStar] = useState(null);
 
     const currentIndex = tabs.indexOf(activeTab);
-    const [visible, setVisible] = useState(false);
 
-    const handleMouseEnter = () => {
-        setVisible(true);
-    };
-
-    const handleMouseLeave = () => {
-        setVisible(false);
-    };
+    console.log(area, movie, schedule);
 
     useEffect(() => {
         if (!area && !movie && !schedule) {
@@ -351,6 +344,7 @@ function BookTicket({ dataArea }) {
         localStorage.removeItem('itemBooked');
         localStorage.removeItem('star');
         localStorage.removeItem('promotion');
+        localStorage.removeItem('itemBooked');
         navigate('/booking');
         window.location.reload();
     };
@@ -522,7 +516,7 @@ function BookTicket({ dataArea }) {
                                 item.map(
                                     (data, index) =>
                                         data.count !== 0 && (
-                                            <>
+                                            <div key={index}>
                                                 <div className={cx('line')}></div>
                                                 <div className={cx('order-food')} key={index}>
                                                     <div className={cx('food-name')}>
@@ -532,7 +526,7 @@ function BookTicket({ dataArea }) {
                                                         {formatVND(data.item.price * data?.count || 1)}
                                                     </p>
                                                 </div>
-                                            </>
+                                            </div>
                                         ),
                                 )}
 

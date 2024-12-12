@@ -40,6 +40,7 @@ function BookingManagementPage() {
         currentParams.delete('status');
         currentParams.delete('cinema');
         currentParams.delete('date');
+        currentParams.delete('areaId');
 
         navigate(
             {
@@ -63,6 +64,7 @@ function BookingManagementPage() {
         const invoiceId = queryParams.get('invoiceId');
         const status = queryParams.get('status');
         const cinemaId = queryParams.get('cinema');
+        const areaId = queryParams.get('areaId');
         const date = queryParams.get('date');
 
         const data = {
@@ -73,6 +75,7 @@ function BookingManagementPage() {
             invoiceId: invoiceId && !isNaN(parseInt(invoiceId, 10)) ? parseInt(invoiceId, 10) : null,
             status: status ? parseInt(status, 10) - 1 : null,
             cinemaId: cinemaId ? parseInt(cinemaId, 10) : null,
+            areaId: areaId ? parseInt(areaId, 10) : null,
         };
 
         const res = await GetInvoiceSearchApi(data, token);

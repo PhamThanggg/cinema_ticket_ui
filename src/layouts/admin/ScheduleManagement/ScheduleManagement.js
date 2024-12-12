@@ -14,6 +14,7 @@ import { formatVND } from '~/utils/vndPrice';
 import { confirmAction } from '~/components/ConfirmAction/ConfirmAction';
 import { toast } from 'react-toastify';
 import { useAuth } from '~/components/Context/AuthContext';
+import DropDownSearch from '~/components/DropDownSearch';
 
 const cx = classNames.bind(styles);
 
@@ -33,13 +34,14 @@ function ScheduleManagement({ ...props }) {
     const [date, setDate] = useState('');
     const [schedule, setSchedule] = useState(null);
     const [scheduleId, setScheduleId] = useState(null);
+    const [loadList, setLoadList] = useState(true);
     const cinema = queryParams.get('cinema');
     const roomId = queryParams.get('roomId');
     const screeningDate = queryParams.get('screeningDate');
 
     useEffect(() => {
         const getSchedule = async () => {
-            if (cinema && roomId && screeningDate) {
+            if (cinema && roomId) {
                 const res = await ScheduleSearchApi(roomId, screeningDate, currentPage - 1, 10);
                 setSchedule(res);
             } else {
@@ -48,7 +50,7 @@ function ScheduleManagement({ ...props }) {
         };
 
         getSchedule();
-    }, [props.cinemas, props.rooms, roomId, date]);
+    }, [props.cinemas, props.rooms, roomId, date, loadList]);
 
     useEffect(() => {
         if (props.areas && props.areas.length > 0) {
@@ -127,9 +129,14 @@ function ScheduleManagement({ ...props }) {
             <div className={cx('wrapper')}>
                 <div style={{ margin: '10px', paddingTop: '10px', display: 'flex', justifyContent: 'space-between' }}>
                     <div className={cx('ctn-search')}>
-                        <DropDown searchName={'Chọn khu vực'} data={areaValue} name={'area'} />
-                        <DropDown searchName={'Chọn rạp chiếu'} data={cinemaValue} name={'cinema'} />
-                        <DropDown searchName={'Chọn phòng chiếu'} data={roomValue} name={'roomId'} />
+                        <DropDownSearch searchName={'Chọn khu vực'} data={areaValue} name={'area'} width="180px" />
+                        <DropDownSearch
+                            searchName={'Chọn rạp chiếu'}
+                            data={cinemaValue}
+                            name={'cinema'}
+                            width="180px"
+                        />
+                        <DropDownSearch searchName={'Chọn phòng'} data={roomValue} name={'roomId'} width="180px" />
 
                         <div className={cx('ctn-input')}>
                             <label className={cx('label')}>Ngày chiếu:</label>
@@ -162,6 +169,9 @@ function ScheduleManagement({ ...props }) {
                                             <div className={cx('title_tb')}>Phim</div>
                                         </TableCell>
                                         <TableCell>
+                                            <div className={cx('title_tb')}>Ngày chiếu</div>
+                                        </TableCell>
+                                        <TableCell>
                                             <div className={cx('title_tb')}>Suất chiếu</div>
                                         </TableCell>
                                         <TableCell>
@@ -188,6 +198,9 @@ function ScheduleManagement({ ...props }) {
                                             </TableCell>
                                             <TableCell>
                                                 <div className={cx('title_tb')}>{row.movies.nameMovie}</div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <button className={cx('time_title')}>{row.screeningDate}</button>
                                             </TableCell>
                                             <TableCell>
                                                 <div className={cx('title_tb')}>
@@ -257,6 +270,7 @@ function ScheduleManagement({ ...props }) {
                 schedule={schedule}
                 scheduleId={scheduleId}
                 setSchedule={setSchedule}
+                setLoadList={setLoadList}
             />
         </div>
     );

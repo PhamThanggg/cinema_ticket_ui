@@ -24,10 +24,12 @@ function MovieCinemaTime({ dataArea, setAreaData, setMovieData, setScheduleData 
 
     const [selectedDate, setSelectedDate] = useState(formatDate(today));
     const [isVisible, setIsVisible] = useState('place');
+    const [isVisibleMovie, setIsVisibleMovie] = useState('');
+    const [isVisibleTime, setIsVisibleTime] = useState('');
     const [selectMovie, setselectMovie] = useState(null);
     const [activeArea, setActiveArea] = useState(null);
     const [movie, setMovie] = useState(null);
-    const [cinema, setCinema] = useState(null);
+    const [cinema, setCinema] = useState([]);
     const [selectCinema, setSelectCinema] = useState(null);
     const [cinemSchedule, setCinemSchedule] = useState(null);
     const [selectSchedule, setSelectSchedule] = useState(null);
@@ -35,7 +37,6 @@ function MovieCinemaTime({ dataArea, setAreaData, setMovieData, setScheduleData 
     //quản lý movie chọn
     const [selectedIndex, setSelectedIndex] = useState(null);
 
-    console.log(cinemSchedule);
     useEffect(() => {
         if (activeArea) {
             getCinema();
@@ -104,7 +105,7 @@ function MovieCinemaTime({ dataArea, setAreaData, setMovieData, setScheduleData 
     };
 
     const getMovie = async () => {
-        const data = await MovieAreaShowNowApi(activeArea.id, 0, 0, 100);
+        const data = await MovieAreaShowNowApi(activeArea.id, 1, null, null, 0, 30);
 
         if (data && data.result) {
             setMovie(data.result);
@@ -119,16 +120,13 @@ function MovieCinemaTime({ dataArea, setAreaData, setMovieData, setScheduleData 
     };
 
     // logic giao diện
-    const [maxHeights, setMaxHeights] = useState({
-        place: '0px',
-        movie: '0px',
-        time: '0px',
-    });
-    const contentRefs = {
-        place: useRef(null),
-        movie: useRef(null),
-        time: useRef(null),
-    };
+    const [maxHeightPlace, setMaxHeightPlace] = useState('0px');
+    const [maxHeightMovie, setMaxHeightMovie] = useState('0px');
+    const [maxHeightTime, setMaxHeightTime] = useState('0px');
+
+    const placeRef = useRef(null);
+    const movieRef = useRef(null);
+    const timeRef = useRef(null);
 
     const toggleDownUp = (tab) => {
         if (isVisible === tab) {
@@ -138,25 +136,48 @@ function MovieCinemaTime({ dataArea, setAreaData, setMovieData, setScheduleData 
         }
     };
 
+    const toggleDownUpMovie = (tab) => {
+        if (isVisibleMovie === tab) {
+            setIsVisibleMovie('');
+        } else {
+            setIsVisibleMovie(tab);
+        }
+    };
+
+    const toggleDownUpTime = (tab) => {
+        if (isVisibleTime === tab) {
+            setIsVisibleTime('');
+        } else {
+            setIsVisibleTime(tab);
+        }
+    };
+
     useEffect(() => {
         if (isVisible) {
-            setMaxHeights((prevHeights) => ({
-                ...prevHeights,
-                [isVisible]: `${contentRefs[isVisible].current.scrollHeight}px`,
-            }));
+            setMaxHeightPlace(`${placeRef.current.scrollHeight}px`);
+        } else {
+            setMaxHeightPlace('0px');
         }
-
-        // Đặt lại chiều cao cho các phần không được chọn
-        Object.keys(maxHeights).forEach((key) => {
-            if (key !== isVisible) {
-                setMaxHeights((prevHeights) => ({
-                    ...prevHeights,
-                    [key]: '0px',
-                }));
-            }
-        });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isVisible, cinemSchedule]);
+
+    useEffect(() => {
+        if (isVisibleMovie) {
+            setMaxHeightMovie(`${movieRef.current.scrollHeight}px`);
+        } else {
+            setMaxHeightMovie('0px');
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isVisibleMovie, cinemSchedule]);
+
+    useEffect(() => {
+        if (isVisibleTime) {
+            setMaxHeightTime(`${timeRef.current.scrollHeight}px`);
+        } else {
+            setMaxHeightTime('0px');
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isVisibleTime, cinemSchedule]);
 
     return (
         <div className={cx('wrapper')}>
@@ -172,9 +193,9 @@ function MovieCinemaTime({ dataArea, setAreaData, setMovieData, setScheduleData 
                 </div>
 
                 <div
-                    ref={contentRefs.place}
+                    ref={placeRef}
                     style={{
-                        maxHeight: maxHeights.place,
+                        maxHeight: maxHeightPlace,
                         transition: 'max-height 0.5s ease',
                         overflow: 'hidden',
                     }}
@@ -193,24 +214,24 @@ function MovieCinemaTime({ dataArea, setAreaData, setMovieData, setScheduleData 
             </div>
 
             <div className={cx('order-ctn')}>
-                <div className={cx('order-place')} onClick={() => toggleDownUp('movie')}>
+                <div className={cx('order-place')} onClick={() => toggleDownUpMovie('movie')}>
                     <h3 className={cx('title-place')}>Chọn phim {selectMovie ? ' - ' + selectMovie.nameMovie : ''}</h3>
-                    <div className={cx('btn-hide', { hidden: isVisible !== 'movie' })}>
+                    <div className={cx('btn-hide', { hidden: isVisibleMovie !== 'movie' })}>
                         <FontAwesomeIcon className={cx('icon')} icon={faCaretUp} />
                     </div>
-                    <div className={cx('btn-show', { hidden: isVisible === 'movie' })}>
+                    <div className={cx('btn-show', { hidden: isVisibleMovie === 'movie' })}>
                         <FontAwesomeIcon className={cx('icon')} icon={faCaretDown} />
                     </div>
                 </div>
 
                 <div
-                    ref={contentRefs.movie}
+                    ref={movieRef}
                     style={{
-                        maxHeight: maxHeights.movie,
+                        maxHeight: maxHeightMovie,
                         transition: 'max-height 0.5s ease',
                         overflow: 'hidden',
                     }}
-                    className={cx('title-content', { visible: isVisible === 'movie' })}
+                    className={cx('title-content', { visible: isVisibleMovie === 'movie' })}
                 >
                     <MovieBooking
                         movieData={movie}
@@ -222,24 +243,24 @@ function MovieCinemaTime({ dataArea, setAreaData, setMovieData, setScheduleData 
             </div>
 
             <div className={cx('order-ctn')}>
-                <div className={cx('order-place')} onClick={() => toggleDownUp('time')}>
+                <div className={cx('order-place')} onClick={() => toggleDownUpTime('time')}>
                     <h3 className={cx('title-place')}>Chọn suất</h3>
-                    <div className={cx('btn-hide', { hidden: isVisible !== 'time' })}>
+                    <div className={cx('btn-hide', { hidden: isVisibleTime !== 'time' })}>
                         <FontAwesomeIcon className={cx('icon')} icon={faCaretUp} />
                     </div>
-                    <div className={cx('btn-show', { hidden: isVisible === 'time' })}>
+                    <div className={cx('btn-show', { hidden: isVisibleTime === 'time' })}>
                         <FontAwesomeIcon className={cx('icon')} icon={faCaretDown} />
                     </div>
                 </div>
 
                 <div
-                    ref={contentRefs.time}
+                    ref={timeRef}
                     style={{
-                        maxHeight: maxHeights.time,
+                        maxHeight: maxHeightTime,
                         transition: 'max-height 0.5s ease',
                         overflow: 'hidden',
                     }}
-                    className={cx('title-content', { visible: isVisible === 'time' })}
+                    className={cx('title-content', { visible: isVisibleTime === 'time' })}
                 >
                     <div className={cx('booking-time')}>
                         <div className={cx('booking-cinema')}>
@@ -293,6 +314,12 @@ function MovieCinemaTime({ dataArea, setAreaData, setMovieData, setScheduleData 
                                     </div>
                                     <div className={cx('hour')}>
                                         {data.schedules.map((schedule, scheduleIndex) => {
+                                            const scheduleTime = new Date(schedule.startTime).getTime();
+                                            const currentTime = Date.now();
+                                            if (scheduleTime < currentTime) {
+                                                return null;
+                                            }
+
                                             const date = new Date(schedule.startTime);
                                             const hours = date.getHours().toString().padStart(2, '0');
                                             const minutes = date.getMinutes().toString().padStart(2, '0');
@@ -325,6 +352,12 @@ function MovieCinemaTime({ dataArea, setAreaData, setMovieData, setScheduleData 
                             ))}
 
                         {cinemSchedule && cinemSchedule.length < 1 && (
+                            <div style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
+                                Không có suất chiếu nào
+                            </div>
+                        )}
+
+                        {!cinemSchedule && (
                             <div style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
                                 Không có suất chiếu nào
                             </div>

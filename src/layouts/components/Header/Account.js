@@ -47,6 +47,11 @@ function Account({ offSet }) {
             render={(attrs) => (
                 <div className={cx('dropdown-menu')} tabIndex="-1" {...attrs}>
                     <ul className={cx('menu-list-respon')}>
+                        {state.isAdmin && (
+                            <Link to={'/admin'}>
+                                <li className={cx('menu-item')}>Quản trị</li>
+                            </Link>
+                        )}
                         <Link to={'/profile#personalInfo'}>
                             <li className={cx('menu-item')}>Tài khoản</li>
                         </Link>

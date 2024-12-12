@@ -3,6 +3,7 @@ import styles from './AdminHeader.module.scss';
 import { Link } from 'react-router-dom';
 import { MenuAdminIcon } from '~/components/Icon';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Typpy from '@tippyjs/react/headless';
 import {
     faAngleDown,
     faAngleRight,
@@ -11,18 +12,24 @@ import {
     faCookie,
     faFilm,
     faGauge,
+    faGift,
     faLayerGroup,
+    faPerson,
     faReceipt,
     faShield,
     faUser,
 } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
 import routes from '~/config/router';
+import { LogoutApi } from '~/service/auth';
+import { useAuth } from '~/components/Context/AuthContext';
+import { toast } from 'react-toastify';
 
 const cx = classNames.bind(styles);
 
 function Header({ toggleSidebar, isSidebarVisible }) {
-    const [expandedItems, setExpandedItems] = useState(Array(10).fill(false));
+    const { state, logout } = useAuth();
+    const [expandedItems, setExpandedItems] = useState(Array(11).fill(false));
 
     const toggleCollapse = (index) => {
         setExpandedItems((prevState) => prevState.map((item, i) => (i === index ? !item : item)));
@@ -44,7 +51,8 @@ function Header({ toggleSidebar, isSidebarVisible }) {
             icon: <FontAwesomeIcon icon={faCity} className={cx('dashboard_icon')} />,
             links: [
                 { label: 'Danh sách rạp', path: routes.CinemaManagement },
-                { label: 'Thêm rạp', path: '/settings/account' },
+                { label: 'Thêm rạp', path: routes.CinemaAdd },
+                { label: 'Thêm khu vực', path: routes.ListArea },
             ],
         },
         {
@@ -52,7 +60,7 @@ function Header({ toggleSidebar, isSidebarVisible }) {
             icon: <FontAwesomeIcon icon={faFilm} className={cx('dashboard_icon')} />,
             links: [
                 { label: 'Danh sách phim', path: routes.ListMovie },
-                { label: 'Thêm phim', path: '/reports/weekly' },
+                { label: 'Thêm phim', path: routes.MovieAdd },
             ],
         },
         {
@@ -85,7 +93,35 @@ function Header({ toggleSidebar, isSidebarVisible }) {
             icon: <FontAwesomeIcon icon={faShield} className={cx('dashboard_icon')} />,
             links: [{ label: 'Danh sách vai trò', path: routes.ListRole }],
         },
+        {
+            label: 'Quản lý khuyến mãi',
+            icon: <FontAwesomeIcon icon={faGift} className={cx('dashboard_icon')} />,
+            links: [{ label: 'Danh sách vai trò', path: routes.ListRole }],
+        },
+        {
+            label: 'Quản lý diễn viên',
+            icon: <FontAwesomeIcon icon={faPerson} className={cx('dashboard_icon')} />,
+            links: [{ label: 'Danh sách vai trò', path: routes.ListRole }],
+        },
     ];
+
+    const [visible, setVisible] = useState(false);
+    const handleToggle = () => {
+        setVisible(!visible);
+    };
+
+    const handleLogout = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (token) {
+                await LogoutApi(token);
+            }
+            logout();
+            toast.success('Đăng xuất thành công!');
+        } finally {
+            setVisible(false);
+        }
+    };
 
     return (
         <div>
@@ -98,16 +134,43 @@ function Header({ toggleSidebar, isSidebarVisible }) {
                 </div>
 
                 <div>
-                    <div className={cx('wrapper-avatar')}>
-                        <img
-                            className={cx('avatar')}
-                            src="https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-                            alt={'PhamHuyThang'}
-                        />
-                        <div className={cx('info')}>
-                            <span className={cx('name')}>PhamHuyThang</span>
+                    <Typpy
+                        interactive={true}
+                        hideOnClick={false}
+                        delay={[0, 0]}
+                        offset={[0, 0]}
+                        touch={true}
+                        placement={'bottom-start'}
+                        onClickOutside={() => setVisible(false)}
+                        onShow={() => setVisible(true)}
+                        onHide={() => setVisible(false)}
+                        render={(attrs) => (
+                            <div className={cx('dropdown-menu')} tabIndex="-1" {...attrs}>
+                                <ul className={cx('menu-list-respon')}>
+                                    <Link to={'/'}>
+                                        <li className={cx('menu-item')}>Trang chủ</li>
+                                    </Link>
+                                    <Link to={'/profile#personalInfo'}>
+                                        <li className={cx('menu-item')}>Tài khoản</li>
+                                    </Link>
+                                    <li className={cx('menu-item')} onClick={handleLogout}>
+                                        Đăng xuất
+                                    </li>
+                                </ul>
+                            </div>
+                        )}
+                    >
+                        <div className={cx('wrapper-avatar')} onClick={handleToggle}>
+                            <img
+                                className={cx('avatar')}
+                                src="https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+                                alt={'PhamHuyThang'}
+                            />
+                            <div className={cx('info')}>
+                                <span className={cx('name')}>PhamHuyThang</span>
+                            </div>
                         </div>
-                    </div>
+                    </Typpy>
                 </div>
             </div>
 

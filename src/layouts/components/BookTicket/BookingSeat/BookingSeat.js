@@ -8,6 +8,7 @@ import { Stomp } from '@stomp/stompjs';
 import { formatDateToCustomFormat } from '~/utils/dateFormatter';
 import { useAuth } from '~/components/Context/AuthContext';
 import { GetSeatSelectApi } from '~/service/SeatService';
+import { toast } from 'react-toastify';
 
 const cx = classNames.bind(styles);
 
@@ -80,8 +81,6 @@ function BookingSeat({ seatData, setSeatData, selectedSeats, setSelectedSeats, a
         }
     };
 
-    // console.log(seatData);
-
     if (seatData) {
         var groupedSeats = seatData.reduce((acc, seat) => {
             if (!acc[seat.row]) {
@@ -94,7 +93,6 @@ function BookingSeat({ seatData, setSeatData, selectedSeats, setSelectedSeats, a
     }
 
     const handleSeatClick = async (seat) => {
-        console.log(seat);
         // Kiểm tra ghế đã được chọn hay chưa
         if (selectedSeats.length > 0 && selectedSeats.some((selectedSeat) => selectedSeat.id === seat.id)) {
             // Nếu đã chọn thì bỏ chọn
@@ -107,7 +105,10 @@ function BookingSeat({ seatData, setSeatData, selectedSeats, setSelectedSeats, a
             }
         } else {
             // Nếu chưa chọn thì thêm vào danh sách
-            // cập nhật chọn ghế
+            if (selectedSeats && selectedSeats.length >= 20) {
+                toast.warning('Bạn chỉ được chọn tối đa 20 ghế trong 1 lần đặt!');
+                return;
+            }
             const now = new Date();
             const reservationTime = formatDateToCustomFormat(now);
             const date = new Date(Number(localStorage.getItem('timestamp')));
@@ -116,7 +117,6 @@ function BookingSeat({ seatData, setSeatData, selectedSeats, setSelectedSeats, a
                 const newExpiry = new Date(now.getTime() + 10 * 60 * 1000);
                 expiryTime = formatDateToCustomFormat(newExpiry);
             }
-            console.log(expiryTime);
             const seatIds = [];
             seatIds.push(seat.id);
 
@@ -147,8 +147,8 @@ function BookingSeat({ seatData, setSeatData, selectedSeats, setSelectedSeats, a
         <div className={cx('wrapper')}>
             <div className={cx('nav')}>
                 <div className={cx('time')}>
-                    <div className={cx('title-time')}>Đổi suất chiếu</div>
-                    <button className={cx('btn-time')}>10:00</button>
+                    <div className={cx('title-time')}>Chọn ghế</div>
+                    {/* <button className={cx('btn-time')}>10:00</button> */}
                 </div>
             </div>
 

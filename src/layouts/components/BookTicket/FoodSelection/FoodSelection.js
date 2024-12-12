@@ -76,6 +76,7 @@ function FoodSelection({ setItem }) {
                                 <QuantityInput
                                     initialQuantity={itemsWithQuantity.find((i) => i.item.id === data.id)?.count || 0}
                                     onQuantityChange={(newQuantity) => handleQuantityChange(data, newQuantity)}
+                                    max={100}
                                 />
                             </div>
                         </div>

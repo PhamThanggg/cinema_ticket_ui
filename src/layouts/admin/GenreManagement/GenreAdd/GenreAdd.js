@@ -10,7 +10,7 @@ import { useAuth } from '~/components/Context/AuthContext';
 
 const cx = classNames.bind(styles);
 
-function GenreAdd({ open, handleClose, setGenreList, genreId }) {
+function GenreAdd({ open, handleClose, setGenreList, genreId, ...props }) {
     const { state } = useAuth();
     const { token } = state;
     const [formData, setFormData] = useState({
@@ -42,10 +42,10 @@ function GenreAdd({ open, handleClose, setGenreList, genreId }) {
 
     const validate = () => {
         if (!formData.name.trim()) {
-            return 'Name genre is required.';
+            return 'Tên thể loại là bắt buộc.';
         }
         if (formData.status === undefined || formData.status === null) {
-            return 'Status must be selected.';
+            return 'Trạng thái là bắt buộc.';
         }
 
         return null;
@@ -67,11 +67,11 @@ function GenreAdd({ open, handleClose, setGenreList, genreId }) {
             setGenreList((prevList) =>
                 prevList.map((genre) => (genre.id === updatedGenre.result.id ? updatedGenre.result : genre)),
             );
-            toast.success('Update successfully');
+            toast.success('Cập nhật thành công');
         } else {
             const res = await CreateGenreApi(data, token);
             if (res) {
-                setGenreList((prevList) => [res.result, ...prevList]);
+                props.setLoadList((prev) => !prev);
                 toast.success(res.message);
             }
         }

@@ -4,17 +4,14 @@ import { MovieDetailApi } from '~/service/MovieService';
 
 import { useLocation } from 'react-router-dom';
 import Loading from '~/components/Loading';
-import { GetAreaApi } from '~/service/AreaService';
 
 function MovieDetail() {
     const [movie, setMovie] = useState(null);
-    const [area, setArea] = useState(null);
     const location = useLocation();
     const { movieId } = location.state || {};
 
     useEffect(() => {
         getMovie();
-        getArea();
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -29,22 +26,13 @@ function MovieDetail() {
         }
     };
 
-    const getArea = async () => {
-        try {
-            const getArea = await GetAreaApi();
-            setArea(getArea);
-        } catch (error) {
-            console.log('Error get area');
-        }
-    };
-
-    if (!movie || !area) {
+    if (!movie) {
         return <Loading />;
     }
 
     return (
         <div>
-            <MovieDetails movieData={movie.result} areaData={area.result} />
+            <MovieDetails movieData={movie.result} />
         </div>
     );
 }

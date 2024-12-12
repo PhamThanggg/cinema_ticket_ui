@@ -6,10 +6,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPen, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
 import ComboAdd from './ComboAdd';
-import DropDown from '~/components/DropDown';
 import { formatVND } from '~/utils/vndPrice';
 import { confirmAction } from '~/components/ConfirmAction/ConfirmAction';
 import { useLocation } from 'react-router-dom';
+import DropDownSearch from '~/components/DropDownSearch';
 
 const cx = classNames.bind(styles);
 
@@ -20,6 +20,7 @@ function ComboManagement({ ...props }) {
     const [cinemaValue, setCinemaValue] = useState([]);
     const [itemId, setItemId] = useState(null);
     const cinemaId = queryParams.get('cinema');
+
     useEffect(() => {
         if (props.cinemas && props.cinemas.length > 0) {
             const genreValues = props.cinemas.map((data) => ({
@@ -58,13 +59,18 @@ function ComboManagement({ ...props }) {
             <div className={cx('wrapper')}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div className={cx('ctn-search', 'margin')}>
-                        <DropDown searchName={'Chọn rạp chiếu'} data={cinemaValue} name={'cinema'} />
+                        <DropDownSearch
+                            searchName={'Chọn rạp chiếu'}
+                            data={cinemaValue}
+                            name={'cinema'}
+                            width="180px"
+                        />
                     </div>
                     {props.cinemaId && (
                         <div className={cx('btn')}>
                             <button onClick={() => handleOpenClick(null)}>
                                 <FontAwesomeIcon icon={faPlus} className={cx('btn-icon')} />
-                                Tạo thể loại
+                                Tạo combo
                             </button>
                         </div>
                     )}
@@ -134,14 +140,28 @@ function ComboManagement({ ...props }) {
                                     ))}
                             </TableBody>
                         </Table>
+                        {props.combos && props.combos.length < 1 && (
+                            <div style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
+                                Không có bộ phim nào
+                            </div>
+                        )}
                     </TableContainer>
-                    <div className={cx('pagination')}>
-                        <PaginationS />
-                    </div>
+
+                    {/* {props.combos && props.combos.length > 0 && (
+                        <div className={cx('pagination')}>
+                            <PaginationS />
+                        </div>
+                    )} */}
                 </div>
             </div>
 
-            <ComboAdd open={isDialogOpen} handleClose={handleCloseDialog} comboId={itemId} cinemaId={cinemaId} />
+            <ComboAdd
+                open={isDialogOpen}
+                handleClose={handleCloseDialog}
+                comboId={itemId}
+                cinemaId={cinemaId}
+                setLoadList={props.setLoadList}
+            />
         </div>
     );
 }

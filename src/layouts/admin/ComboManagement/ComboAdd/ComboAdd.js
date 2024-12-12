@@ -10,7 +10,7 @@ import { useAuth } from '~/components/Context/AuthContext';
 
 const cx = classNames.bind(styles);
 
-function GenreAdd({ open, handleClose, comboId, cinemaId }) {
+function ComboAdd({ open, handleClose, comboId, cinemaId, ...props }) {
     const { state } = useAuth();
     const { token } = state;
     const [formData, setFormData] = useState({
@@ -37,28 +37,36 @@ function GenreAdd({ open, handleClose, comboId, cinemaId }) {
                     status: res.result.status,
                 });
             }
+        } else {
+            setFormData({
+                name: '',
+                imageUrl: '',
+                price: '',
+                description: '',
+                status: 1,
+            });
         }
     };
 
     const validate = () => {
         if (!cinemaId) {
-            return 'Cinema not found.';
+            return 'Rạp chiếu không tìm thấy.';
         }
         if (!formData.name) {
-            return 'name is required.';
+            return 'Tên combo là bắt buộc.';
         }
         if (!formData.imageUrl) {
-            return 'imageUrl is required.';
+            return 'Đường dẫn ảnh là bắt buộc.';
         }
         if (!formData.price) {
-            return 'Price is required.';
+            return 'Giá là bắt buộc.';
         }
-        if (!formData.description) {
-            return 'Description is required.';
-        }
-        if (formData.status === undefined || formData.status === null) {
-            return 'Status must be selected.';
-        }
+        // if (!formData.description) {
+        //     return 'Description is required.';
+        // }
+        // if (formData.status === undefined || formData.status === null) {
+        //     return 'Vui lòng chọn trạng thái.';
+        // }
         return null;
     };
 
@@ -87,21 +95,15 @@ function GenreAdd({ open, handleClose, comboId, cinemaId }) {
         if (comboId) {
             const updatedGenre = await UpdateItemApi(data, comboId, token);
             if (updatedGenre) {
-                toast.success('Update successfully');
-                // setSchedule((prevList) =>
-                //     prevList.map((genre) => (genre.id === updatedGenre.result.id ? updatedGenre.result : genre)),
-                // );
+                props.setLoadList((prev) => !prev);
+                toast.success('Cập nhật thành công');
             }
         } else {
             const res = await CreateItemApi(data, token);
             if (res) {
+                props.setLoadList((prev) => !prev);
                 toast.success(res.message);
             }
-            // if (res && res.result) {
-            //     if (schedule) {
-            //         setSchedule((prevList) => [res.result, ...prevList]);
-            //     }
-            // }
         }
     };
 
@@ -179,13 +181,13 @@ function GenreAdd({ open, handleClose, comboId, cinemaId }) {
                             />
                         </div>
                     </div>
-                    <div className={cx('ctn-input')}>
+                    {/* <div className={cx('ctn-input')}>
                         <label className={cx('label')}>Chọn trạng thái:</label>
                         <select className={cx('input', 'select')}>
                             <option value="1">Đang bán</option>
                             <option value="2">Ngừng bán</option>
                         </select>
-                    </div>
+                    </div> */}
                 </div>
 
                 <div className={cx('btn_center')}>
@@ -202,4 +204,4 @@ function GenreAdd({ open, handleClose, comboId, cinemaId }) {
     );
 }
 
-export default GenreAdd;
+export default ComboAdd;

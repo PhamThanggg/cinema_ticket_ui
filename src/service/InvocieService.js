@@ -49,7 +49,8 @@ const GetInvoiceSearchApi = async (data, token) => {
             movieName: data.movieName,
             cinemaId: data.cinemaId,
             status: data.status,
-            date: data.data,
+            date: data.date,
+            areaId: data.areaId,
         },
     };
 

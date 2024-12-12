@@ -97,19 +97,21 @@ function AppRoutes() {
                     />
                 );
             })}
+
+            <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
     );
 }
 
 function App() {
     return (
-        <AuthProvider>
-            <Router>
+        <Router>
+            <AuthProvider>
                 <div className="App">
                     <AppRoutes />
                 </div>
-            </Router>
-        </AuthProvider>
+            </AuthProvider>
+        </Router>
     );
 }
 

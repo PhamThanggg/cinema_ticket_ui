@@ -34,6 +34,7 @@ function Confirmation() {
         localStorage.removeItem('itemBooked');
         localStorage.removeItem('star');
         localStorage.removeItem('promotion');
+        localStorage.removeItem('itemBooked');
 
         const confirmPayment = async () => {
             try {

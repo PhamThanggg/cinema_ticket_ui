@@ -36,6 +36,58 @@
     color: var(--text-color);
 }
 
+// typpy
+.dropdown-menu {
+    position: relative;
+    background-color: var(--white);
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    min-width: 13rem;
+    padding: 1rem 0;
+    margin-top: 0.7em;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    min-width: 150px;
+    top: -10px;
+    color: rgba(0, 0, 0, 0.721);
+    font-size: 1.4rem;
+    font-weight: 600;
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: -14px;
+        left: 75%;
+        transform: translateX(-50%);
+        border-width: 8px;
+        border-style: solid;
+        border-color: transparent transparent white transparent;
+    }
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: -15px;
+        left: 75%;
+        transform: translateX(-50%);
+        border-width: 8px;
+        border-style: solid;
+        border-color: transparent transparent #ebebeb transparent;
+    }
+}
+
+.menu-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    color: var(--text-color);
+    border-left: 5px solid transparent;
+
+    &:hover {
+        color: var(--blue);
+        background-color: rgb(242, 245, 255);
+        border-left: 5px solid var(--blue);
+    }
+}
+
 // avatar
 .wrapper-avatar {
     display: flex;
@@ -99,6 +151,10 @@
     &.visible {
         transform: translateX(0);
     }
+}
+
+.sidebar::-webkit-scrollbar {
+    display: none;
 }
 
 .sidenav {

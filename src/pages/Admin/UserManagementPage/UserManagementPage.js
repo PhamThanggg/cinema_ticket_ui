@@ -13,6 +13,7 @@ function UserManagementPage() {
     const initialPage = Math.max(1, Number(queryParams.get('page')) || 1);
     const [currentPage, setCurrentPage] = useState(initialPage);
     const [users, setUsers] = useState(null);
+    const [loadList, setLoadList] = useState(true);
 
     useEffect(() => {
         removeQueryParams();
@@ -20,16 +21,19 @@ function UserManagementPage() {
 
     useEffect(() => {
         getCinemaList();
-    }, [currentPage, location]);
+    }, [currentPage, location, loadList]);
 
     const getCinemaList = async () => {
         const name = queryParams.get('name');
         const email = queryParams.get('email');
+        const roleId = queryParams.get('roleId');
+
         const data = {
             page: currentPage - 1,
             limit: 10,
             name: name || '',
             email: email || '',
+            roleId: roleId,
         };
         const res = await getUserSearchApi(data, token);
 
@@ -61,7 +65,14 @@ function UserManagementPage() {
         navigate(`${location.pathname}?${queryParams.toString()}`);
     };
 
-    return <UserManagement users={users} currentPage={currentPage} handlePageChange={handlePageChange} />;
+    return (
+        <UserManagement
+            users={users}
+            currentPage={currentPage}
+            handlePageChange={handlePageChange}
+            setLoadList={setLoadList}
+        />
+    );
 }
 
 export default UserManagementPage;

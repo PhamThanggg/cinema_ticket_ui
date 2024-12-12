@@ -9,6 +9,8 @@ import routes from '~/config/router';
 import { useEffect, useState } from 'react';
 import SearchBar from '~/components/SearchBar';
 import DropDown from '~/components/DropDown';
+import { formatToDate } from '~/utils/dateFormatter';
+import DropDownSearch from '~/components/DropDownSearch';
 
 const cx = classNames.bind(styles);
 function ListMovie({ movies, currentPage, handlePageChange, genres }) {
@@ -57,8 +59,9 @@ function ListMovie({ movies, currentPage, handlePageChange, genres }) {
 
                         <div className={cx('display_flex')}>
                             <DropDown searchName={'Chọn trạng thái'} data={status} name={'status'} />
-                            <DropDown searchName={'Chọn thể loại'} data={genreValue} name={'genreId'} />
-                            <SearchBar name={'nameMovie'} />
+                            {/* <DropDown searchName={'Chọn thể loại'} data={genreValue} name={'genreId'} /> */}
+                            <DropDownSearch searchName={'Chọn thể loại'} data={genreValue} name={'genreId'} />
+                            <SearchBar name={'nameMovie'} label="Nhập tên phim" />
                         </div>
                     </div>
                     <div className={cx('list')}>
@@ -116,7 +119,9 @@ function ListMovie({ movies, currentPage, handlePageChange, genres }) {
                                                 </TableCell>
                                                 <TableCell>
                                                     <div className={cx('title_tb')}>
-                                                        <button className={cx('time_title')}>{row.premiereDate}</button>
+                                                        <button className={cx('time_title')}>
+                                                            {formatToDate(row.premiereDate)}
+                                                        </button>
                                                     </div>
                                                 </TableCell>
                                                 <TableCell>
@@ -142,14 +147,21 @@ function ListMovie({ movies, currentPage, handlePageChange, genres }) {
                                         ))}
                                 </TableBody>
                             </Table>
+                            {movies && movies.result.length < 1 && (
+                                <div style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
+                                    Không có bộ phim nào
+                                </div>
+                            )}
                         </TableContainer>
-                        <div className={cx('pagination')}>
-                            <PaginationS
-                                currentPage={currentPage}
-                                totalPages={movies?.totalPages || 0}
-                                onPageChange={handlePageChange}
-                            />
-                        </div>
+                        {movies && movies.result.length > 0 && (
+                            <div className={cx('pagination')}>
+                                <PaginationS
+                                    currentPage={currentPage}
+                                    totalPages={movies?.totalPages || 0}
+                                    onPageChange={handlePageChange}
+                                />
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

@@ -3,54 +3,59 @@ import classNames from 'classnames/bind';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import PaginationS from '~/components/Pagination';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
-import ScheduleAdd from './RoleAdd';
-import DropDown from '~/components/DropDown';
+import RoleAdd from './RoleAdd';
+import { confirmAction } from '~/components/ConfirmAction/ConfirmAction';
+import SearchBar from '~/components/SearchBar';
+import { DeleteRoleApi } from '~/service/RolePremissionService';
+import { toast } from 'react-toastify';
+import { useAuth } from '~/components/Context/AuthContext';
 
 const cx = classNames.bind(styles);
 
-function ScheduleManagement() {
+function RoleManagement({ ...props }) {
+    const { state } = useAuth();
     const [isDialogOpen, setDialogOpen] = useState(false);
+    const [role, setRole] = useState(null);
 
-    const handleOpenClick = (id) => {
-        console.log('ID được truyền vào:', id);
+    const handleLoginClick = (role) => {
+        setRole(role);
         setDialogOpen(true);
     };
 
     const handleCloseDialog = () => {
         setDialogOpen(false);
+        setRole(null);
     };
-    const rows = [
-        { id: 1, name: 'John Doe', age: 30, occupation: 'Software Engineer' },
-        { id: 2, name: 'Jane Smith', age: 25, occupation: 'Designer' },
-        { id: 3, name: 'Mike Johnson', age: 35, occupation: 'Project Manager' },
-    ];
 
-    const handleDetailClick = (id) => {};
+    const handleDeleteRoleClick = async (id) => {
+        const confirm = await confirmAction();
+        if (confirm) {
+            const res = await DeleteRoleApi(id, state.token);
+            if (res) {
+                props.setLoadList((prev) => !prev);
+                toast.success('Xóa vai trò thành công');
+            }
+        }
+    };
 
     return (
         <div>
             <div className={cx('nav')}>
-                Quản lý thể loại / <span>Danh sách thể loại</span>
+                Quản lý quyền / <span>Danh sách vai trò</span>
             </div>
             <div className={cx('wrapper')}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div className={cx('btn')}>
-                        <button onClick={handleOpenClick}>
+                        <button onClick={() => handleLoginClick(null)}>
                             <FontAwesomeIcon icon={faPlus} className={cx('btn-icon')} />
-                            Tạo thể loại
+                            Tạo vai trò
                         </button>
                     </div>
 
                     <div className={cx('ctn-search')}>
-                        <DropDown searchName={'Chọn rạp chiếu'} data={[]} name={'status'} />
-                        <DropDown searchName={'Chọn phòng chiếu'} data={[]} name={'status'} />
-
-                        <div className={cx('ctn-input')}>
-                            <label className={cx('label')}>Ngày chiếu:</label>
-                            <input type="date" className={cx('input')} />
-                        </div>
+                        <SearchBar label={'Tên vai trò'} name={'name'} />
                     </div>
                 </div>
 
@@ -60,16 +65,13 @@ function ScheduleManagement() {
                             <TableHead>
                                 <TableRow className={cx('bgr')}>
                                     <TableCell className={cx('stt')}>
-                                        <div className={cx('title_tb')}>STT</div>
+                                        <div className={cx('stt_center', 'title_tb')}>STT</div>
                                     </TableCell>
                                     <TableCell>
-                                        <div className={cx('title_tb')}>ID</div>
+                                        <div className={cx('title_tb')}>Tên vai trò</div>
                                     </TableCell>
                                     <TableCell>
-                                        <div className={cx('title_tb')}>Tên thể loại</div>
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className={cx('title_tb')}>Trạng thái</div>
+                                        <div className={cx('title_tb')}>Mô tả</div>
                                     </TableCell>
                                     <TableCell>
                                         <div className={cx('title_tb')}>Thao tác</div>
@@ -77,46 +79,62 @@ function ScheduleManagement() {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {rows.map((row) => (
-                                    <TableRow key={row.id}>
-                                        <TableCell>
-                                            <div className={cx('stt_center', 'title_tb')}>{row.id}</div>
-                                        </TableCell>
-                                        <TableCell>
-                                            <div className={cx('title_tb')}>{row.name}</div>
-                                        </TableCell>
-                                        <TableCell>
-                                            <div className={cx('title_tb')}>
-                                                <button className={cx('time_title')}>{row.occupation}</button>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            <div className={cx('title_tb')}>
-                                                <button className={cx('status_title')}>{row.occupation}</button>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            <div
-                                                onClick={() => handleDetailClick(row.id)}
-                                                className={cx('title_tb', 'detail')}
-                                            >
-                                                Xem chi tiết
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
+                                {props.roles &&
+                                    props.roles.result.map((row, index) => (
+                                        <TableRow key={row.id}>
+                                            <TableCell>
+                                                <div className={cx('stt_center', 'title_tb')}>
+                                                    {props.roles.pageSize * (props.currentPage - 1) + index + 1}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className={cx('title_tb')}>{row.name}</div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className={cx('title_tb')}>{row.description}</div>
+                                            </TableCell>
+                                            <TableCell>
+                                                {row.name !== 'ADMIN' && row.name !== 'USER' && (
+                                                    <div className={cx('title_tb')}>
+                                                        <button
+                                                            className={cx('pen')}
+                                                            onClick={() => handleLoginClick(row)}
+                                                        >
+                                                            <FontAwesomeIcon icon={faPen} />
+                                                        </button>
+                                                        <button
+                                                            className={cx('delete')}
+                                                            onClick={() => handleDeleteRoleClick(row.id)}
+                                                        >
+                                                            <FontAwesomeIcon icon={faTrash} />
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
                             </TableBody>
                         </Table>
                     </TableContainer>
                     <div className={cx('pagination')}>
-                        <PaginationS />
+                        <PaginationS
+                            currentPage={props.currentPage}
+                            totalPages={(props.roles && props.roles?.totalPages) || 0}
+                            onPageChange={props.handlePageChange}
+                        />
                     </div>
                 </div>
             </div>
 
-            <ScheduleAdd open={isDialogOpen} handleClose={handleCloseDialog} />
+            <RoleAdd
+                open={isDialogOpen}
+                handleClose={handleCloseDialog}
+                role={role}
+                setLoadList={props.setLoadList}
+                permissions={props.permissions}
+            />
         </div>
     );
 }
 
-export default ScheduleManagement;
+export default RoleManagement;

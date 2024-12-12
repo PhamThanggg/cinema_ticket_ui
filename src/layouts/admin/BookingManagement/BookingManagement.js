@@ -8,6 +8,8 @@ import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { formatVND } from '~/utils/vndPrice';
 import { formatToApiTime } from '~/utils/dateFormatter';
+import DropDownSearch from '~/components/DropDownSearch';
+import { GetAreaApi } from '~/service/AreaService';
 
 const cx = classNames.bind(styles);
 
@@ -17,6 +19,7 @@ function BookingManagement({ ...props }) {
     const navigate = useNavigate();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
+    const [area, setArea] = useState([]);
 
     const statusValue = [
         {
@@ -39,6 +42,20 @@ function BookingManagement({ ...props }) {
         }
     }, [props.cinemas]);
 
+    useEffect(() => {
+        const getArea = async () => {
+            const res = await GetAreaApi();
+            if (res && res.result) {
+                const data = res.result.map((item) => ({
+                    value: item.id,
+                    name: item.areaName,
+                }));
+                setArea(data);
+            }
+        };
+        getArea();
+    }, []);
+
     const handleDateChange = (event) => {
         const selectedDate = event.target.value;
         setDate(selectedDate);
@@ -60,11 +77,20 @@ function BookingManagement({ ...props }) {
             <div className={cx('wrapper')}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div className={cx('ctn-search')}>
-                        <DropDown searchName={'Chọn rạp chiếu'} data={cinemaValue} name={'cinema'} />
-                        <DropDown searchName={'Chọn trạng thái'} data={statusValue} name={'status'} />
-
+                        <DropDownSearch searchName={'Chọn khu vực'} data={area} name={'areaId'} width="180px" />
+                        <DropDownSearch
+                            searchName={'Chọn rạp chiếu'}
+                            data={cinemaValue}
+                            name={'cinema'}
+                            width="180px"
+                        />
+                        <DropDownSearch
+                            searchName={'Chọn trạng thái'}
+                            data={statusValue}
+                            name={'status'}
+                            width="145px"
+                        />
                         <div className={cx('ctn-input')}>
-                            {/* <label className={cx('label')}>Ngày chiếu:</label> */}
                             <input type="date" className={cx('input')} onChange={handleDateChange} />
                         </div>
                         <SearchBar label={'Mã đơn hàng'} name={'invoiceId'} />
@@ -150,14 +176,22 @@ function BookingManagement({ ...props }) {
                                     ))}
                             </TableBody>
                         </Table>
+                        {props.invoices && props.invoices.result.length < 1 && (
+                            <div style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
+                                Không có hóa đơn nào
+                            </div>
+                        )}
                     </TableContainer>
-                    <div className={cx('pagination')}>
-                        <PaginationS
-                            currentPage={props.currentPage}
-                            totalPages={(props.invoices && props.invoices?.totalPages) || 0}
-                            onPageChange={props.handlePageChange}
-                        />
-                    </div>
+
+                    {props.invoices && props.invoices.result.length > 0 && (
+                        <div className={cx('pagination')}>
+                            <PaginationS
+                                currentPage={props.currentPage}
+                                totalPages={(props.invoices && props.invoices?.totalPages) || 0}
+                                onPageChange={props.handlePageChange}
+                            />
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

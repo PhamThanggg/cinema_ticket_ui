@@ -13,7 +13,7 @@ import { useAuth } from '~/components/Context/AuthContext';
 
 const cx = classNames.bind(styles);
 
-function GenreAdd({ open, handleClose, roomId, schedule, scheduleId, setSchedule }) {
+function ScheduleAdd({ open, handleClose, roomId, scheduleId, ...props }) {
     const { state } = useAuth();
     const { token } = state;
     const [movies, setMovies] = useState(null);
@@ -116,18 +116,14 @@ function GenreAdd({ open, handleClose, roomId, schedule, scheduleId, setSchedule
         if (scheduleId) {
             const updatedGenre = await UpdateScheduleApi(data, scheduleId, token);
             if (updatedGenre) {
-                toast.success('Update successfully');
-                // setSchedule((prevList) =>
-                //     prevList.map((genre) => (genre.id === updatedGenre.result.id ? updatedGenre.result : genre)),
-                // );
+                props.setLoadList((prev) => !prev);
+                toast.success('Cập nhật thành công');
             }
         } else {
             const res = await CreateScheduleApi(data, token);
             if (res && res.result) {
+                props.setLoadList((prev) => !prev);
                 toast.success(res.message);
-                // if (schedule) {
-                //     setSchedule((prevList) => [res.result, ...prevList]);
-                // }
             }
         }
     };
@@ -259,4 +255,4 @@ function GenreAdd({ open, handleClose, roomId, schedule, scheduleId, setSchedule
     );
 }
 
-export default GenreAdd;
+export default ScheduleAdd;

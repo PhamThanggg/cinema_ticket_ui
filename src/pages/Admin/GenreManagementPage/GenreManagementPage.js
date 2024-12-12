@@ -11,10 +11,11 @@ function GenreManagementPage() {
     const initialPage = Math.max(1, Number(queryParams.get('page')) || 1);
     const [currentPage, setCurrentPage] = useState(initialPage);
     const [genres, setGenres] = useState(null);
+    const [loadList, setLoadList] = useState(true);
 
     useEffect(() => {
         getGenreList();
-    }, [currentPage, location]);
+    }, [currentPage, location, loadList]);
 
     const handlePageChange = (newPage) => {
         queryParams.set('page', newPage);
@@ -30,7 +31,7 @@ function GenreManagementPage() {
         const data = {
             page: currentPage - 1,
             limit: 10,
-            nameMovie: name || '',
+            name: name || '',
         };
 
         const res = await GenreSearchApi(data);
@@ -44,7 +45,14 @@ function GenreManagementPage() {
         return <Loading />;
     }
 
-    return <GenreManagement genres={genres} currentPage={currentPage} handlePageChange={handlePageChange} />;
+    return (
+        <GenreManagement
+            genres={genres}
+            currentPage={currentPage}
+            handlePageChange={handlePageChange}
+            setLoadList={setLoadList}
+        />
+    );
 }
 
 export default GenreManagementPage;

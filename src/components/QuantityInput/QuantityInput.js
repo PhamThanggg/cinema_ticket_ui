@@ -4,7 +4,7 @@ import styles from './Quantity.module.scss';
 
 const cx = classNames.bind(styles);
 
-function QuantityInput({ initialQuantity, onQuantityChange }) {
+function QuantityInput({ initialQuantity, onQuantityChange, max }) {
     const [quantity, setQuantity] = useState(initialQuantity);
 
     useEffect(() => {
@@ -12,7 +12,10 @@ function QuantityInput({ initialQuantity, onQuantityChange }) {
     }, [initialQuantity]);
 
     const handleIncrease = () => {
-        const newQuantity = quantity + 1;
+        let newQuantity = quantity + 1;
+        if (newQuantity > max) {
+            newQuantity = max;
+        }
         setQuantity(newQuantity);
         onQuantityChange(newQuantity);
     };
@@ -24,9 +27,13 @@ function QuantityInput({ initialQuantity, onQuantityChange }) {
     };
 
     const handleInputChange = (e) => {
-        const value = parseInt(e.target.value, 10);
+        let value = parseInt(e.target.value, 10);
+        if (value > max) {
+            value = max;
+        }
         if (!isNaN(value) && value >= 0) {
             setQuantity(value);
+            onQuantityChange(value);
         }
     };
 
