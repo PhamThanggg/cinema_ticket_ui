@@ -213,37 +213,37 @@ function MovieAdd() {
 
     const validate = () => {
         if (!formData.name.trim()) {
-            return 'Name movie is required.';
+            return 'Tên phim là bắt buộc.';
         }
         if (!formData.producer.trim()) {
-            return 'Producer is required.';
+            return 'Nhà sản xuất là bắt buộc.';
         }
         if (!formData.duration || formData.duration <= 0) {
-            return 'Duration is required and must be greater than 0.';
+            return 'Thời lượng là bắt buộc và phải lớn hơn 0.';
         }
         if (!formData.language.trim()) {
-            return 'Language is required.';
+            return 'Ngôn ngữ là bắt buộc.';
         }
         if (formData.ageLimit === undefined || formData.ageLimit === null) {
-            return 'Age limit must be selected.';
+            return 'Giới hạn độ tuổi là bắt buộc';
         }
         // if (!formData.trailer.trim()) {
-        //     return 'Trailer URL is required.';
+        //     return 'Đường dẫn trailer là bắt buộc.';
         // }
         // if (!formData.nation.trim()) {
-        //     return 'Nation is required.';
+        //     return 'Quốc gia là bắt buộc.';
         // }
         // if (!formData.description.trim()) {
-        //     return 'Description is required.';
+        //     return 'Mô tả là bắt buộc.';
         // }
         if (!formData.premiereDate.trim()) {
-            return 'Premiere date is required.';
+            return 'Ngày công chiếu là bắt buộc.';
         }
         if (formData.status === undefined || formData.status === null) {
-            return 'Status must be selected.';
+            return 'Trạng thái phải được chọn.';
         }
         if (genre.length < 1) {
-            return 'Genre must be selected.';
+            return 'Thể loại phải được chọn.';
         }
         return null;
     };

@@ -1,51 +1,92 @@
-import styles from './GenreManagement.module.scss';
+import styles from './PromotionManagement.module.scss';
 import classNames from 'classnames/bind';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import PaginationS from '~/components/Pagination';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPen, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { useEffect, useState } from 'react';
-import GenreAdd from './PromotionAdd';
+import { useState } from 'react';
 import { confirmAction } from '~/components/ConfirmAction/ConfirmAction';
-import { DeleteGenreApi } from '~/service/GenreService';
 import { useAuth } from '~/components/Context/AuthContext';
 import { toast } from 'react-toastify';
 import SearchBar from '~/components/SearchBar';
+import DropDown from '~/components/DropDown';
+import { DeletePromotionApi } from '~/service/PromotionService';
+import PromotionAdd from './PromotionAdd';
+import PromotionInfoAdd from './PromotionInfoAdd';
 
 const cx = classNames.bind(styles);
 
-function PromotionManagement({ genres, currentPage, handlePageChange, ...props }) {
+function PromotionManagement({ promotions, currentPage, handlePageChange, ...props }) {
     const { state } = useAuth();
     const { token } = state;
     const [isDialogOpen, setDialogOpen] = useState(false);
-    const [genreList, setGenreList] = useState(null);
-    const [genreId, setGenreId] = useState(null);
+    const [isDialogOpenInfo, setDialogOpenInfo] = useState(false);
+    const [promotion, setPromotion] = useState(null);
 
-    useEffect(() => {
-        setGenreList(genres.result);
-    }, [genres]);
-
-    const handleOpenClick = (id) => {
-        if (id) {
-            setGenreId(id);
+    const handleOpenClick = (promotion) => {
+        if (promotion) {
+            setPromotion(promotion);
         }
         setDialogOpen(true);
     };
 
+    const handleOpenInfoClick = (promotion) => {
+        if (promotion) {
+            setPromotion(promotion);
+        }
+        setDialogOpenInfo(true);
+    };
+
+    const handleOpenPromtioClick = (promotion) => {
+        if (promotion && promotion.promotionType === 'CODE') {
+            setPromotion(promotion);
+            setDialogOpen(true);
+        }
+
+        if (promotion && promotion.promotionType === 'INFO') {
+            setPromotion(promotion);
+            setDialogOpenInfo(true);
+        }
+    };
+
     const handleDeleteClick = async (id) => {
-        const confirm = confirmAction();
+        const confirm = await confirmAction();
         if (confirm) {
-            const res = DeleteGenreApi(id, token);
+            const res = await DeletePromotionApi(id, token);
             if (res) {
+                props.setLoadList((prev) => !prev);
                 toast.success(res.result);
             }
         }
     };
 
     const handleCloseDialog = () => {
-        setGenreId(null);
+        setPromotion(null);
         setDialogOpen(false);
+        setDialogOpenInfo(false);
     };
+
+    const statusValue = [
+        {
+            value: 1,
+            name: 'Còn hạn',
+        },
+        {
+            value: 2,
+            name: 'Hết hạn',
+        },
+    ];
+
+    const promotionType = [
+        {
+            value: 'CODE',
+            name: 'Nhập mã code',
+        },
+        {
+            value: 'INFO',
+            name: 'Thông tin',
+        },
+    ];
 
     return (
         <div>
@@ -55,12 +96,24 @@ function PromotionManagement({ genres, currentPage, handlePageChange, ...props }
             <div className={cx('wrapper')}>
                 <div>
                     <div className={cx('btn')}>
-                        <button className={cx('button')} onClick={() => handleOpenClick(null)}>
-                            <FontAwesomeIcon icon={faPlus} className={cx('btn-icon')} />
-                            Tạo thể loại
-                        </button>
+                        <div>
+                            <button className={cx('button')} onClick={() => handleOpenClick(null)}>
+                                <FontAwesomeIcon icon={faPlus} className={cx('btn-icon')} />
+                                Tạo code
+                            </button>
+                            <button
+                                className={cx('button')}
+                                onClick={() => handleOpenInfoClick(null)}
+                                style={{ marginLeft: '10px' }}
+                            >
+                                <FontAwesomeIcon icon={faPlus} className={cx('btn-icon')} />
+                                Tạo khuyến mãi
+                            </button>
+                        </div>
                         <div className={cx('display_flex')}>
-                            <SearchBar name={'name'} label="Nhập thể loại" />
+                            <DropDown searchName={'Loại khuyến mãi'} data={promotionType} name={'promotionType'} />
+                            <DropDown searchName={'Chọn trạng thái'} data={statusValue} name={'status'} />
+                            <SearchBar name={'name'} label="Nhập tên khuyến mãi" />
                         </div>
                     </div>
                     <div className={cx('list')}>
@@ -71,9 +124,17 @@ function PromotionManagement({ genres, currentPage, handlePageChange, ...props }
                                         <TableCell className={cx('stt')}>
                                             <div className={cx('title_tb', 'stt_center')}>STT</div>
                                         </TableCell>
-
                                         <TableCell>
-                                            <div className={cx('title_tb')}>Tên thể loại</div>
+                                            <div className={cx('title_tb')}>Tên khuyến mãi</div>
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className={cx('title_tb')}>Loại khuyến mãi</div>
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className={cx('title_tb')}>Ngày bắt đầu</div>
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className={cx('title_tb')}>Ngày kết thúc</div>
                                         </TableCell>
                                         <TableCell>
                                             <div className={cx('title_tb')}>Trạng thái</div>
@@ -84,24 +145,42 @@ function PromotionManagement({ genres, currentPage, handlePageChange, ...props }
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {genreList &&
-                                        genreList.map((row, index) => (
+                                    {promotions &&
+                                        promotions.result &&
+                                        promotions.result.map((row, index) => (
                                             <TableRow key={row.id}>
                                                 <TableCell>
                                                     <div className={cx('stt_center', 'title_tb')}>
-                                                        {genres.pageSize * (currentPage - 1) + index + 1}
+                                                        {promotions.pageSize * (currentPage - 1) + index + 1}
                                                     </div>
                                                 </TableCell>
 
                                                 <TableCell>
+                                                    <div className={cx('title_tb')}>{row.name}</div>
+                                                </TableCell>
+                                                <TableCell>
                                                     <div className={cx('title_tb')}>
-                                                        <button className={cx('time_title')}>{row.name}</button>
+                                                        {row.promotionType === 'CODE'
+                                                            ? 'Nhập mã code'
+                                                            : row.promotionType === 'INFO'
+                                                            ? 'Thông tin'
+                                                            : ''}
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className={cx('title_tb')}>
+                                                        <button className={cx('time_title')}>{row.startDate}</button>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className={cx('title_tb')}>
+                                                        <button className={cx('time_title')}>{row.endDate}</button>
                                                     </div>
                                                 </TableCell>
                                                 <TableCell>
                                                     <div className={cx('title_tb')}>
                                                         <button className={cx('status_title')}>
-                                                            {row.status === 1 ? 'Hoạt động' : 'Không hoạt động'}
+                                                            {new Date(row.endDate) > new Date() ? 'Còn hạn' : 'Hết hạn'}
                                                         </button>
                                                     </div>
                                                 </TableCell>
@@ -109,7 +188,7 @@ function PromotionManagement({ genres, currentPage, handlePageChange, ...props }
                                                     <div className={cx('title_tb')}>
                                                         <button
                                                             className={cx('pen')}
-                                                            onClick={() => handleOpenClick(row.id)}
+                                                            onClick={() => handleOpenPromtioClick(row)}
                                                         >
                                                             <FontAwesomeIcon icon={faPen} />
                                                         </button>
@@ -125,17 +204,17 @@ function PromotionManagement({ genres, currentPage, handlePageChange, ...props }
                                         ))}
                                 </TableBody>
                             </Table>
-                            {genreList && genreList.length < 1 && (
+                            {promotions && promotions.result && promotions.result.length < 1 && (
                                 <div style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
-                                    Không có thể loại nào
+                                    Không có khuyến mãi nào
                                 </div>
                             )}
                         </TableContainer>
-                        {genreList && genreList.length > 0 && (
+                        {promotions && promotions.result && promotions.result.length > 0 && (
                             <div className={cx('pagination')}>
                                 <PaginationS
                                     currentPage={currentPage}
-                                    totalPages={genres?.totalPages || 0}
+                                    totalPages={promotions?.totalPages || 0}
                                     onPageChange={handlePageChange}
                                 />
                             </div>
@@ -144,11 +223,18 @@ function PromotionManagement({ genres, currentPage, handlePageChange, ...props }
                 </div>
             </div>
 
-            <GenreAdd
+            <PromotionAdd
                 open={isDialogOpen}
                 handleClose={handleCloseDialog}
-                setGenreList={setGenreList}
-                genreId={genreId}
+                promotion={promotion}
+                setLoadList={props.setLoadList}
+            />
+
+            <PromotionInfoAdd
+                open={isDialogOpenInfo}
+                handleClose={handleCloseDialog}
+                promotion={promotion}
+                setPromotion={setPromotion}
                 setLoadList={props.setLoadList}
             />
         </div>

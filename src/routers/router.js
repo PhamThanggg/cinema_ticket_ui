@@ -21,6 +21,8 @@ import BookingManagementPage from '~/pages/Admin/BookingManagementPage';
 import UserManagementPage from '~/pages/Admin/UserManagementPage';
 import RoleManagementPage from '~/pages/Admin/RoleManagementPage';
 import AreaManagementPage from '~/pages/Admin/AreaManagementPage';
+import PromotionManagementPage from '~/pages/Admin/PromotionManagementPage';
+import ActorManagementPage from '~/pages/Admin/ActorManagementPage';
 
 const publicRoutes = [
     { path: config.routes.home, component: Home },
@@ -51,6 +53,8 @@ export const adminRoutes = [
     { path: config.routes.ListUser, component: UserManagementPage },
     { path: config.routes.ListRole, component: RoleManagementPage },
     { path: config.routes.ListArea, component: AreaManagementPage },
+    { path: config.routes.ListPromotion, component: PromotionManagementPage },
+    { path: config.routes.ListActor, component: ActorManagementPage },
 ];
 
 export { publicRoutes, privateRoutes };

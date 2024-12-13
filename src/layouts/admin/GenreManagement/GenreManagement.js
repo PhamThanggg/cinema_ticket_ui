@@ -33,9 +33,9 @@ function GenreManagement({ genres, currentPage, handlePageChange, ...props }) {
     };
 
     const handleDeleteClick = async (id) => {
-        const confirm = confirmAction();
+        const confirm = await confirmAction();
         if (confirm) {
-            const res = DeleteGenreApi(id, token);
+            const res = await DeleteGenreApi(id, token);
             if (res) {
                 toast.success(res.result);
             }

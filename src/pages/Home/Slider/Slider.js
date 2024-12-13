@@ -28,6 +28,7 @@ const NextArrow = (props) => {
 
 function Slide() {
     const images = [
+        'https://cdn.galaxycine.vn/media/2024/11/29/2048_1732875284611.jpg',
         'https://cdn.galaxycine.vn/media/2024/9/9/tim-kiem-tai-nang-am-phu-2048-sneak-_1725856218383.jpg',
         'https://cdn.galaxycine.vn/media/2024/8/29/2048_1724920527246.jpg',
         'https://cdn.galaxycine.vn/media/2024/9/9/cam-2048_1725872495016.jpg',

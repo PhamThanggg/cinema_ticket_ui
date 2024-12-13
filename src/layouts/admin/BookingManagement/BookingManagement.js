@@ -2,7 +2,6 @@ import styles from './BookingManagement.module.scss';
 import classNames from 'classnames/bind';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import PaginationS from '~/components/Pagination';
-import DropDown from '~/components/DropDown';
 import SearchBar from '~/components/SearchBar';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';

@@ -96,12 +96,12 @@ function Header({ toggleSidebar, isSidebarVisible }) {
         {
             label: 'Quản lý khuyến mãi',
             icon: <FontAwesomeIcon icon={faGift} className={cx('dashboard_icon')} />,
-            links: [{ label: 'Danh sách vai trò', path: routes.ListRole }],
+            links: [{ label: 'Danh sách khuyến mãi', path: routes.ListPromotion }],
         },
         {
             label: 'Quản lý diễn viên',
             icon: <FontAwesomeIcon icon={faPerson} className={cx('dashboard_icon')} />,
-            links: [{ label: 'Danh sách vai trò', path: routes.ListRole }],
+            links: [{ label: 'Danh sách diễn viên', path: routes.ListActor }],
         },
     ];
 

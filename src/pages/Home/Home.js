@@ -6,6 +6,7 @@ import Promotion from './Promotion';
 import { useEffect, useState } from 'react';
 import { MovieShowNowApi } from '~/service/MovieService';
 import Loading from '~/components/Loading';
+import { PromotionSearchNameApi } from '~/service/PromotionService';
 
 const cx = classNames.bind(styles);
 
@@ -14,9 +15,13 @@ function Home() {
     const movieType2 = 'Phim Sắp Chiếu';
     const [res, setRes] = useState(null);
     const [resC, setResC] = useState(null);
+    const [promotion, setPromotion] = useState(null);
+    const [loadding, setLoading] = useState(false);
 
     useEffect(() => {
+        setLoading(true);
         getMovieShowNow();
+        setLoading(false);
     }, []);
 
     const getMovieShowNow = async () => {
@@ -28,6 +33,11 @@ function Home() {
             setResC(comming);
         } catch (error) {
             console.log('Error fetching movie data:', error);
+        }
+
+        const promotion = await PromotionSearchNameApi(null, 0, 20);
+        if (promotion) {
+            setPromotion(promotion.result);
         }
     };
 
@@ -41,7 +51,7 @@ function Home() {
             <div className={cx('wrapper-movie')}>
                 <Movie movieType={movieType} showBuyTicketButton={true} movieData={res.result} status={0} />
                 <Movie movieType={movieType2} showBuyTicketButton={false} movieData={resC.result} status={1} />
-                <Promotion />
+                <Promotion promotion={promotion} />
             </div>
         </div>
     );

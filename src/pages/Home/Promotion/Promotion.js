@@ -27,14 +27,12 @@ const NextArrow = (props) => {
     );
 };
 
-function Promotion() {
-    const images = [1, 2, 3, 4, 5, 6];
-
+function Promotion({ promotion }) {
     const settings = {
         className: 'center',
         centerMode: true,
         dots: true, // Hiển thị các chấm tròn để chuyển ảnh
-        infinite: true, // Cho phép vòng lặp lại slider
+        infinite: promotion && promotion.length < 4 ? false : true, // Cho phép vòng lặp lại slider
         speed: 500, // Tốc độ chuyển ảnh
         slidesToShow: 4, // Số ảnh hiển thị mỗi lần
         slidesToScroll: 1, // Số ảnh cuộn mỗi lần
@@ -83,9 +81,7 @@ function Promotion() {
             </div>
             <div className={cx('slider')}>
                 <Slider {...settings}>
-                    {images.map((image, index) => (
-                        <Item key={index} />
-                    ))}
+                    {promotion && promotion.map((image, index) => <Item key={index} promotionData={image} />)}
                 </Slider>
             </div>
         </div>
